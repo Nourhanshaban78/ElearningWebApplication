@@ -4,9 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace E_learning.Core.Entities
+namespace E_learning.Core.Enums
 {
-    internal class Demo
+    public enum Status
     {
+        Pending,
+        Active,
+        Nonactive
     }
 }
