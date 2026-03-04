@@ -1,22 +1,16 @@
-﻿using E_learning.Core.Entities.Notifactions;
-using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Identity;
 
 using E_learning.Core.Entities.Assessments.Exams;
 using E_learning.Core.Entities.Assessments.Quizzes;
 using E_learning.Core.Entities.Billing___Payments;
 using E_learning.Core.Entities.Courses___content;
-using Microsoft.AspNetCore.Identity;
 using E_learning.Core.Enums;
+using E_learning.Core.Entities.Notifactions;
 
 
 namespace E_learning.Core.Entities.Identity
 {
-    public class ApplicationUser : IdentityUser
+    public class ApplicationUser : IdentityUser<Guid>
     {
         public string FullName { get; set; } = string.Empty;
         public string? Bio { get; set; } = string.Empty;
@@ -31,8 +25,8 @@ namespace E_learning.Core.Entities.Identity
 
         #region Notification & NotificationSetting NavProp
 
-        // public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
-        // public NotificationSettings? NotificationSettings { get; set; }
+         public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
+         public NotificationSettings? NotificationSettings { get; set; }
 
         #endregion
         public ICollection<Courses> Courses { get; set; } = new List<Courses>();
@@ -44,17 +38,18 @@ namespace E_learning.Core.Entities.Identity
         public ICollection<PaymentMethods> PaymentMethods { get; set; } = new List<PaymentMethods>();
         public ICollection<PaymentTransactions> PaymentTransactions { get; set; } = new List<PaymentTransactions>();
         public ICollection<PayoutRequests> PayoutRequests { get; set; } = new List<PayoutRequests>();
+        public ICollection<UserSession> UserSessions { get; set; } = new List<UserSession>();
+        public ICollection<OtpCodes> OtpCodes { get; set; } = new List<OtpCodes>();
 
-      
-        //// Preferences
-        //public string Language { get; set; } = "en";
-        //public string TimeZone { get; set; } = "UTC";
-        //public bool ProfileVisibility { get; set; } = true;
-        //public bool ShowProgressToOthers { get; set; } = true;
+        // Preferences
+        public string Language { get; set; } = "en";
+        public string TimeZone { get; set; } = "UTC";
+        public bool ProfileVisibility { get; set; } = true;
+        public bool ShowProgressToOthers { get; set; } = true;
 
-        //// Notifications
-        //public bool NotifyInApp { get; set; } = true;
-        //public bool NotifyEmail { get; set; } = true;
+        // Notifications
+        public bool NotifyInApp { get; set; } = true;
+        public bool NotifyEmail { get; set; } = true;
 
     }
 }

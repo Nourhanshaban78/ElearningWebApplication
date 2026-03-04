@@ -1,7 +1,9 @@
 ﻿
 using E_learning.API.Extensions;
+using E_learning.Core.Entities.Identity;
 using E_learning.Repository.Data;
 using E_learning.Repository.Interceptors;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -35,6 +37,10 @@ namespace E_learning.API
                 options.UseSqlServer(connectionString)
                        .AddInterceptors(interceptor);
             });
+
+
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>()
+                .AddEntityFrameworkStores<ELearningDbContext>().AddDefaultTokenProviders();
 
 
             // Add services to the container.

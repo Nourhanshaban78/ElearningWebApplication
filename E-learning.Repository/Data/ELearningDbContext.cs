@@ -1,6 +1,8 @@
 ﻿using E_learning.Core.Entities.Base;
+using E_learning.Core.Entities.Enrollment___Progress;
 using E_learning.Core.Entities.Identity;
 using E_learning.Repository.Interceptors;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,27 +11,26 @@ using System.Linq.Expressions;
 
 namespace E_learning.Repository.Data
 {
-    public class ELearningDbContext
-       : IdentityDbContext<ApplicationUser>
+    public class ELearningDbContext : IdentityDbContext<ApplicationUser,IdentityRole<Guid> ,Guid>
     {
 
         private readonly AuditInterceptor _auditInterceptor;
 
-        public ELearningDbContext(
-            DbContextOptions<ELearningDbContext> options,
-            AuditInterceptor auditInterceptor)
-            : base(options)
+        public ELearningDbContext(DbContextOptions<ELearningDbContext> options,AuditInterceptor auditInterceptor): base(options)
         {
             _auditInterceptor = auditInterceptor;
         }
-        // Enrollment
-        //public DbSet<Enrollment> Enrollments { get; set; }
-        //public DbSet<LessonProgress> LessonProgress { get; set; }
+
+        #region DbSet
+        #region Enrollment
+        public DbSet<Enrollment> Enrollments { get; set; }
+        public DbSet<LessonProgress> LessonProgress { get; set; }
+        #endregion
+
+        #endregion
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
-            
             modelBuilder.ApplyConfigurationsFromAssembly(
                 typeof(ELearningDbContext).Assembly);
 
@@ -52,7 +53,12 @@ namespace E_learning.Repository.Data
                     entityType.SetQueryFilter(filter);
                 }
             }
+
+            modelBuilder.Entity<OtpCodes>().HasOne(o => o.User).WithMany(u => u.OtpCodes).HasForeignKey(o => o.UserId);
+            modelBuilder.Entity<UserSession>().HasOne(s => s.User).WithMany(u => u.UserSessions).HasForeignKey(o => o.UserId);
         }
+
+     
 
         // ─── OnConfiguring ───────────────────────
         protected override void OnConfiguring(
