@@ -1,4 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using E_learning.Core.Entities.Assessments.Exams;
+using E_learning.Core.Entities.Assessments.Quizzes;
+using E_learning.Core.Entities.Billing___Payments;
+using E_learning.Core.Entities.Courses___content;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,5 +21,15 @@ namespace E_learning.Core.Entities.Identity
         //public Status IsActive { get; set; }
         public DateTime MemberSince { get; set; }
         public DateTime UpdatedAt { get; set; }
+
+        public ICollection<Courses> Courses { get; set; }
+
+        public ICollection<ExamAttempts> ExamAttempts { get; set; }
+        public ICollection<QuizAttempts> QuizAttempts { get; set; }
+
+        public ICollection<InstructorEarnings> InstructorEarnings { get; set; }
+        public ICollection<PaymentMethods> PaymentMethods { get; set; }
+        public ICollection<PaymentTransactions> PaymentTransactions { get; set; }
+        public ICollection<PayoutRequests> PayoutRequests { get; set; }
     }
 }
