@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using E_learning.Core.Entities.Notifactions;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,5 +18,13 @@ namespace E_learning.Core.Entities.Identity
         //public Status IsActive { get; set; }
         public DateTime MemberSince { get; set; }
         public DateTime UpdatedAt { get; set; }
+
+
+        #region Notification & NotificationSetting NavProp
+
+        // public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
+        // public NotificationSettings? NotificationSettings { get; set; }
+
+        #endregion
     }
 }
