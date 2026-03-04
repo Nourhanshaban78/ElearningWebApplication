@@ -15,9 +15,8 @@
 **/secrets.json
 secrets.json
 # ASP.NET Core appsettings
-appsettings.json
-appsettings.*.json
-!appsettings.Development.json
+
+appsettings.Development.json
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs

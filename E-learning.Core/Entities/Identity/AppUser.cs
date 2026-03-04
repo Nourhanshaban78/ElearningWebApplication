@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace E_learning.Core.Entities.Identity
 {
-    internal class AppUser
+    public class AppUser
     {
+       
     }
 }
