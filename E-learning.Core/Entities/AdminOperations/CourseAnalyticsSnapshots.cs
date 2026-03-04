@@ -1,3 +1,4 @@
+using E_learning.Core.Entities.Courses___content;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ namespace E_learning.Core.Entities
         public Guid Id { get; set; }
 
         public Guid CourseId { get; set; }
-        public virtual Courses Course { get; set; }
+        public virtual Courses Course { get; set; } = new Courses();
 
         public DateTime SnapshotDate { get; set; }
         public int TotalStudents { get; set; } = 0;

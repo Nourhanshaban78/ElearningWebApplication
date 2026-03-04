@@ -1,4 +1,6 @@
 ﻿using E_learning.Core.Entities.Base;
+using E_learning.Core.Entities.Courses___content;
+using E_learning.Core.Entities.Enrollment___Progress;
 using E_learning.Core.Entities.Identity;
 using E_learning.Core.Enums;
 using System;
@@ -7,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace E_learning.Core.Entities
+namespace E_learning.Core.Entities.Enrollment___Progress
 {
   
     public class LessonProgress : BaseEntity
@@ -16,7 +18,7 @@ namespace E_learning.Core.Entities
         public Enrollment Enrollment { get; set; } = null!;
 
         public int LessonId { get; set; }
-        //public Lesson Lesson { get; set; } = null!;
+        public Lessons Lesson { get; set; } = null!;
 
     
         public EnrollmentStatus Status { get; set; }

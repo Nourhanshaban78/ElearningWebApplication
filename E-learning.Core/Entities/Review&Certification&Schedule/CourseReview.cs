@@ -1,6 +1,7 @@
-﻿using E_learning.Core.Entities.Identity;
+﻿using E_learning.Core.Entities.Courses___content;
+using E_learning.Core.Entities.Identity;
 
-namespace E_learning.Core.Entities
+namespace E_learning.Core.Entities.Review_Certification_Schedule
 {
     public class CourseReview
     {
@@ -19,7 +20,7 @@ namespace E_learning.Core.Entities
         public DateTime? InstructorRepliedAt { get; set; }
 
         // Navigation
-        //public Course Course { get; set; }
+        public Courses Course { get; set; }
         public ApplicationUser Student { get; set; }
     }
 }

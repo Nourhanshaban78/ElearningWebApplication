@@ -1,4 +1,6 @@
 ﻿using E_learning.Core.Entities.Base;
+using E_learning.Core.Entities.Billing___Payments;
+using E_learning.Core.Entities.Courses___content;
 using E_learning.Core.Entities.Identity;
 using E_learning.Core.Enums;
 using System;
@@ -7,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace E_learning.Core.Entities
+namespace E_learning.Core.Entities.Enrollment___Progress
 {
     public class Enrollment : AuditableEntity, ISoftDelete
     {
@@ -16,10 +18,10 @@ namespace E_learning.Core.Entities
         public ApplicationUser Student { get; set; } = null!;
 
         public int CourseId { get; set; }
-        //public Course Course { get; set; } = null!;
+        public Courses Course { get; set; } = null!;
 
         public int? TransactionId { get; set; }
-        //public PaymentTransaction? Transaction { get; set; }
+        public PaymentTransactions? Transaction { get; set; }
 
         public EnrollmentStatus Status { get; set; } = EnrollmentStatus.NotStarted;
 

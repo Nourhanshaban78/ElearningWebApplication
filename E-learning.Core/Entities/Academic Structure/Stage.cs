@@ -27,6 +27,6 @@ namespace E_learning.Core.Entities.Academic_Structure
         public DateTime CreatedAt { get; set; }
 
         // Navigation Property (One-to-Many)
-        public ICollection<Level> Levels { get; set; }
+        public ICollection<Level> Levels { get; set; } = new List<Level>();
     }
 }

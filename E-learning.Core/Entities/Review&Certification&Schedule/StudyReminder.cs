@@ -1,6 +1,6 @@
 ﻿using E_learning.Core.Entities.Identity;
 
-namespace E_learning.Core.Entities
+namespace E_learning.Core.Entities.Review_Certification_Schedule
 {
     public class StudyReminder
     {

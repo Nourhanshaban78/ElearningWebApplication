@@ -1,4 +1,5 @@
-﻿using E_learning.Core.Entities.Assessments.Exams;
+﻿using E_learning.Core.Entities.Academic_Structure;
+using E_learning.Core.Entities.Assessments.Exams;
 using E_learning.Core.Entities.Assessments.Quizzes;
 using E_learning.Core.Entities.Billing___Payments;
 using E_learning.Core.Entities.Identity;
