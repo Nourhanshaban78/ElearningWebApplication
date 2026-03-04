@@ -1,4 +1,5 @@
 ﻿using E_learning.Core.Entities;
+using E_learning.Core.Entities.Enrollment___Progress;
 using E_learning.Core.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;

@@ -12,7 +12,7 @@ namespace E_learning.Core.Entities.Assessments.Exams
         public Guid Id { get; set; }
 
         public Guid StudentId { get; set; }
-        public ApplicationUser Students { get; set; }
+        public ApplicationUser Student { get; set; } = null!;
 
         public Guid ExamId { get; set; }
         public Exams Exams { get; set; }

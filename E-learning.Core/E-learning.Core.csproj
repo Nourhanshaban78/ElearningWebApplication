@@ -10,4 +10,7 @@
 		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.23" />
 		<PackageReference Include="StackExchange.Redis" Version="2.10.1" />
 	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Entities\Live Session\" />
+	</ItemGroup>
 </Project>

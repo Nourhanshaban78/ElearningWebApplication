@@ -1,17 +1,19 @@
-﻿using E_learning.Core.Entities.Identity;
+﻿using E_learning.Core.Entities.Courses___content;
+using E_learning.Core.Entities.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace E_learning.Core.Entities
+namespace E_learning.Core.Entities.Profiles
+
 {
     public class Instructor
     {
-        public int InstructorId { get; set; }
+        public Guid Id { get; set; }
 
-        public string ApplicationUserId { get; set; }
+        public Guid UserId { get; set; }
         public ApplicationUser User { get; set; }
 
         public string? Headline { get; set; }
@@ -23,8 +25,8 @@ namespace E_learning.Core.Entities
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
-        public ICollection<Course> Courses { get; set; }
-        public ICollection<livesession> LiveSessions { get; set; }
+        public ICollection<Courses> Courses { get; set; }
+        //ublic ICollection<livesession> LiveSessions { get; set; }
 
     }
 }

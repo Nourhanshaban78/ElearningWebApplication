@@ -26,6 +26,10 @@ namespace E_learning.Repository.Data
         public DbSet<Enrollment> Enrollments { get; set; }
         public DbSet<LessonProgress> LessonProgress { get; set; }
         #endregion
+        #region Identity
+        public DbSet<OtpCodes> OtpCodes { get; set; }
+        public DbSet <UserSession> UserSessions { get; set; }
+        #endregion
 
         #endregion
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -53,9 +57,6 @@ namespace E_learning.Repository.Data
                     entityType.SetQueryFilter(filter);
                 }
             }
-
-            modelBuilder.Entity<OtpCodes>().HasOne(o => o.User).WithMany(u => u.OtpCodes).HasForeignKey(o => o.UserId);
-            modelBuilder.Entity<UserSession>().HasOne(s => s.User).WithMany(u => u.UserSessions).HasForeignKey(o => o.UserId);
         }
 
      

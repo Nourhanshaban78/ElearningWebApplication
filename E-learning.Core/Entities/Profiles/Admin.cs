@@ -5,13 +5,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace E_learning.Core.Entities
+namespace E_learning.Core.Entities.Profiles
+
 {
     public class Admin
     {
-        public int AdminId { get; set; }
+        public Guid Id { get; set; }
 
-        public string ApplicationUserId { get; set; }
+        public Guid UserId { get; set; }
         public ApplicationUser User { get; set; }
 
         public bool IsSuperAdmin { get; set; } = false;
