@@ -44,7 +44,7 @@ namespace E_learning.Repository.Config.NotificationsConfigurations
                    .HasForeignKey(x => x.User.Id)
                    .OnDelete(DeleteBehavior.Cascade);
 
-            // Index
+            // Index    
 
             builder.HasIndex(x => new { x.User, x.IsRead});
             builder.HasIndex(x => x.CreatedAt);
