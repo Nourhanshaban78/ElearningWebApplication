@@ -17,7 +17,7 @@ namespace E_learning.Core.Entities.Identity
         public string? ProfileImage { get; set; } = string.Empty;
         public string? Location { get; set; } = string.Empty;
         public DateOnly DateOfBirth { get; set; }
-        
+
         public Status IsActive { get; set; }
         public DateTime MemberSince { get; set; }
         public DateTime UpdatedAt { get; set; }
@@ -25,8 +25,8 @@ namespace E_learning.Core.Entities.Identity
 
         #region Notification & NotificationSetting NavProp
 
-         public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
-         public NotificationSettings? NotificationSettings { get; set; }
+        public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
+        public NotificationSettings? NotificationSettings { get; set; }
 
         #endregion
         public ICollection<Courses> Courses { get; set; } = new List<Courses>();

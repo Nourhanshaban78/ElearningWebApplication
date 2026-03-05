@@ -11,6 +11,7 @@ namespace E_learning.Core.Entities.Notifactions
     {
         public Guid Id { get; set; }
         public ApplicationUser User { get; set; } = default!;
+        public Guid UserId { get; set; }
         public bool CourseAnnouncement { get; set; } = true;
         public bool AssignmentReminder { get; set; } = true;
         public bool ExamNotification { get; set; } = true;

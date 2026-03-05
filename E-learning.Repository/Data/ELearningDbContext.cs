@@ -6,17 +6,20 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
+using E_learning.Core.Entities.Notifactions;
+using E_learning.Core.Entities.Assessments.Quizzes;
+using E_learning.Core.Entities.Assessments.Exams;
 using System.Linq.Expressions;
 
 
 namespace E_learning.Repository.Data
 {
-    public class ELearningDbContext : IdentityDbContext<ApplicationUser,IdentityRole<Guid> ,Guid>
+    public class ELearningDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>
     {
 
         private readonly AuditInterceptor _auditInterceptor;
 
-        public ELearningDbContext(DbContextOptions<ELearningDbContext> options,AuditInterceptor auditInterceptor): base(options)
+        public ELearningDbContext(DbContextOptions<ELearningDbContext> options, AuditInterceptor auditInterceptor) : base(options)
         {
             _auditInterceptor = auditInterceptor;
         }
@@ -28,7 +31,21 @@ namespace E_learning.Repository.Data
         #endregion
         #region Identity
         public DbSet<OtpCodes> OtpCodes { get; set; }
-        public DbSet <UserSession> UserSessions { get; set; }
+        public DbSet<UserSession> UserSessions { get; set; }
+        #endregion
+
+        #region Assessments 
+        public DbSet<Quizzes> Quizzes { get; set; }
+        public DbSet<QuizQuestions> QuizQuestions { get; set; }
+        public DbSet<QuizOptions> QuizOptions { get; set; }
+        public DbSet<QuizAttempts> QuizAttempts { get; set; }
+        public DbSet<QuizAttemptAnswers> QuizAttemptAnswers { get; set; }
+
+        public DbSet<Exams> Exams { get; set; }
+        public DbSet<ExamQuestions> ExamQuestions { get; set; }
+        public DbSet<ExamOptions> ExamOptions { get; set; }
+        public DbSet<ExamAttempts> ExamAttempts { get; set; }
+        public DbSet<ExamAttemptAnswers> ExamAttemptAnswers { get; set; }
         #endregion
 
         #endregion
@@ -57,9 +74,17 @@ namespace E_learning.Repository.Data
                     entityType.SetQueryFilter(filter);
                 }
             }
+
+            modelBuilder.Entity<NotificationSettings>()
+                .HasKey(n => n.UserId);
+
+            modelBuilder.Entity<ApplicationUser>()
+                .HasOne(a => a.NotificationSettings)
+                .WithOne(n => n.User)
+                .HasForeignKey<NotificationSettings>(n => n.UserId);
         }
 
-     
+
 
         // ─── OnConfiguring ───────────────────────
         protected override void OnConfiguring(
