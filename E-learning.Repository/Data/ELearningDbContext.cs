@@ -1,6 +1,7 @@
 ﻿using E_learning.Core.Entities.Base;
 using E_learning.Core.Entities.Enrollment___Progress;
 using E_learning.Core.Entities.Identity;
+using E_learning.Core.Entities.Review_Certification_Schedule;
 using E_learning.Core.Entities.Notifactions;
 using E_learning.Repository.Interceptors;
 using Microsoft.AspNetCore.Identity;
@@ -40,7 +41,15 @@ namespace E_learning.Repository.Data
         public DbSet<NotificationSettings> NotificationSettings { get; set; }
 
         #endregion
+        #region Review&Certification&Schedule
+        public DbSet<CourseReview> CourseReviews { get; set; }
 
+        public DbSet<Certificate> Certificates { get; set; }
+
+        public DbSet<ScheduleEvent> ScheduleEvents { get; set; }
+
+        public DbSet<StudyReminder> StudyReminders { get; set; }
+        #endregion
         #endregion
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
