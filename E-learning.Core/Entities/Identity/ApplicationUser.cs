@@ -30,6 +30,7 @@ namespace E_learning.Core.Entities.Identity
 
         #endregion
         public ICollection<Courses> Courses { get; set; } = new List<Courses>();
+        public ICollection<Courses> ApprovedCourses { get; set; } = new List<Courses>();
 
         public ICollection<ExamAttempts> ExamAttempts { get; set; } = new List<ExamAttempts>();
         public ICollection<QuizAttempts> QuizAttempts { get; set; } = new List<QuizAttempts>();

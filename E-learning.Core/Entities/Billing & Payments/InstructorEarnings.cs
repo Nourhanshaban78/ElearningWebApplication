@@ -1,5 +1,6 @@
 ﻿using E_learning.Core.Entities.Courses___content;
 using E_learning.Core.Entities.Identity;
+using E_learning.Core.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,7 +25,7 @@ namespace E_learning.Core.Entities.Billing___Payments
         public decimal GrossAmount { get; set; }
         public decimal PlatformFee { get; set; }
         public decimal NetAmount { get; set; }
-        public string Status { get; set; } = "Pending";
+        public InstructorEarningsStatus Status { get; set; } = InstructorEarningsStatus.Pending;
         public DateTime AvailableAt { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }

@@ -1,4 +1,5 @@
 ﻿using E_learning.Core.Entities.Assessments.Quizzes;
+using E_learning.Core.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,11 +16,11 @@ namespace E_learning.Core.Entities.Courses___content
         public Sections Sections { get; set; }
 
         public string Title { get; set; }
-        public string Type { get; set; }
+        public LessonsType Type { get; set; }
         public string VideoUrl { get; set; }
         public string Content { get; set; }
         public int DurationSeconds { get; set; }
-        public int OrerIndex { get; set; }
+        public int OrderIndex { get; set; }
         public bool IsFreePreview { get; set; } = false;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 

@@ -1,3 +1,5 @@
+﻿using E_learning.Core.Entities.Base;
+using E_learning.Core.Entities.Courses___content;
 ﻿using E_learning.Core.Entities;
 using E_learning.Core.Entities.AdminOperations;
 using E_learning.Core.Entities.Base;
@@ -26,6 +28,11 @@ namespace E_learning.Repository.Data
         }
 
         #region DbSet
+        #region Courses & Content
+        public DbSet<Courses> Courses { get; set; }
+        public DbSet<Lessons> Lessons { get; set; }
+        public DbSet<Sections> Sections { get; set; }
+        #endregion
 
         #region Enrollment
         public DbSet<Enrollment> Enrollments { get; set; }

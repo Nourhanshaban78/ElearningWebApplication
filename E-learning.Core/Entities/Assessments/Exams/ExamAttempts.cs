@@ -1,4 +1,5 @@
 ﻿using E_learning.Core.Entities.Identity;
+using E_learning.Core.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,7 +29,7 @@ namespace E_learning.Core.Entities.Assessments.Exams
         public bool IsPublished { get; set; } = false;
         public bool? IsPassed { get; set; }
         public string? TeacherComment { get; set; }
-        public string Status { get; set; } = "InProgress";
+        public ExamAttemptsStatus Status { get; set; } = ExamAttemptsStatus.InProgress;
 
         public ICollection<ExamAttemptAnswers> ExamAttemptAnswers { get; set; }
     }
