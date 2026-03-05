@@ -41,6 +41,9 @@ namespace E_learning.Repository.Data
         public DbSet<NotificationSettings> NotificationSettings { get; set; }
 
         #endregion
+        #region Academic Structure
+        public DbSet<Stage> Stages { get; set; }
+        public DbSet<Level> Levels { get; set; }
         #region Review&Certification&Schedule
         public DbSet<CourseReview> CourseReviews { get; set; }
 
