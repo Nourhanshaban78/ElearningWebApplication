@@ -2,6 +2,7 @@
 using E_learning.Core.Entities.Enrollment___Progress;
 using E_learning.Core.Entities.Identity;
 using E_learning.Core.Entities.Review_Certification_Schedule;
+using E_learning.Core.Entities.Notifactions;
 using E_learning.Repository.Interceptors;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -23,13 +24,22 @@ namespace E_learning.Repository.Data
         }
 
         #region DbSet
+
         #region Enrollment
         public DbSet<Enrollment> Enrollments { get; set; }
         public DbSet<LessonProgress> LessonProgress { get; set; }
         #endregion
+
         #region Identity
         public DbSet<OtpCodes> OtpCodes { get; set; }
         public DbSet<UserSession> UserSessions { get; set; }
+        #endregion
+
+        #region Notifications & NotificationsSettings
+
+        public DbSet<Notifications> Notifications { get; set; }
+        public DbSet<NotificationSettings> NotificationSettings { get; set; }
+
         #endregion
         #region Review&Certification&Schedule
         public DbSet<CourseReview> CourseReviews { get; set; }
