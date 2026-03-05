@@ -1,4 +1,5 @@
-﻿using System;
+﻿using E_learning.Core.Entities.Courses___content;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -33,6 +34,6 @@ namespace E_learning.Core.Entities.Academic_Structure
         [NotMapped]
         public int CourseCount { get; set; }
 
-
+        public ICollection<Courses> Courses { get; set; }
     }
 }

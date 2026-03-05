@@ -18,7 +18,7 @@ namespace E_learning.Core.Entities.Billing___Payments
         public decimal Amount { get; set; }
         public string Method { get; set; }
         public string? AccountDetails { get; set; }
-        public Status Status { get; set; } 
+        public PaymentTransactionsStatus Status { get; set; } = PaymentTransactionsStatus.Pending; 
         public DateTime RequestedAt { get; set; } = DateTime.UtcNow;
         public DateTime? ProcessedAt { get; set; }
         public string? AdminNotes { get; set; }

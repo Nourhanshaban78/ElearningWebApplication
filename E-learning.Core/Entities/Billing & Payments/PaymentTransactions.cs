@@ -1,5 +1,6 @@
 ﻿using E_learning.Core.Entities.Courses___content;
 using E_learning.Core.Entities.Identity;
+using E_learning.Core.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +24,7 @@ namespace E_learning.Core.Entities.Billing___Payments
 
         public decimal Amount { get; set; }
         public string Currency { get; set; } = "USD";
-        public string Status { get; set; } = "Pending";
+        public PaymentTransactionsStatus Status { get; set; } = PaymentTransactionsStatus.Pending;
         public string? GatewayReference { get; set; }
         public string? FailureReason { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

@@ -1,4 +1,5 @@
 ﻿using E_learning.Core.Entities.Base;
+using E_learning.Core.Entities.Courses___content;
 using E_learning.Core.Entities.Enrollment___Progress;
 using E_learning.Core.Entities.Identity;
 using E_learning.Repository.Interceptors;
@@ -22,6 +23,11 @@ namespace E_learning.Repository.Data
         }
 
         #region DbSet
+        #region Courses & Content
+        public DbSet<Courses> Courses { get; set; }
+        public DbSet<Lessons> Lessons { get; set; }
+        public DbSet<Sections> Sections { get; set; }
+        #endregion
         #region Enrollment
         public DbSet<Enrollment> Enrollments { get; set; }
         public DbSet<LessonProgress> LessonProgress { get; set; }

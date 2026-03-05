@@ -1,4 +1,5 @@
 ﻿using E_learning.Core.Entities.Identity;
+using E_learning.Core.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +22,7 @@ namespace E_learning.Core.Entities.Assessments.Quizzes
         public DateTime? SubmittedAt { get; set; }
         public decimal? Score { get; set; }
         public bool? IsPassed { get; set; }
-        public string Status { get; set; } = "InProgress";
+        public QuizAttemptsStatus Status { get; set; } = QuizAttemptsStatus.InProgress;
 
         public ICollection<QuizAttemptAnswers> QuizAttemptAnswers { get; set; }
     }
