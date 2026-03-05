@@ -30,7 +30,10 @@ namespace E_learning.Repository.Data
         public DbSet<OtpCodes> OtpCodes { get; set; }
         public DbSet <UserSession> UserSessions { get; set; }
         #endregion
-
+        #region Academic Structure
+        public DbSet<Stage> Stages { get; set; }
+        public DbSet<Level> Levels { get; set; }
+        #endregion
         #endregion
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
