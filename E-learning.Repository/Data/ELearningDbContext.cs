@@ -36,7 +36,7 @@ namespace E_learning.Repository.Data
 
         #region Notifications & NotificationsSettings
 
-        public DbSet<Notification> Notifications { get; set; }
+        public DbSet<Notifications> Notifications { get; set; }
         public DbSet<NotificationSettings> NotificationSettings { get; set; }
 
         #endregion
