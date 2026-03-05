@@ -32,7 +32,7 @@ namespace E_learning.Repository.Config
             // Relationships
 
             builder.HasOne(cr => cr.Course)
-                   .WithMany(c => c.CourseReview)  // need in Course entity : public ICollection<CourseReview> CourseReviews { get; set; }
+                   .WithMany(c => c.CourseReviews)  // need in Course entity : 
                    .HasForeignKey(cr => cr.CourseId)
                    .OnDelete(DeleteBehavior.Cascade);
 

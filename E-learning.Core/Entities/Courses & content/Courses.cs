@@ -2,7 +2,9 @@
 using E_learning.Core.Entities.Assessments.Exams;
 using E_learning.Core.Entities.Assessments.Quizzes;
 using E_learning.Core.Entities.Billing___Payments;
+using E_learning.Core.Entities.Enrollment___Progress;
 using E_learning.Core.Entities.Identity;
+using E_learning.Core.Entities.Review_Certification_Schedule;
 using E_learning.Core.Enums;
 using System;
 using System.Collections.Generic;
@@ -45,7 +47,10 @@ namespace E_learning.Core.Entities.Courses___content
         public ICollection<Sections> Sections { get; set; }
         public ICollection<Quizzes> Quizzes { get; set; }
         public ICollection<Exams> Exams { get; set; }
-        public ICollection<PaymentTransactions> PaymentTransactions { get; set; }
-        public ICollection<InstructorEarnings> InstructorEarnings { get; set; }
+        public ICollection<PaymentTransactions> PaymentTransactions { get; set; } = new List<PaymentTransactions>();
+        public ICollection<InstructorEarnings> InstructorEarnings { get; set; } = new List<InstructorEarnings>();
+        public ICollection<CourseReview> CourseReviews { get; set; } = new List<CourseReview>();
+        public ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
+
     }
 }
