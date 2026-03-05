@@ -25,8 +25,8 @@ namespace E_learning.Core.Entities.Identity
 
         #region Notification & NotificationSetting NavProp
 
-        public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
-        public NotificationSettings? NotificationSettings { get; set; }
+         public ICollection<Notifications> Notifications { get; set; } = new List<Notifications>();
+         public NotificationSettings? NotificationSettings { get; set; }
 
         #endregion
         public ICollection<Courses> Courses { get; set; } = new List<Courses>();

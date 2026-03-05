@@ -3,6 +3,7 @@ using E_learning.Core.Entities.Assessments.Exams;
 using E_learning.Core.Entities.Assessments.Quizzes;
 using E_learning.Core.Entities.Billing___Payments;
 using E_learning.Core.Entities.Identity;
+using E_learning.Core.Entities.Review_Certification_Schedule;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,6 +40,7 @@ namespace E_learning.Core.Entities.Courses___content
         public ICollection<Sections> Sections { get; set; }
         public ICollection<Quizzes> Quizzes { get; set; }
         public ICollection<Exams> Exams { get; set; }
+        public ICollection<CourseReview> CourseReview { get; set; }
         public ICollection<PaymentTransactions> PaymentTransactions { get; set; }
         public ICollection<InstructorEarnings> InstructorEarnings { get; set; }
     }
