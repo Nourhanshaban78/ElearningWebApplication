@@ -1,4 +1,5 @@
 ﻿using E_learning.Core.Entities.Academic_Structure;
+using E_learning.Core.Entities.Assessments.Assignments;
 using E_learning.Core.Entities.Assessments.Exams;
 using E_learning.Core.Entities.Assessments.Quizzes;
 using E_learning.Core.Entities.Billing___Payments;
@@ -51,6 +52,8 @@ namespace E_learning.Core.Entities.Courses___content
         public ICollection<InstructorEarnings> InstructorEarnings { get; set; } = new List<InstructorEarnings>();
         public ICollection<CourseReview> CourseReviews { get; set; } = new List<CourseReview>();
         public ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
+        public ICollection<Assignment> Assignments { get; set; } = new List<Assignment>();
+
 
     }
 }
