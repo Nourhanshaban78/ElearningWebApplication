@@ -1,4 +1,6 @@
-﻿using E_learning.Core.Entities.Base;
+﻿using E_learning.Core.Entities;
+using E_learning.Core.Entities.AdminOperations;
+using E_learning.Core.Entities.Base;
 using E_learning.Core.Entities.Enrollment___Progress;
 using E_learning.Core.Entities.Identity;
 using E_learning.Repository.Interceptors;
@@ -11,12 +13,12 @@ using System.Linq.Expressions;
 
 namespace E_learning.Repository.Data
 {
-    public class ELearningDbContext : IdentityDbContext<ApplicationUser,IdentityRole<Guid> ,Guid>
+    public class ELearningDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>
     {
 
         private readonly AuditInterceptor _auditInterceptor;
 
-        public ELearningDbContext(DbContextOptions<ELearningDbContext> options,AuditInterceptor auditInterceptor): base(options)
+        public ELearningDbContext(DbContextOptions<ELearningDbContext> options, AuditInterceptor auditInterceptor) : base(options)
         {
             _auditInterceptor = auditInterceptor;
         }
@@ -28,7 +30,13 @@ namespace E_learning.Repository.Data
         #endregion
         #region Identity
         public DbSet<OtpCodes> OtpCodes { get; set; }
-        public DbSet <UserSession> UserSessions { get; set; }
+        public DbSet<UserSession> UserSessions { get; set; }
+        #endregion
+        #region Admin Operations
+        public DbSet<PayoutApprovals> PayoutApprovals { get; set; }
+        public DbSet<SupportTickets> SupportTickets { get; set; }
+        public DbSet<SupportTicketReplies> SupportTicketReplies { get; set; }
+        public DbSet<CourseAnalyticsSnapshots> CourseAnalyticsSnapshots { get; set; }
         #endregion
 
         #endregion
@@ -59,7 +67,7 @@ namespace E_learning.Repository.Data
             }
         }
 
-     
+
 
         // ─── OnConfiguring ───────────────────────
         protected override void OnConfiguring(
