@@ -1,6 +1,8 @@
 ﻿using E_learning.Core.Entities.Base;
 using E_learning.Core.Entities.Enrollment___Progress;
 using E_learning.Core.Entities.Identity;
+using E_learning.Core.Entities.Review_Certification_Schedule;
+using E_learning.Core.Entities.Notifactions;
 using E_learning.Repository.Interceptors;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -11,28 +13,45 @@ using System.Linq.Expressions;
 
 namespace E_learning.Repository.Data
 {
-    public class ELearningDbContext : IdentityDbContext<ApplicationUser,IdentityRole<Guid> ,Guid>
+    public class ELearningDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>
     {
 
         private readonly AuditInterceptor _auditInterceptor;
 
-        public ELearningDbContext(DbContextOptions<ELearningDbContext> options,AuditInterceptor auditInterceptor): base(options)
+        public ELearningDbContext(DbContextOptions<ELearningDbContext> options, AuditInterceptor auditInterceptor) : base(options)
         {
             _auditInterceptor = auditInterceptor;
         }
 
         #region DbSet
+
         #region Enrollment
         public DbSet<Enrollment> Enrollments { get; set; }
         public DbSet<LessonProgress> LessonProgress { get; set; }
         #endregion
+
         #region Identity
         public DbSet<OtpCodes> OtpCodes { get; set; }
-        public DbSet <UserSession> UserSessions { get; set; }
+        public DbSet<UserSession> UserSessions { get; set; }
+        #endregion
+
+        #region Notifications & NotificationsSettings
+
+        public DbSet<Notifications> Notifications { get; set; }
+        public DbSet<NotificationSettings> NotificationSettings { get; set; }
+
         #endregion
         #region Academic Structure
         public DbSet<Stage> Stages { get; set; }
         public DbSet<Level> Levels { get; set; }
+        #region Review&Certification&Schedule
+        public DbSet<CourseReview> CourseReviews { get; set; }
+
+        public DbSet<Certificate> Certificates { get; set; }
+
+        public DbSet<ScheduleEvent> ScheduleEvents { get; set; }
+
+        public DbSet<StudyReminder> StudyReminders { get; set; }
         #endregion
         #endregion
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -62,7 +81,7 @@ namespace E_learning.Repository.Data
             }
         }
 
-     
+
 
         // ─── OnConfiguring ───────────────────────
         protected override void OnConfiguring(
