@@ -18,7 +18,7 @@ namespace E_learning.Core.Entities.Assessments.Quizzes
         public Guid? LessonId { get; set; }
         public Lessons Lessons { get; set; }
 
-        public string Titile { get; set; }
+        public string Title { get; set; }
         public string? Topic { get; set; }
         public QuizzesType Type { get; set; } = QuizzesType.Regular;
         public int? TimeLimitSeconds { get; set; }
