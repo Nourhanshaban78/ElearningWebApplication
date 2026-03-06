@@ -1,6 +1,7 @@
 ﻿using E_learning.Core.Entities.Base;
 using E_learning.Core.Entities.Enrollment___Progress;
 using E_learning.Core.Entities.Identity;
+using E_learning.Core.Entities.Profiles;
 using E_learning.Repository.Interceptors;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -29,6 +30,10 @@ namespace E_learning.Repository.Data
         #region Identity
         public DbSet<OtpCodes> OtpCodes { get; set; }
         public DbSet <UserSession> UserSessions { get; set; }
+        public DbSet<Student> Students { get; set; }
+        public DbSet<Instructor> Instructors { get; set; }
+
+        public DbSet<Admin> Admins { get; set; }
         #endregion
 
         #endregion
