@@ -11,6 +11,7 @@ namespace E_learning.Core.Entities.Notifactions
     public class Notifications
     {
         public Guid Id { get; set; }
+        public Guid UserId { get; set; }
         public ApplicationUser User { get; set; } = default!;
         public string Title { get; set; } = default!;
         public string Body { get; set; } = default!;

@@ -39,7 +39,7 @@ namespace E_learning.Core.Entities.Profiles
 
         public ICollection<LessonProgress> LessonProgresses { get; set; }
 
-        //public ICollection<LiveSessionAttendance> LiveSessionAttendances { get; set; }
+      //  public ICollection<LiveSessionAttendance> LiveSessionAttendances { get; set; }
         public ICollection<AssignmentSubmissions> AssignmentSubmissions { get; set; } = new List<AssignmentSubmissions>();
     }
 }

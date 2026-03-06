@@ -8,6 +8,7 @@ using E_learning.Core.Enums;
 using E_learning.Core.Entities.Notifactions;
 using E_learning.Core.Entities.Profiles;
 using E_learning.Core.Entities.Enrollment___Progress;
+using System.ComponentModel.DataAnnotations;
 
 
 namespace E_learning.Core.Entities.Identity
@@ -31,6 +32,7 @@ namespace E_learning.Core.Entities.Identity
          public NotificationSettings? NotificationSettings { get; set; }
 
         #endregion
+        #region Relations
         public ICollection<Courses> Courses { get; set; } = new List<Courses>();
         public ICollection<Courses> ApprovedCourses { get; set; } = new List<Courses>();
 
@@ -44,6 +46,7 @@ namespace E_learning.Core.Entities.Identity
         public ICollection<UserSession> UserSessions { get; set; } = new List<UserSession>();
         public ICollection<OtpCodes> OtpCodes { get; set; } = new List<OtpCodes>();
 
+        #endregion
         // Preferences
         public string Language { get; set; } = "en";
         public string TimeZone { get; set; } = "UTC";

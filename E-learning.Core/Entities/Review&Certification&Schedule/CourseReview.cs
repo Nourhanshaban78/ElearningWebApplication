@@ -8,7 +8,7 @@ namespace E_learning.Core.Entities.Review_Certification_Schedule
         public int Id { get; set; }
 
         public int CourseId { get; set; }
-        public string StudentId { get; set; }
+        public Guid StudentId { get; set; }
 
         public int Rating { get; set; }
 
@@ -21,6 +21,6 @@ namespace E_learning.Core.Entities.Review_Certification_Schedule
 
         // Navigation
         public Courses Course { get; set; }
-        public ApplicationUser Student { get; set; }
+        public ApplicationUser Students { get; set; }
     }
 }

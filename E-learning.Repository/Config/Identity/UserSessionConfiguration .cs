@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace E_learning.Repository.Config
+namespace E_learning.Repository.Config.Identity
 {
     public class UserSessionConfiguration : IEntityTypeConfiguration<UserSession>
     {

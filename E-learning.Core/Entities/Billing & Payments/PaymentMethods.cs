@@ -10,10 +10,11 @@ namespace E_learning.Core.Entities.Billing___Payments
 {
     public class PaymentMethods
     {
+
         public Guid Id { get; set; }
 
         public Guid UserId { get; set; }
-        public ApplicationUser AppUser { get; set; }
+        public ApplicationUser User { get; set; }
 
         public PaymentMethodsType Type { get; set; }
         public string? CardLastFour { get; set; }

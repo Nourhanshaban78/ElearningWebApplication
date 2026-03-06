@@ -14,8 +14,8 @@ namespace E_learning.Core.Entities.Enrollment___Progress
     public class Enrollment : AuditableEntity, ISoftDelete
     {
         
-        public string StudentId { get; set; }
-        public ApplicationUser Student { get; set; } = null!;
+        public Guid StudentId { get; set; }
+        public ApplicationUser Student { get; set; }
 
         public int CourseId { get; set; }
         public Courses Course { get; set; } = null!;

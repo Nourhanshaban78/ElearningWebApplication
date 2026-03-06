@@ -17,6 +17,7 @@ using E_learning.Core.Entities.Academic_Structure;
 using E_learning.Core.Entities.Assessments.Assignments;
 using E_learning.Core.Entities.Assessments.Exams;
 using E_learning.Core.Entities.Assessments.Quizzes;
+using E_learning.Core.Entities.Billing___Payments;
 
 
 namespace E_learning.Repository.Data
@@ -42,11 +43,12 @@ namespace E_learning.Repository.Data
         #region Identity
         public DbSet<OtpCodes> OtpCodes { get; set; }
         public DbSet <UserSession> UserSessions { get; set; }
+        #endregion
+        #region Profile
         public DbSet<Student> Students { get; set; }
         public DbSet<Instructor> Instructors { get; set; }
 
         public DbSet<Admin> Admins { get; set; }
-        public DbSet<UserSession> UserSessions { get; set; }
         #endregion
         #region Admin Operations
         public DbSet<PayoutApprovals> PayoutApprovals { get; set; }
@@ -73,7 +75,13 @@ namespace E_learning.Repository.Data
 
         public DbSet<StudyReminder> StudyReminders { get; set; }
         #endregion
-    
+
+        #region Payment 
+        public DbSet<PaymentMethods> PaymentMethods { get; set; }
+        public DbSet<InstructorEarnings> InstructorEarnings { get; set; }
+        public DbSet<PaymentTransactions> PaymentTransactions { get; set; }
+        public DbSet<PayoutRequests> PayoutRequests { get; set; }
+         #endregion
 
         #region Assesments
         public DbSet<Assignment> Assignments { get; set; }
