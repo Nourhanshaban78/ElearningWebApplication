@@ -7,6 +7,7 @@ using E_learning.Core.Entities.Courses___content;
 using E_learning.Core.Enums;
 using E_learning.Core.Entities.Notifactions;
 using E_learning.Core.Entities.Profiles;
+using E_learning.Core.Entities.Enrollment___Progress;
 
 
 namespace E_learning.Core.Entities.Identity
@@ -26,15 +27,16 @@ namespace E_learning.Core.Entities.Identity
 
         #region Notification & NotificationSetting NavProp
 
-         public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
+         public ICollection<Notifications> Notifications { get; set; } = new List<Notifications>();
          public NotificationSettings? NotificationSettings { get; set; }
 
         #endregion
         public ICollection<Courses> Courses { get; set; } = new List<Courses>();
+        public ICollection<Courses> ApprovedCourses { get; set; } = new List<Courses>();
 
         public ICollection<ExamAttempts> ExamAttempts { get; set; } = new List<ExamAttempts>();
         public ICollection<QuizAttempts> QuizAttempts { get; set; } = new List<QuizAttempts>();
-
+        public ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
         public ICollection<InstructorEarnings> InstructorEarnings { get; set; } = new List<InstructorEarnings>();
         public ICollection<PaymentMethods> PaymentMethods { get; set; } = new List<PaymentMethods>();
         public ICollection<PaymentTransactions> PaymentTransactions { get; set; } = new List<PaymentTransactions>();

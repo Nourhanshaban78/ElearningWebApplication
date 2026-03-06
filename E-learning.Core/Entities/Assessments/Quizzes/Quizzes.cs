@@ -1,4 +1,5 @@
 ﻿using E_learning.Core.Entities.Courses___content;
+using E_learning.Core.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,9 +18,9 @@ namespace E_learning.Core.Entities.Assessments.Quizzes
         public Guid? LessonId { get; set; }
         public Lessons Lessons { get; set; }
 
-        public string Titile { get; set; }
+        public string Title { get; set; }
         public string? Topic { get; set; }
-        public string Type { get; set; } = "Regular";
+        public QuizzesType Type { get; set; } = QuizzesType.Regular;
         public int? TimeLimitSeconds { get; set; }
         public int TimePerQuestionSeconds { get; set; } = 30;
         public decimal PassingScore { get; set; } = 60;

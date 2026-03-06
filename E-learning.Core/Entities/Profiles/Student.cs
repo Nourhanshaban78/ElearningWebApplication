@@ -1,4 +1,5 @@
-﻿using E_learning.Core.Entities.Assessments.Exams;
+﻿using E_learning.Core.Entities.Assessments.Assignments;
+using E_learning.Core.Entities.Assessments.Exams;
 using E_learning.Core.Entities.Assessments.Quizzes;
 using E_learning.Core.Entities.Billing___Payments;
 using E_learning.Core.Entities.Enrollment___Progress;
@@ -39,5 +40,6 @@ namespace E_learning.Core.Entities.Profiles
         public ICollection<LessonProgress> LessonProgresses { get; set; }
 
         //public ICollection<LiveSessionAttendance> LiveSessionAttendances { get; set; }
+        public ICollection<AssignmentSubmissions> AssignmentSubmissions { get; set; } = new List<AssignmentSubmissions>();
     }
 }

@@ -13,10 +13,10 @@ namespace E_learning.Repository.Config
     {
         public void Configure(EntityTypeBuilder<ExamAttempts> builder)
         {
-            builder.HasOne(e => e.Student)
-                   .WithMany(u => u.ExamAttempts)
-                   .HasForeignKey(e => e.StudentId)
-                   .OnDelete(DeleteBehavior.Cascade);
+            //builder.HasOne(e => e.Student)
+            //       .WithMany(u => u.ExamAttempts)
+            //       .HasForeignKey(e => e.StudentId)
+            //       .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

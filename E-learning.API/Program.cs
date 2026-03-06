@@ -23,8 +23,6 @@ namespace E_learning.API
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddScoped<AuditInterceptor>();
 
-         
-
             // DbContext Default
             builder.Services.AddDbContext<ELearningDbContext>((serviceProvider, options) =>
             {
@@ -53,7 +51,7 @@ namespace E_learning.API
             var app = builder.Build();
 
             // ─── Migration & Seeding ─────────────────────
-            await app.MigrateDatabaseAsync();
+          //  await app.MigrateDatabaseAsync();
 
 
             // Configure the HTTP request pipeline.

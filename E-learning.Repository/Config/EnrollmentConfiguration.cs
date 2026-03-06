@@ -36,23 +36,23 @@ namespace E_learning.Repository.Config
                    .HasDefaultValue(0);
 
 
-            //builder.HasOne(e => e.Student)
-            //       .WithMany(u => u.Enrollments)
-            //       .HasForeignKey(e => e.StudentId)
-            //       .OnDelete(DeleteBehavior.Restrict);
+            builder.HasOne(e => e.Student)
+                   .WithMany(u => u.Enrollments)
+                   .HasForeignKey(e => e.StudentId)
+                   .OnDelete(DeleteBehavior.Restrict);
 
-            //// Enrollment → Course
-            //builder.HasOne(e => e.Course)
-            //       .WithMany(c => c.Enrollments)
-            //       .HasForeignKey(e => e.CourseId)
-            //       .OnDelete(DeleteBehavior.Restrict);
+            // Enrollment → Course
+            builder.HasOne(e => e.Course)
+                   .WithMany(c => c.Enrollments)
+                   .HasForeignKey(e => e.CourseId)
+                   .OnDelete(DeleteBehavior.Restrict);
 
-            //// Enrollment → Transaction (Optional)
-            //builder.HasOne(e => e.Transaction)
-            //       .WithMany()
-            //       .HasForeignKey(e => e.TransactionId)
-            //       .IsRequired(false)
-            //       .OnDelete(DeleteBehavior.SetNull);
+            // Enrollment → Transaction (Optional)
+            builder.HasOne(e => e.Transaction)
+                   .WithMany()
+                   .HasForeignKey(e => e.TransactionId)
+                   .IsRequired(false)
+                   .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

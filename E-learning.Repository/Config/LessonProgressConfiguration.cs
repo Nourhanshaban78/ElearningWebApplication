@@ -46,11 +46,11 @@ namespace E_learning.Repository.Config
                    .HasForeignKey(lp => lp.EnrollmentId)
                    .OnDelete(DeleteBehavior.Cascade);
 
-            //// LessonProgress → Lesson
-            //builder.HasOne(lp => lp.Lesson)
-            //       .WithMany()
-            //       .HasForeignKey(lp => lp.LessonId)
-            //       .OnDelete(DeleteBehavior.Restrict);
+            // LessonProgress → Lesson
+            builder.HasOne(lp => lp.Lesson)
+                   .WithMany()
+                   .HasForeignKey(lp => lp.LessonId)
+                   .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
