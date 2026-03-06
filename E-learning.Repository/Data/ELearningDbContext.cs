@@ -4,6 +4,7 @@ using E_learning.Core.Entities;
 using E_learning.Core.Entities.AdminOperations;
 using E_learning.Core.Entities.Enrollment___Progress;
 using E_learning.Core.Entities.Identity;
+using E_learning.Core.Entities.Profiles;
 using E_learning.Core.Entities.Review_Certification_Schedule;
 using E_learning.Core.Entities.Notifactions;
 using E_learning.Repository.Interceptors;
@@ -40,6 +41,11 @@ namespace E_learning.Repository.Data
 
         #region Identity
         public DbSet<OtpCodes> OtpCodes { get; set; }
+        public DbSet <UserSession> UserSessions { get; set; }
+        public DbSet<Student> Students { get; set; }
+        public DbSet<Instructor> Instructors { get; set; }
+
+        public DbSet<Admin> Admins { get; set; }
         public DbSet<UserSession> UserSessions { get; set; }
         #endregion
         #region Admin Operations

@@ -6,6 +6,7 @@ using E_learning.Core.Entities.Billing___Payments;
 using E_learning.Core.Entities.Courses___content;
 using E_learning.Core.Enums;
 using E_learning.Core.Entities.Notifactions;
+using E_learning.Core.Entities.Profiles;
 using E_learning.Core.Entities.Enrollment___Progress;
 
 
@@ -53,5 +54,9 @@ namespace E_learning.Core.Entities.Identity
         public bool NotifyInApp { get; set; } = true;
         public bool NotifyEmail { get; set; } = true;
 
+        //profile 
+        public Student? Student { get; set; }
+        public Instructor? Instructor { get; set; }
+        public Admin? Admin { get; set; }
     }
 }

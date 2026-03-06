@@ -26,7 +26,7 @@ namespace E_learning.Core.Entities.Profiles
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
         public ICollection<Courses> Courses { get; set; }
-        //ublic ICollection<livesession> LiveSessions { get; set; }
+        //public ICollection<livesession> LiveSessions { get; set; }
 
     }
 }
