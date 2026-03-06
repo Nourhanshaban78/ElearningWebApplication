@@ -13,6 +13,9 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 using System.Linq.Expressions;
+using E_learning.Core.Entities.Assessments.Assignments;
+using E_learning.Core.Entities.Assessments.Exams;
+using E_learning.Core.Entities.Assessments.Quizzes;
 
 
 namespace E_learning.Repository.Data
@@ -48,7 +51,7 @@ namespace E_learning.Repository.Data
         public DbSet<SupportTickets> SupportTickets { get; set; }
         public DbSet<SupportTicketReplies> SupportTicketReplies { get; set; }
         public DbSet<CourseAnalyticsSnapshots> CourseAnalyticsSnapshots { get; set; }
-
+        #endregion
         #region Notifications & NotificationsSettings
 
         public DbSet<Notifications> Notifications { get; set; }
@@ -58,6 +61,7 @@ namespace E_learning.Repository.Data
         #region Academic Structure
         public DbSet<Stage> Stages { get; set; }
         public DbSet<Level> Levels { get; set; }
+        #endregion
         #region Review&Certification&Schedule
         public DbSet<CourseReview> CourseReviews { get; set; }
 
@@ -67,6 +71,23 @@ namespace E_learning.Repository.Data
 
         public DbSet<StudyReminder> StudyReminders { get; set; }
         #endregion
+    
+
+        #region Assesments
+        public DbSet<Assignment> Assignments { get; set; }
+        public DbSet<AssignmentSubmissions> AssignmentSubmissions { get; set; }
+        public DbSet<Quizzes> Quizzes { get; set; }
+        public DbSet<QuizQuestions> QuizQuestions { get; set; }
+        public DbSet<QuizOptions> QuizOptions { get; set; }
+        public DbSet<QuizAttempts> QuizAttempts { get; set; }
+        public DbSet<QuizAttemptAnswers> QuizAttemptAnswers { get; set; }
+        public DbSet<Exams> Exams { get; set; }
+        public DbSet<ExamQuestions> ExamQuestions { get; set; }
+        public DbSet<ExamOptions> ExamOptions { get; set; }
+        public DbSet<ExamAttempts> ExamAttempts { get; set; }
+        public DbSet<ExamAttemptAnswers> ExamAttemptAnswers { get; set; }
+        #endregion
+
         #endregion
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
