@@ -16,27 +16,32 @@ namespace E_learning.Repository.Config.Assessments.Quizze
         {
             builder.ToTable("QuizAttempts");
 
-            builder.HasKey(a => a.Id);
+            builder.HasKey(x => x.Id);
 
-            builder.Property(a => a.Score)
-            .HasColumnType("decimal(5,2)");
+            builder.Property(x => x.Score)
+                   .HasColumnType("decimal(5,2)");
 
-            builder.Property(a => a.Status) 
-                   .HasMaxLength(20)
-                   .HasDefaultValue(QuizAttemptsStatus.InProgress);
+            builder.Property(x => x.Status)
+                   .IsRequired();
 
-            builder.Property(a => a.StartedAt)
-                   .HasDefaultValueSql("GETUTCDATE()");
+            builder.Property(x => x.StartedAt)
+                   .IsRequired();
 
-            builder.HasOne(a => a.Students)
-                   .WithMany(s=>s.QuizAttempts)
-                   .HasForeignKey(a => a.StudentId)
-                   .OnDelete(DeleteBehavior.Restrict);
-
-            builder.HasOne(a => a.Quizzes)
-                   .WithMany(q => q.QuizAttempts)
-                   .HasForeignKey(a => a.QuizId)
+            builder.HasOne(x => x.Student)
+                   .WithMany()
+                   .HasForeignKey(x => x.StudentId)
                    .OnDelete(DeleteBehavior.Cascade);
-        }
+
+            builder.HasOne(x => x.Quizzes)
+                   .WithMany()
+                   .HasForeignKey(x => x.QuizId)
+                   .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasMany(x => x.QuizAttemptAnswers)
+                   .WithOne()
+                   .HasForeignKey("QuizAttemptId")
+                   .OnDelete(DeleteBehavior.Cascade);
+        
+    }
     }
 }

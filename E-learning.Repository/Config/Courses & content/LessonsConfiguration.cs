@@ -9,46 +9,20 @@ using System.Threading.Tasks;
 
 namespace E_learning.Repository.Config.Courses___content
 {
-    public class LessonsConfiguration : IEntityTypeConfiguration<Lessons>
+    public class LessonConfiguration : IEntityTypeConfiguration<Lessons>
     {
         public void Configure(EntityTypeBuilder<Lessons> builder)
         {
-            builder.ToTable("Lessons");
+            builder.HasKey(x => x.Id);
 
-            builder.HasKey(l => l.Id);
+            builder.Property(x => x.Title)
+                .IsRequired()
+                .HasMaxLength(200);
 
-            builder.Property(l => l.Id)
-                   .ValueGeneratedNever();
-
-            builder.HasOne(l => l.Sections)
-                   .WithMany(s => s.Lessons)
-                   .HasForeignKey(l => l.SectionId)
-                   .OnDelete(DeleteBehavior.Cascade);
-
-            builder.Property(l => l.Title)
-                   .IsRequired()
-                   .HasMaxLength(200);
-
-            builder.Property(l => l.Type)
-                   .IsRequired()
-                   .HasMaxLength(20);
-
-            builder.Property(l => l.VideoUrl)
-                   .HasMaxLength(500);
-
-            builder.Property(l => l.Content)
-                   .HasColumnType("nvarchar(max)");
-
-            builder.Property(l => l.DurationSeconds);
-
-            builder.Property(l => l.OrderIndex)
-                   .IsRequired();
-
-            builder.Property(l => l.IsFreePreview)
-                   .HasDefaultValue(false);
-
-            builder.Property(l => l.CreatedAt)
-                   .HasDefaultValueSql("GETUTCDATE()");
+            builder.HasOne(x => x.Sections)
+                .WithMany(x => x.Lessons)
+                .HasForeignKey(x => x.SectionId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

@@ -12,11 +12,12 @@ namespace E_learning.Core.Entities.Notifactions
     {
         public Guid Id { get; set; }
         public Guid UserId { get; set; }
-        public ApplicationUser User { get; set; } = default!;
-        public string Title { get; set; } = default!;
-        public string Body { get; set; } = default!;
-        public NotificationType Type { get; set; } = default!;
+        public ApplicationUser? User { get; set; }
+
+        public string Title { get; set; }
+        public string Body { get; set; }
+        public NotificationType Type { get; set; }
         public bool IsRead { get; set; }
-        public DateTime CreatedAt { get; set; } // Default GETUTCDATE()
+        public DateTime CreatedAt { get; set; }
     }
 }

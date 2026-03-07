@@ -41,12 +41,12 @@ namespace E_learning.Repository.Config.NotificationsConfigurations
 
             builder.HasOne(x => x.User)
                    .WithMany(u => u.Notifications)
-                   .HasForeignKey(x => x.User.Id)
+                   .HasForeignKey(x => x.UserId)
                    .OnDelete(DeleteBehavior.Cascade);
 
             // Index    
 
-            builder.HasIndex(x => new { x.User, x.IsRead});
+            builder.HasIndex(x => new { x.UserId, x.IsRead});
             builder.HasIndex(x => x.CreatedAt);
                    
 

@@ -17,40 +17,45 @@ namespace E_learning.Repository.Config
     {
         public void Configure(EntityTypeBuilder<LessonProgress> builder)
         {
-            builder.ToTable("LessonProgress");
+            builder.ToTable("LessonProgresses");
 
-            builder.HasKey(lp => lp.Id);
+         
+            builder.HasKey(x => x.Id);
 
-            builder.HasIndex(lp => new { lp.EnrollmentId, lp.LessonId })
-                   .IsUnique()
-                   .HasDatabaseName("UQ_LessonProgress_Enrollment_Lesson");
-
-            // ─── Properties ─────────────────────────
-            builder.Property(lp => lp.Status)
-                   .HasConversion<string>()
-                   .HasMaxLength(20)
-                   .HasDefaultValue(EnrollmentStatus.NotStarted)
+          
+            builder.Property(x => x.Status)
                    .IsRequired();
 
-            builder.Property(lp => lp.WatchedSeconds)
+            builder.Property(x => x.WatchedSeconds)
                    .HasDefaultValue(0);
 
-            builder.Property(lp => lp.LastAccessedAt)
-                   .HasDefaultValueSql("GETUTCDATE()");
+            builder.Property(x => x.LastAccessedAt)
+                   .IsRequired();
 
-       
-
-            // LessonProgress → Enrollment
-            builder.HasOne(lp => lp.Enrollment)
-                   .WithMany(e => e.LessonProgresses)
-                   .HasForeignKey(lp => lp.EnrollmentId)
+          
+            builder.HasOne(x => x.Enrollment)
+                   .WithMany(x => x.LessonProgresses)
+                   .HasForeignKey(x => x.EnrollmentId)
                    .OnDelete(DeleteBehavior.Cascade);
 
-            // LessonProgress → Lesson
-            builder.HasOne(lp => lp.Lesson)
+          
+            builder.HasOne(x => x.Lesson)
                    .WithMany()
-                   .HasForeignKey(lp => lp.LessonId)
+                   .HasForeignKey(x => x.LessonId)
+                   .OnDelete(DeleteBehavior.Cascade);
+
+           
+            builder.HasOne(x => x.Student)
+                   .WithMany()
+                   .HasForeignKey(x => x.StudentId)
                    .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasIndex(x => new { x.StudentId, x.LessonId })
+                   .IsUnique();
+
+           
+            builder.HasIndex(x => x.EnrollmentId);
+            builder.HasIndex(x => x.LessonId);
         }
     }
 }

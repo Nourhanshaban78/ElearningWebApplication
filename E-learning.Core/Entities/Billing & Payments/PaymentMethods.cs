@@ -10,11 +10,10 @@ namespace E_learning.Core.Entities.Billing___Payments
 {
     public class PaymentMethods
     {
-
         public Guid Id { get; set; }
 
         public Guid UserId { get; set; }
-        public ApplicationUser User { get; set; }
+        public ApplicationUser? User { get; set; }
 
         public PaymentMethodsType Type { get; set; }
         public string? CardLastFour { get; set; }
@@ -22,9 +21,9 @@ namespace E_learning.Core.Entities.Billing___Payments
         public int? ExpiryMonth { get; set; }
         public int? ExpiryYear { get; set; }
         public string? PayPalEmail { get; set; }
-        public bool IsDefault { get; set; }=false;
+        public bool IsDefault { get; set; } = false;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        public ICollection<PaymentTransactions> PaymentTransactions { get; set; }
+        public ICollection<PaymentTransactions> PaymentTransactions { get; set; } = new List<PaymentTransactions>();
     }
 }

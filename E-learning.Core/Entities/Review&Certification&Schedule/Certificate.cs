@@ -1,14 +1,15 @@
 ﻿using E_learning.Core.Entities.Courses___content;
 using E_learning.Core.Entities.Identity;
+using E_learning.Core.Entities.Profiles;
 
 namespace E_learning.Core.Entities.Review_Certification_Schedule
 {
     public class Certificate
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
-        public string StudentId { get; set; }
-        public int CourseId { get; set; }
+        public Guid StudentId { get; set; }
+        public Guid CourseId { get; set; }
 
         public string CertificateCode { get; set; }
 
@@ -16,8 +17,7 @@ namespace E_learning.Core.Entities.Review_Certification_Schedule
 
         public string? FileUrl { get; set; }
 
-        // Navigation
-        public ApplicationUser Student { get; set; }
+        public Student Student { get; set; }
         public Courses Course { get; set; }
     }
 }

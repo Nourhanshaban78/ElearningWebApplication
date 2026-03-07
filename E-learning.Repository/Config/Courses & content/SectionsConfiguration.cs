@@ -11,29 +11,20 @@ namespace E_learning.Repository.Config.Courses___content
 {
     internal class SectionsConfiguration : IEntityTypeConfiguration<Sections>
     {
-        public void Configure(EntityTypeBuilder<Sections> builder)
-        {
-            builder.ToTable("Sections");
+      
+            public void Configure(EntityTypeBuilder<Sections> builder)
+            {
+                builder.HasKey(x => x.Id);
 
-            builder.HasKey(s => s.Id);
+                builder.Property(x => x.Title)
+                    .IsRequired()
+                    .HasMaxLength(200);
 
-            builder.Property(s => s.Id)
-                   .ValueGeneratedNever();
-
-            builder.HasOne(s => s.Courses)
-                   .WithMany(c => c.Sections)
-                   .HasForeignKey(s => s.CourseId)
-                   .OnDelete(DeleteBehavior.Cascade);
-
-            builder.Property(s => s.Title)
-                   .IsRequired()
-                   .HasMaxLength(200);
-
-            builder.Property(s => s.OrderIndex)
-                   .IsRequired();
-
-            builder.Property(s => s.CreatedAt)
-                   .HasDefaultValueSql("GETUTCDATE()");
-        }
+                builder.HasOne(x => x.Courses)
+                    .WithMany(x => x.Sections)
+                    .HasForeignKey(x => x.CourseId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            }
+        
     }
 }

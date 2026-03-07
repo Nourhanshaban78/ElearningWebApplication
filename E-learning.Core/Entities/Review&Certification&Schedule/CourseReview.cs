@@ -1,13 +1,14 @@
 ﻿using E_learning.Core.Entities.Courses___content;
 using E_learning.Core.Entities.Identity;
+using E_learning.Core.Entities.Profiles;
 
 namespace E_learning.Core.Entities.Review_Certification_Schedule
 {
     public class CourseReview
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
-        public int CourseId { get; set; }
+        public Guid CourseId { get; set; }
         public Guid StudentId { get; set; }
 
         public int Rating { get; set; }
@@ -21,6 +22,6 @@ namespace E_learning.Core.Entities.Review_Certification_Schedule
 
         // Navigation
         public Courses Course { get; set; }
-        public ApplicationUser Students { get; set; }
+        public Student Student { get; set; }
     }
 }

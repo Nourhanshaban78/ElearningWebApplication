@@ -11,13 +11,13 @@ namespace E_learning.Core.Entities.Courses___content
         public Guid Id { get; set; }
 
         public Guid CourseId { get; set; }
-        public Courses Courses { get; set; }
+        public Courses? Courses { get; set; }
 
         public string Title { get; set; }
         public int OrderIndex { get; set; }
-        
+
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        public ICollection<Lessons> Lessons { get; set; }
+        public ICollection<Lessons> Lessons { get; set; } = new List<Lessons>();
     }
 }

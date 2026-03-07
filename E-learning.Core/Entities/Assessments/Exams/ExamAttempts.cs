@@ -1,4 +1,5 @@
 ﻿using E_learning.Core.Entities.Identity;
+using E_learning.Core.Entities.Profiles;
 using E_learning.Core.Enums;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ namespace E_learning.Core.Entities.Assessments.Exams
         public Guid Id { get; set; }
 
         public Guid StudentId { get; set; }
-        public ApplicationUser Student { get; set; } = null!;
+        public Student Student { get; set; } = null!;
 
         public Guid ExamId { get; set; }
         public Exams Exams { get; set; }

@@ -11,48 +11,26 @@ using System.Threading.Tasks;
 
 namespace E_learning.Repository.Config
 {
-    
-    public class EnrollmentConfiguration
-        : IEntityTypeConfiguration<Enrollment>
+
+    public class EnrollmentConfiguration : IEntityTypeConfiguration<Enrollment>
     {
         public void Configure(EntityTypeBuilder<Enrollment> builder)
         {
-            builder.ToTable("Enrollments");
+            builder.HasKey(x => x.Id);
 
-            builder.HasKey(e => e.Id);
+            builder.HasOne(x => x.Student)
+                .WithMany(x => x.Enrollments)
+                .HasForeignKey(x => x.StudentId);
 
-            builder.HasIndex(e => new { e.StudentId, e.CourseId })
-                   .IsUnique()
-                   .HasDatabaseName("UQ_Enrollment_Student_Course");
+            builder.HasOne(x => x.Course)
+                .WithMany(x => x.Enrollments)
+                .HasForeignKey(x => x.CourseId);
 
-            builder.Property(e => e.Status)
-                   .HasConversion<string>()   
-                   .HasMaxLength(20)
-                   .HasDefaultValue(EnrollmentStatus.NotStarted)
-                   .IsRequired();
-
-            builder.Property(e => e.ProgressPercentage)
-                   .HasColumnType("decimal(5,2)")
-                   .HasDefaultValue(0);
-
-
-            builder.HasOne(e => e.Student)
-                   .WithMany(u => u.Enrollments)
-                   .HasForeignKey(e => e.StudentId)
-                   .OnDelete(DeleteBehavior.Restrict);
-
-            // Enrollment → Course
-            builder.HasOne(e => e.Course)
-                   .WithMany(c => c.Enrollments)
-                   .HasForeignKey(e => e.CourseId)
-                   .OnDelete(DeleteBehavior.Restrict);
-
-            // Enrollment → Transaction (Optional)
-            builder.HasOne(e => e.Transaction)
-                   .WithMany()
-                   .HasForeignKey(e => e.TransactionId)
-                   .IsRequired(false)
-                   .OnDelete(DeleteBehavior.SetNull);
+            builder.HasOne(x => x.Transaction)
+                .WithMany()
+                .HasForeignKey(x => x.TransactionId)
+                .OnDelete(DeleteBehavior.SetNull);
         }
-    }
+    
+}
 }

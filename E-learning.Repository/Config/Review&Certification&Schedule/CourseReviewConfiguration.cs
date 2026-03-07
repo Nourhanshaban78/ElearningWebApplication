@@ -10,36 +10,40 @@ namespace E_learning.Repository.Config
         {
             builder.ToTable("CourseReviews");
 
-            builder.HasKey(cr => cr.Id);
+            // Primary Key
+            builder.HasKey(x => x.Id);
 
-            builder.HasIndex(cr => new { cr.CourseId, cr.StudentId })
-                   .IsUnique()
-                   .HasDatabaseName("UQ_CourseReviews_Course_Student");
-
-            builder.Property(cr => cr.Rating)
+            // Properties
+            builder.Property(x => x.Rating)
                    .IsRequired();
 
-            builder.Property(cr => cr.Comment)
-                   .HasMaxLength(1000);
+            builder.Property(x => x.Comment)
+                   .HasMaxLength(2000);
 
-            builder.Property(cr => cr.CreatedAt)
-                   .HasDefaultValueSql("GETUTCDATE()");
+            builder.Property(x => x.InstructorReply)
+                   .HasMaxLength(2000);
 
-            builder.ToTable(t =>
-            {
-                t.HasCheckConstraint("CK_CourseReviews_Rating", "[Rating] BETWEEN 1 AND 5");
-            });
-            // Relationships
+            builder.Property(x => x.CreatedAt)
+                   .IsRequired();
 
-            builder.HasOne(cr => cr.Course)
-                   .WithMany(c => c.CourseReviews)  // need in Course entity : 
-                   .HasForeignKey(cr => cr.CourseId)
+            // Relationship: Course
+            builder.HasOne(x => x.Course)
+                   .WithMany(x => x.CourseReviews)
+                   .HasForeignKey(x => x.CourseId)
                    .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasOne(cr => cr.Student)
-                   .WithMany()
-                   .HasForeignKey(cr => cr.StudentId)
+            // Relationship: Student
+            builder.HasOne(x => x.Student)
+                   .WithMany(x => x.CourseReviews)
+                   .HasForeignKey(x => x.StudentId)
                    .OnDelete(DeleteBehavior.Restrict);
+
+            // Prevent duplicate review by same student for the same course
+            builder.HasIndex(x => new { x.CourseId, x.StudentId })
+                   .IsUnique();
+
+            // Index for performance
+            builder.HasIndex(x => x.CourseId);
         }
     }
 }

@@ -11,29 +11,30 @@ namespace E_learning.Repository.Config.Academic_Structure
 {
     public class LevelConfiguration : IEntityTypeConfiguration<Level>
     {
-        public void Configure(EntityTypeBuilder<Level> builder)
-        {
-            builder.ToTable("Levels");
+       
+            public void Configure(EntityTypeBuilder<Level> builder)
+            {
+                builder.HasKey(x => x.Id);
 
-            builder.HasKey(l => l.Id);
+                builder.Property(x => x.Name)
+                    .IsRequired()
+                    .HasMaxLength(100);
 
-            builder.Property(l => l.Name)
-                   .IsRequired()
-                   .HasMaxLength(100);
+                builder.Property(x => x.OrderIndex)
+                    .IsRequired();
 
-            builder.Property(l => l.OrderIndex)
-                   .IsRequired();
+                builder.Ignore(x => x.CourseCount);
 
-            builder.Property(l => l.IsActive)
-                   .HasDefaultValue(true);
+                builder.HasOne(x => x.Stage)
+                    .WithMany(x => x.Levels)
+                    .HasForeignKey(x => x.StageId)
+                    .OnDelete(DeleteBehavior.Restrict);
 
-            builder.Property(l => l.CreatedAt)
-                   .HasDefaultValueSql("GETUTCDATE()");
-
-            builder.HasOne(l => l.Stage)
-                   .WithMany(s => s.Levels)
-                   .HasForeignKey(l => l.StageId)
-                   .OnDelete(DeleteBehavior.Restrict);
+                builder.HasMany(x => x.Courses)
+                    .WithOne(x => x.Level)
+                    .HasForeignKey(x => x.LevelId)
+                    .OnDelete(DeleteBehavior.SetNull);
+            
         }
     }
 }

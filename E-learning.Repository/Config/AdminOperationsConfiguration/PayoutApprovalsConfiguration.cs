@@ -15,30 +15,34 @@ namespace E_learning.Repository.Config.AdminOperationsConfiguration
         {
             builder.ToTable("PayoutApprovals");
 
-            builder.HasKey(i => i.Id);
+            // Primary Key
+            builder.HasKey(x => x.Id);
 
-            builder.HasOne(p => p.PayoutRequest)
-                 .WithOne()
-                 .HasForeignKey<PayoutApprovals>(p => p.PayoutRequestId)
-                 .OnDelete(DeleteBehavior.Cascade);
+            // Properties
+            builder.Property(x => x.Decision)
+                   .IsRequired();
 
-            builder.HasOne(p => p.Admin)
-                 .WithMany()
-                 .HasForeignKey(p => p.AdminId)
-                 .OnDelete(DeleteBehavior.Cascade);
-     
-            builder.Property(i => i.Decision)
-                  .HasConversion<string>()
-                  .HasMaxLength(20);
-
-            builder.Property(i => i.Notes)
+            builder.Property(x => x.Notes)
                    .HasMaxLength(500);
 
-            builder.Property(us => us.ProcessedAt)
-                   .HasDefaultValueSql("GETUTCDATE()");
+            builder.Property(x => x.ProcessedAt)
+                   .IsRequired();
 
+            // Relationship with PayoutRequests
+            builder.HasOne(x => x.PayoutRequest)
+                   .WithMany() // change if PayoutRequests has collection
+                   .HasForeignKey(x => x.PayoutRequestId)
+                   .OnDelete(DeleteBehavior.Cascade);
 
-
+            // Relationship with Admin
+            builder.HasOne(x => x.Admin)
+                   .WithMany() // change if Admin has collection
+                   .HasForeignKey(x => x.AdminId)
+                   .OnDelete(DeleteBehavior.Restrict);
         }
+
+
+
+    
     }
 }

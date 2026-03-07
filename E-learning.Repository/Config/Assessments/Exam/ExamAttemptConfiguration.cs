@@ -16,31 +16,41 @@ namespace E_learning.Repository.Config.Assessments.Exam
         {
             builder.ToTable("ExamAttempts");
 
-            builder.HasKey(a => a.Id);
+            builder.HasKey(x => x.Id);
 
-            builder.Property(a => a.Score)
-                   .HasColumnType("decimal(7,2)");
+            builder.Property(x => x.Score)
+                   .HasColumnType("decimal(5,2)");
 
-            builder.Property(a => a.Status) 
-                   .HasMaxLength(20)
-                   .HasDefaultValue(ExamAttemptsStatus.InProgress);
+            builder.Property(x => x.TeacherComment)
+                   .HasMaxLength(1000);
 
-            builder.Property(a => a.StartedAt)
-                   .HasDefaultValueSql("GETUTCDATE()");
+            builder.Property(x => x.Status)
+                   .IsRequired();
 
-            builder.HasOne(a => a.Student)
-                   .WithMany(s=>s.ExamAttempts)
-                   .HasForeignKey(a => a.StudentId)
+            builder.Property(x => x.StartedAt)
+                   .IsRequired();
+
+            builder.HasOne(x => x.Student)
+                   .WithMany()
+                   .HasForeignKey(x => x.StudentId)
+                   .OnDelete(DeleteBehavior.Cascade);
+
+            
+            builder.HasOne(x => x.Exams)
+                   .WithMany()
+                   .HasForeignKey(x => x.ExamId)
+                   .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasOne(x => x.User)
+                   .WithMany()
+                   .HasForeignKey(x => x.ReviewedBy)
                    .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(a => a.Exams)
-                   .WithMany(e => e.ExamAttempts)
-                   .HasForeignKey(a => a.ExamId)
+            builder.HasMany(x => x.ExamAttemptAnswers)
+                   .WithOne()
+                   .HasForeignKey("ExamAttemptId")
                    .OnDelete(DeleteBehavior.Cascade);
-            builder.Property(a => a.IsPublished)
-                  .HasDefaultValue(false);
-            builder.Property(a => a.TeacherComment)
-                  .HasMaxLength(1000);
         }
+    
     }
 }

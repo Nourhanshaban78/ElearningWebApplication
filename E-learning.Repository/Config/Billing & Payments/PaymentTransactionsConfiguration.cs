@@ -14,76 +14,53 @@ namespace E_learning.Repository.Config.Billing___Payments
     {
         public void Configure(EntityTypeBuilder<PaymentTransactions> builder)
         {
-            // Table
             builder.ToTable("PaymentTransactions");
 
-            // Primary Key
-            builder.HasKey(p => p.Id);
+            builder.HasKey(x => x.Id);
 
+            builder.Property(x => x.Amount)
+                   .HasColumnType("decimal(18,2)")
+                   .IsRequired();
 
-            // Properties
+            builder.Property(x => x.Currency)
+                   .HasMaxLength(10)
+                   .IsRequired();
 
+            builder.Property(x => x.Status)
+                   .IsRequired();
 
-            builder.Property(p => p.Amount)
-                .HasColumnType("decimal(18,2)")
-                .IsRequired();
+            builder.Property(x => x.GatewayReference)
+                   .HasMaxLength(200);
 
-            builder.Property(p => p.Currency)
-                .HasMaxLength(10)
-                .HasDefaultValue("USD");
+            builder.Property(x => x.FailureReason)
+                   .HasMaxLength(500);
 
-            builder.Property(p => p.Status)
-                .HasConversion<int>()
-                .HasDefaultValue(PaymentTransactionsStatus.Pending);
+            builder.Property(x => x.CreatedAt)
+                   .IsRequired();
 
-            builder.Property(p => p.GatewayReference)
-                .HasMaxLength(200);
+            builder.HasOne(x => x.Student)
+                   .WithMany()
+                   .HasForeignKey(x => x.StudentId)
+                   .OnDelete(DeleteBehavior.Restrict);
 
-            builder.Property(p => p.FailureReason)
-                .HasMaxLength(500);
+            builder.HasOne(x => x.Courses)
+                   .WithMany()
+                   .HasForeignKey(x => x.CourseId)
+                   .OnDelete(DeleteBehavior.Restrict);
 
-            builder.Property(p => p.CreatedAt)
-                .HasDefaultValueSql("GETUTCDATE()");
+                    builder.HasOne(t => t.PaymentMethods)
+                .WithMany(p => p.PaymentTransactions)
+               .HasForeignKey(t => t.PaymentMethodId)
+               .OnDelete(DeleteBehavior.Restrict);
 
-            builder.Property(p => p.CompletedAt)
-                .IsRequired(false);
+            builder.HasMany(x => x.InstructorEarnings)
+                   .WithOne(x => x.PaymentTransactions)
+                   .HasForeignKey(x => x.TransactionId)
+                   .OnDelete(DeleteBehavior.Cascade);
 
-
-            // Relationships
-
-
-            // Student → PaymentTransactions (1 : many)
-            builder.HasOne(p => p.Student)
-                .WithMany(u => u.PaymentTransactions)
-                .HasForeignKey(p => p.StudentId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            // Course → PaymentTransactions (1 : many)
-            builder.HasOne(p => p.Courses)
-                .WithMany(c => c.PaymentTransactions)
-                .HasForeignKey(p => p.CourseId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            // PaymentMethod → PaymentTransactions (1 : many)
-            builder.HasOne(p => p.PaymentMethods)
-                .WithMany(pm => pm.PaymentTransactions)
-                .HasForeignKey(p => p.PaymentMethodId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            // PaymentTransactions → InstructorEarnings (1 : many)
-            builder.HasMany(p => p.InstructorEarnings)
-                .WithOne(e => e.PaymentTransactions)
-                .HasForeignKey(e => e.TransactionId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-
-            // Indexes (Recommended)
-
-
-            builder.HasIndex(p => p.StudentId);
-            builder.HasIndex(p => p.CourseId);
-            builder.HasIndex(p => p.Status);
-            builder.HasIndex(p => p.CreatedAt);
+            builder.HasIndex(x => x.StudentId);
+            builder.HasIndex(x => x.CourseId);
+            builder.HasIndex(x => x.Status);
         }
     }
 }

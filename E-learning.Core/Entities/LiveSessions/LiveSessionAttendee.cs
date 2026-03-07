@@ -1,5 +1,6 @@
 ﻿using E_learning.Core.Entities.Base;
 using E_learning.Core.Entities.Identity;
+using E_learning.Core.Entities.Profiles;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,11 +12,11 @@ namespace E_learning.Core.Entities.LiveSessions
     public class LiveSessionAttendee : BaseEntity
     {
         // ─── Foreign Keys ───────────────────────
-        public int SessionId { get; set; }
+        public Guid SessionId { get; set; }
         public LiveSession Session { get; set; } = null!;
 
         public Guid StudentId { get; set; }
-        public ApplicationUser Student { get; set; } = null!;
+        public Student Student { get; set; } = null!;
 
         // ─── Attendance ──────────────────────────
 

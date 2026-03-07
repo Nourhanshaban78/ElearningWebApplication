@@ -19,7 +19,7 @@ namespace E_learning.Repository.Config.NotificationsConfigurations
 
             // Relationship One-One
 
-            builder.HasIndex(x => x.User.Id).IsUnique();
+            builder.HasIndex(x => x.UserId).IsUnique();
 
             builder.Property(x => x.CourseAnnouncement)
                    .HasDefaultValue(true);
@@ -41,7 +41,7 @@ namespace E_learning.Repository.Config.NotificationsConfigurations
 
             builder.HasOne(x => x.User)
                 .WithOne(u => u.NotificationSettings)
-                .HasForeignKey<NotificationSettings>(x => x.User.Id)
+                .HasForeignKey<NotificationSettings>(x => x.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

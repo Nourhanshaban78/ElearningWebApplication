@@ -8,39 +8,29 @@ namespace E_learning.Repository.Config
     {
         public void Configure(EntityTypeBuilder<Certificate> builder)
         {
-            builder.ToTable("Certificates");
+            builder.HasKey(x => x.Id);
 
-            builder.HasKey(c => c.Id);
+            builder.Property(x => x.CertificateCode)
+                .IsRequired()
+                .HasMaxLength(100);
 
-            builder.HasIndex(c => new { c.StudentId, c.CourseId })
-                   .IsUnique()
-                   .HasDatabaseName("UQ_Certificates_Student_Course");
+            builder.Property(x => x.FileUrl)
+                .HasMaxLength(500);
 
-            builder.HasIndex(c => c.CertificateCode)
-                   .IsUnique()
-                   .HasDatabaseName("UQ_Certificates_Code");
+            // Student relation
+            builder.HasOne(x => x.Student)
+                .WithMany(x => x.Certificates)
+                .HasForeignKey(x => x.StudentId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-            builder.Property(c => c.CertificateCode)
-                   .IsRequired()
-                   .HasMaxLength(50);
+            // Course relation
+            builder.HasOne(x => x.Course)
+                .WithMany(x => x.Certificates)
+                .HasForeignKey(x => x.CourseId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-            builder.Property(c => c.FileUrl)
-                   .HasMaxLength(500);
-
-            builder.Property(c => c.IssuedAt)
-                   .HasDefaultValueSql("GETUTCDATE()");
-
-            // Relationships
-
-            builder.HasOne(c => c.Student)
-                   .WithMany()
-                   .HasForeignKey(c => c.StudentId)
-                   .OnDelete(DeleteBehavior.Cascade);
-
-            builder.HasOne(c => c.Course)
-                   .WithMany()
-                   .HasForeignKey(c => c.CourseId)
-                   .OnDelete(DeleteBehavior.Cascade);
+            builder.HasIndex(x => x.CertificateCode)
+                .IsUnique();
         }
     }
 }

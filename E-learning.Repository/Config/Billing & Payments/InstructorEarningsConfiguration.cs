@@ -16,52 +16,48 @@ namespace E_learning.Repository.Config.Billing___Payments
         {
             builder.ToTable("InstructorEarnings");
 
-            builder.HasKey(e => e.Id);
-     
+           
+            builder.HasKey(x => x.Id);
 
-            builder.Property(e => e.GrossAmount)
-                .HasColumnType("decimal(18,2)")
-                .IsRequired();
+          
+            builder.Property(x => x.GrossAmount)
+                   .HasColumnType("decimal(18,2)")
+                   .IsRequired();
 
-            builder.Property(e => e.PlatformFee)
-                .HasColumnType("decimal(18,2)")
-                .IsRequired();
+            builder.Property(x => x.PlatformFee)
+                   .HasColumnType("decimal(18,2)")
+                   .IsRequired();
 
-            builder.Property(e => e.NetAmount)
-                .HasColumnType("decimal(18,2)")
-                .IsRequired();
+            builder.Property(x => x.NetAmount)
+                   .HasColumnType("decimal(18,2)")
+                   .IsRequired();
 
-            builder.Property(e => e.Status)
-                .HasConversion<int>()
-                .HasDefaultValue(InstructorEarningsStatus.Pending);
+            builder.Property(x => x.Status)
+                   .IsRequired();
 
-            builder.Property(e => e.CreatedAt)
-                .HasDefaultValueSql("GETUTCDATE()");
+            builder.Property(x => x.AvailableAt)
+                   .IsRequired();
 
-            builder.Property(e => e.AvailableAt)
-                .IsRequired();
+            builder.Property(x => x.CreatedAt)
+                   .IsRequired();
+
+           
+            builder.HasOne(x => x.Instructor)
+                   .WithMany()
+                   .HasForeignKey(x => x.InstructorId)
+                   .OnDelete(DeleteBehavior.Restrict);
 
             
-            // Relationships
-            
+            builder.HasOne(x => x.PaymentTransactions)
+                   .WithMany()
+                   .HasForeignKey(x => x.TransactionId)
+                   .OnDelete(DeleteBehavior.Restrict);
 
-            // Instructor (User)
-            builder.HasOne(e => e.Instructor)
-                .WithMany(u => u.InstructorEarnings)
-                .HasForeignKey(e => e.InstructorId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            // Transaction
-            builder.HasOne(e => e.PaymentTransactions)
-                .WithMany(t => t.InstructorEarnings)
-                .HasForeignKey(e => e.TransactionId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            // Course
-            builder.HasOne(e => e.Courses)
-                .WithMany(c => c.InstructorEarnings)
-                .HasForeignKey(e => e.CourseId)
-                .OnDelete(DeleteBehavior.Restrict);
+           
+            builder.HasOne(x => x.Courses)
+                   .WithMany()
+                   .HasForeignKey(x => x.CourseId)
+                   .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

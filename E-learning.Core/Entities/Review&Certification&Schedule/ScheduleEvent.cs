@@ -5,11 +5,11 @@ namespace E_learning.Core.Entities.Review_Certification_Schedule
 {
     public class ScheduleEvent
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
-        public string UserId { get; set; }
+        public Guid UserId { get; set; }
 
-        public int? CourseId { get; set; }
+        public Guid? CourseId { get; set; }
 
         public string Title { get; set; }
 

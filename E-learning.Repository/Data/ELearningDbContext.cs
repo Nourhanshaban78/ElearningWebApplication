@@ -18,6 +18,7 @@ using E_learning.Core.Entities.Assessments.Assignments;
 using E_learning.Core.Entities.Assessments.Exams;
 using E_learning.Core.Entities.Assessments.Quizzes;
 using E_learning.Core.Entities.Billing___Payments;
+using E_learning.Core.Entities.LiveSessions;
 
 
 namespace E_learning.Repository.Data
@@ -49,6 +50,7 @@ namespace E_learning.Repository.Data
         public DbSet<Instructor> Instructors { get; set; }
 
         public DbSet<Admin> Admins { get; set; }
+
         #endregion
         #region Admin Operations
         public DbSet<PayoutApprovals> PayoutApprovals { get; set; }
@@ -75,6 +77,10 @@ namespace E_learning.Repository.Data
 
         public DbSet<StudyReminder> StudyReminders { get; set; }
         #endregion
+        #region Live sessions 
+        public DbSet<LiveSession> LiveSessions { get; set; }
+        public DbSet<LiveSessionAttendee> LiveSessionAttendees { get; set; }
+         #endregion
 
         #region Payment 
         public DbSet<PaymentMethods> PaymentMethods { get; set; }
