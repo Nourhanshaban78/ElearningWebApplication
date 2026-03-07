@@ -7,7 +7,7 @@ using E_learning.Core.Entities.Profiles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace E_learning.Repository.Config
+namespace E_learning.Repository.Config.Profiles
 {
     public class StudentConfiguration: IEntityTypeConfiguration<Student>
     {

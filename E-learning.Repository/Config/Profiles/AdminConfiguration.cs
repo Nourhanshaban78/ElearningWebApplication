@@ -7,7 +7,7 @@ using E_learning.Core.Entities.Profiles;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.Threading.Tasks;
 
-namespace E_learning.Repository.Config
+namespace E_learning.Repository.Config.Profiles
 {
     public class AdminConfiguration : IEntityTypeConfiguration<Admin>
     {

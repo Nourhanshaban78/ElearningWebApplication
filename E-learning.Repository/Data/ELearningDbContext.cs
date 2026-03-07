@@ -46,7 +46,7 @@ namespace E_learning.Repository.Data
         public DbSet<Instructor> Instructors { get; set; }
 
         public DbSet<Admin> Admins { get; set; }
-        public DbSet<UserSession> UserSessions { get; set; }
+       
         #endregion
         #region Admin Operations
         public DbSet<PayoutApprovals> PayoutApprovals { get; set; }
