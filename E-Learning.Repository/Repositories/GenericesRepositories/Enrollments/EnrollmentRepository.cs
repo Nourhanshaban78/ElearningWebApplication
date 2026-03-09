@@ -1,10 +1,5 @@
-﻿using E_Learning.Repository.Data;
-using E_Learning.Service.Interfaces.Repositories.Enrollments;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using E_Learning.Core.Interfaces.Repositories.Enrollments;
+using E_Learning.Repository.Data;
 
 namespace E_Learning.Repository.Repositories.GenericesRepositories.Enrollments
 {

@@ -1,10 +1,5 @@
-﻿using E_Learning.Repository.Data;
-using E_Learning.Service.Interfaces.Repositories.Authentications;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using E_Learning.core.Interfaces.Repositories.Authentications;
+using E_Learning.Repository.Data;
 
 namespace E_Learning.Repository.Repositories.GenericesRepositories.Authentications
 {

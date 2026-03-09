@@ -1,12 +1,7 @@
-﻿using E_Learning.Repository.Data;
-using E_Learning.Service.Interfaces.Repositories;
+﻿using E_Learning.Core.Interfaces.Repositories;
+using E_Learning.Repository.Data;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace E_Learning.Repository.Repositories.GenericesRepositories
 {
