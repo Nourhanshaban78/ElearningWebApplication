@@ -8,23 +8,38 @@ namespace E_learning.Repository.Config.Academic_Structure
     {
         public void Configure(EntityTypeBuilder<Stage> builder)
         {
-            builder.HasKey(x => x.Id);
+            builder.ToTable("Stages");
 
-            builder.Property(x => x.Name)
-                .IsRequired()
-                .HasMaxLength(100);
+            // Primary Key
+            builder.HasKey(s => s.Id);
 
-            builder.Property(x => x.Description)
-                .HasMaxLength(500);
+            // Properties
+            builder.Property(s => s.Name)
+                   .IsRequired()
+                   .HasMaxLength(100);
 
-            builder.Property(x => x.OrderIndex)
-                .IsRequired();
+            builder.Property(s => s.Description)
+                   .HasMaxLength(500);
 
-            builder.HasMany(x => x.Levels)
-                .WithOne(x => x.Stage)
-                .HasForeignKey(x => x.StageId)
-                .OnDelete(DeleteBehavior.Restrict);
+            builder.Property(s => s.OrderIndex)
+                   .IsRequired();
+
+            builder.Property(s => s.IsActive)
+                   .HasDefaultValue(true);
+
+            builder.Property(s => s.CreatedAt)
+                   .HasDefaultValueSql("GETUTCDATE()");
+
+            // Relationship with Levels
+            builder.HasMany(s => s.Levels)
+                   .WithOne(l => l.Stage)
+                   .HasForeignKey(l => l.StageId)
+                   .OnDelete(DeleteBehavior.Restrict);
+
+            // Index (recommended)
+            builder.HasIndex(s => s.OrderIndex)
+                   .IsUnique();
         }
-    
+
     }
 }

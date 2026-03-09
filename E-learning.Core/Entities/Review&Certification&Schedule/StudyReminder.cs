@@ -21,6 +21,6 @@ namespace E_learning.Core.Entities.Review_Certification_Schedule
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         // Navigation
-        public ApplicationUser User { get; set; }
+        public ApplicationUser User { get; set; } = null!;
     }
 }

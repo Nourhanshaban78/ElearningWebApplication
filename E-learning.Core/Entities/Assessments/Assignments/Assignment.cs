@@ -20,7 +20,7 @@ namespace E_learning.Core.Entities.Assessments.Assignments
 
      
         public Guid CourseId { get; set; }
-        public virtual Courses Courses { get; set; } = null!;
-        public virtual ICollection<AssignmentSubmissions> AssignmentSubmissions { get; set; } = new List<AssignmentSubmissions>();
+        public  Course Course { get; set; } = null!;
+        public virtual ICollection<AssignmentSubmission> AssignmentSubmissions { get; set; } = new List<AssignmentSubmission>();
     }
 }

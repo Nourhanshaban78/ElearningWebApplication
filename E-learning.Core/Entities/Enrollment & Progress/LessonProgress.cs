@@ -19,7 +19,7 @@ namespace E_learning.Core.Entities.Enrollment___Progress
         public Enrollment Enrollment { get; set; } = null!;
 
         public Guid LessonId { get; set; }
-        public Lessons Lesson { get; set; } = null!;
+        public Lesson Lesson { get; set; } = null!;
 
         public Guid StudentId { get; set; }
         public Student? Student { get; set; }

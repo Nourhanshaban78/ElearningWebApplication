@@ -11,12 +11,14 @@ namespace E_learning.Core.Entities.AdminOperations
         public Guid Id { get; set; }
 
         public Guid TicketId { get; set; }
-        public virtual SupportTickets Ticket { get; set; }
+        public SupportTickets Ticket { get; set; } = null!;
 
         public Guid SenderId { get; set; }
-        public virtual ApplicationUser Sender { get; set; }
+        public ApplicationUser Sender { get; set; } = null!;
 
         public string Body { get; set; }= string.Empty;
         public DateTime CreatedAt { get; set; }=DateTime.UtcNow;
+        public virtual ICollection<SupportTicketReplies> Replies { get; set; } = new List<SupportTicketReplies>();
+        
     }
 }

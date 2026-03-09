@@ -14,26 +14,38 @@ namespace E_learning.Repository.Config.AdminOperationsConfiguration
         {
             builder.ToTable("SupportTicketReplies");
 
+            // Primary Key
             builder.HasKey(r => r.Id);
 
-            builder.HasOne(r => r.Ticket)
-                   .WithMany(t => t.Replies) 
-                   .HasForeignKey(r => r.TicketId)
-                   .OnDelete(DeleteBehavior.Cascade); 
-
-            builder.HasOne(r => r.Sender)
-                   .WithMany()  
-                   .HasForeignKey(r => r.SenderId)
-                   .OnDelete(DeleteBehavior.Restrict); 
-
+            // Properties
             builder.Property(r => r.Body)
-                   .IsRequired() 
-                   .HasColumnType("NVARCHAR(MAX)");
+                   .IsRequired()
+                   .HasMaxLength(2000);
 
             builder.Property(r => r.CreatedAt)
-                   .IsRequired()
                    .HasDefaultValueSql("GETUTCDATE()");
- 
+
+            // Relationship: Reply -> Ticket
+            builder.HasOne(r => r.Ticket)
+                   .WithMany(t => t.Replies)
+                   .HasForeignKey(r => r.TicketId)
+                   .OnDelete(DeleteBehavior.Cascade);
+
+            // Relationship: Reply -> Sender (ApplicationUser)
+            builder.HasOne(r => r.Sender)
+                   .WithMany()
+                   .HasForeignKey(r => r.SenderId)
+                   .OnDelete(DeleteBehavior.Restrict);
+
+            // Self reference for nested replies
+            builder.HasMany(r => r.Replies)
+                   .WithOne()
+                   .HasForeignKey("ParentReplyId")
+                   .OnDelete(DeleteBehavior.Restrict);
+
+            // Indexes
+            builder.HasIndex(r => r.TicketId);
+            builder.HasIndex(r => r.SenderId);
         }
     }
 }

@@ -1,24 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore;
 using E_learning.Core.Entities.Assessments.Quizzes;
 using E_learning.Core.Enums;
 
 namespace E_learning.Repository.Config.Assessments.Quizze
 {
-    public class QuizzesConfiguration : IEntityTypeConfiguration<Quizzes>
+    public class QuizzesConfiguration : IEntityTypeConfiguration<Quiz>
     {
-        public void Configure(EntityTypeBuilder<Quizzes> builder)
+        public void Configure(EntityTypeBuilder<Quiz> builder)
         {
+            // Table
             builder.ToTable("Quizzes");
 
+            // Primary Key
             builder.HasKey(q => q.Id);
 
-              
+            // ========================
+            // Properties
+            // ========================
 
             builder.Property(q => q.Title)
                    .IsRequired()
@@ -28,18 +27,14 @@ namespace E_learning.Repository.Config.Assessments.Quizze
                    .HasMaxLength(200);
 
             builder.Property(q => q.Type)
-                   .HasMaxLength(20)
                    .HasDefaultValue(QuizzesType.Regular);
 
             builder.Property(q => q.TimePerQuestionSeconds)
                    .HasDefaultValue(30);
 
             builder.Property(q => q.PassingScore)
-                   .HasColumnType("decimal(5,2)")
+                   .HasColumnType("decimal(6,2)")
                    .HasDefaultValue(60);
-
-            builder.Property(q => q.MaxAttempts)
-                   .HasDefaultValue(3);
 
             builder.Property(q => q.ShuffleQuestions)
                    .HasDefaultValue(true);
@@ -50,15 +45,47 @@ namespace E_learning.Repository.Config.Assessments.Quizze
             builder.Property(q => q.IsActive)
                    .HasDefaultValue(true);
 
-            builder.HasOne(q => q.Courses)
+            // ========================
+            // Relationships
+            // ========================
+
+            // Quiz → Course
+            builder.HasOne(q => q.Course)
                    .WithMany(c => c.Quizzes)
                    .HasForeignKey(q => q.CourseId)
-                   .OnDelete(DeleteBehavior.Cascade);
+                   .OnDelete(DeleteBehavior.NoAction);
 
-            builder.HasOne(q => q.Lessons)
+            // Quiz → Lesson (optional)
+            builder.HasOne(q => q.Lesson)
                    .WithMany(l => l.Quizzes)
                    .HasForeignKey(q => q.LessonId)
-                   .OnDelete(DeleteBehavior.SetNull);
+                   .OnDelete(DeleteBehavior.Restrict);
+
+            // Quiz → Instructor
+            builder.HasOne(q => q.Instructor)
+                   .WithMany(i => i.Quizzes)
+                   .HasForeignKey(q => q.InstructorId)
+                   .OnDelete(DeleteBehavior.Restrict);
+
+            // Quiz → Questions
+            builder.HasMany(q => q.QuizQuestions)
+                   .WithOne(qq => qq.Quiz)
+                   .HasForeignKey(qq => qq.QuizId)
+                   .OnDelete(DeleteBehavior.Cascade);
+
+            // Quiz → Attempts
+            builder.HasMany(q => q.QuizAttempts)
+                   .WithOne(a => a.Quiz)
+                   .HasForeignKey(a => a.QuizId)
+                   .OnDelete(DeleteBehavior.Cascade);
+
+            // ========================
+            // Indexes
+            // ========================
+
+            builder.HasIndex(q => q.CourseId);
+            builder.HasIndex(q => q.LessonId);
+            builder.HasIndex(q => q.InstructorId);
         }
     }
 }

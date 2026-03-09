@@ -9,33 +9,47 @@ using Microsoft.EntityFrameworkCore;
 
 namespace E_learning.Repository.Config.Assessments.Exam
 {
-    public class ExamAttemptAnswerConfiguration : IEntityTypeConfiguration<ExamAttemptAnswers>
+    public class ExamAttemptAnswerConfiguration : IEntityTypeConfiguration<ExamAttemptAnswer>
     {
-        public void Configure(EntityTypeBuilder<ExamAttemptAnswers> builder)
+        public void Configure(EntityTypeBuilder<ExamAttemptAnswer> builder)
         {
             builder.ToTable("ExamAttemptAnswers");
 
+            // Primary Key
             builder.HasKey(a => a.Id);
 
-            builder.Property(a => a.Score)
-                   .HasColumnType("decimal(5,2)");
+            // Properties
+            builder.Property(a => a.TextAnswer)
+                   .HasMaxLength(4000);
 
-            builder.HasOne(a => a.ExamAttempts)
+            builder.Property(a => a.Score)
+                   .HasColumnType("decimal(6,2)");
+
+            // Relationship: Answer -> ExamAttempt
+            builder.HasOne(a => a.ExamAttempt)
                    .WithMany(a => a.ExamAttemptAnswers)
                    .HasForeignKey(a => a.AttemptId)
                    .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasOne(a => a.ExamQuestions)
-                   .WithMany(e=>e.ExamAttemptAnswers)
+            // Relationship: Answer -> Question
+            builder.HasOne(a => a.ExamQuestion)
+                   .WithMany(q => q.ExamAttemptAnswers)
                    .HasForeignKey(a => a.QuestionId)
                    .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(a => a.ExamOptions)
-                   .WithMany(a=>a.ExamAttemptAnswers)
-                   .HasForeignKey(a => a.SelectedOption)
-                   .OnDelete(DeleteBehavior.SetNull);
-            builder.Property(a => a.TextAnswer)
-                        .HasMaxLength(int.MaxValue);
+            // Relationship: Answer -> Selected Option
+            builder.HasOne(a => a.ExamOption)
+                   .WithMany()
+                   .HasForeignKey(a => a.SelectedOptionId)
+                   .OnDelete(DeleteBehavior.Restrict);
+
+            // Indexes
+            builder.HasIndex(a => a.AttemptId);
+            builder.HasIndex(a => a.QuestionId);
+
+            // Prevent duplicate answers for same question in same attempt
+            builder.HasIndex(a => new { a.AttemptId, a.QuestionId })
+                   .IsUnique();
         }
     }
 }

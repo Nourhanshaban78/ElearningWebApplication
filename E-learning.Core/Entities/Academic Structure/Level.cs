@@ -26,6 +26,6 @@ namespace E_learning.Core.Entities.Academic_Structure
 
         public int CourseCount { get; set; }
 
-        public ICollection<Courses> Courses { get; set; } = new List<Courses>();
+        public ICollection<Course> Courses { get; set; } = new List<Course>();
     }
 }

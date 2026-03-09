@@ -21,7 +21,7 @@ namespace E_learning.Core.Entities.Review_Certification_Schedule
         public DateTime? InstructorRepliedAt { get; set; }
 
         // Navigation
-        public Courses Course { get; set; }
-        public Student Student { get; set; }
+        public Course Course { get; set; } = null!;
+        public Student Student { get; set; } = null!;
     }
 }

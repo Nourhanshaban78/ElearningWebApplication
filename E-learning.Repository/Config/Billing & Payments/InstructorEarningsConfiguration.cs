@@ -10,54 +10,61 @@ using System.Threading.Tasks;
 
 namespace E_learning.Repository.Config.Billing___Payments
 {
-    public class InstructorEarningsConfiguration : IEntityTypeConfiguration<InstructorEarnings>
+    public class InstructorEarningsConfiguration : IEntityTypeConfiguration<InstructorEarning>
     {
-        public void Configure(EntityTypeBuilder<InstructorEarnings> builder)
+        public void Configure(EntityTypeBuilder<InstructorEarning> builder)
         {
             builder.ToTable("InstructorEarnings");
 
-           
-            builder.HasKey(x => x.Id);
+            // Primary Key
+            builder.HasKey(e => e.Id);
 
-          
-            builder.Property(x => x.GrossAmount)
-                   .HasColumnType("decimal(18,2)")
+            // Properties
+            builder.Property(e => e.GrossAmount)
+                   .HasColumnType("decimal(10,2)")
                    .IsRequired();
 
-            builder.Property(x => x.PlatformFee)
-                   .HasColumnType("decimal(18,2)")
+            builder.Property(e => e.PlatformFee)
+                   .HasColumnType("decimal(10,2)")
                    .IsRequired();
 
-            builder.Property(x => x.NetAmount)
-                   .HasColumnType("decimal(18,2)")
+            builder.Property(e => e.NetAmount)
+                   .HasColumnType("decimal(10,2)")
                    .IsRequired();
 
-            builder.Property(x => x.Status)
+            builder.Property(e => e.Status)
+                   .HasDefaultValue(InstructorEarningsStatus.Pending);
+
+            builder.Property(e => e.CreatedAt)
+                   .HasDefaultValueSql("GETUTCDATE()");
+
+            builder.Property(e => e.AvailableAt)
                    .IsRequired();
 
-            builder.Property(x => x.AvailableAt)
-                   .IsRequired();
-
-            builder.Property(x => x.CreatedAt)
-                   .IsRequired();
-
-           
-            builder.HasOne(x => x.Instructor)
-                   .WithMany()
-                   .HasForeignKey(x => x.InstructorId)
+            // Relationship: Earning -> Instructor
+            builder.HasOne(e => e.Instructor)
+                   .WithMany(i => i.InstructorEarnings)
+                   .HasForeignKey(e => e.InstructorId)
                    .OnDelete(DeleteBehavior.Restrict);
 
-            
-            builder.HasOne(x => x.PaymentTransactions)
-                   .WithMany()
-                   .HasForeignKey(x => x.TransactionId)
+
+            builder.HasMany(x => x.PaymentTransactions)
+               .WithOne(x => x.InstructorEarning)
+               .HasForeignKey(x => x.InstructorEarningId)
+               .OnDelete(DeleteBehavior.Cascade);
+
+
+
+            // Relationship: Earning -> Course
+            builder.HasOne(e => e.Course)
+                   .WithMany(c => c.InstructorEarnings)
+                   .HasForeignKey(e => e.CourseId)
                    .OnDelete(DeleteBehavior.Restrict);
 
-           
-            builder.HasOne(x => x.Courses)
-                   .WithMany()
-                   .HasForeignKey(x => x.CourseId)
-                   .OnDelete(DeleteBehavior.Restrict);
+            // Indexes
+            builder.HasIndex(e => e.InstructorId);
+            builder.HasIndex(e => e.CourseId);
+            builder.HasIndex(e => e.Status);
         }
     }
 }

@@ -5,6 +5,7 @@ using E_learning.Core.Entities.Assessments.Quizzes;
 using E_learning.Core.Entities.Billing___Payments;
 using E_learning.Core.Entities.Enrollment___Progress;
 using E_learning.Core.Entities.Identity;
+using E_learning.Core.Entities.LiveSessions;
 using E_learning.Core.Entities.Profiles;
 using E_learning.Core.Entities.Review_Certification_Schedule;
 using E_learning.Core.Enums;
@@ -17,7 +18,7 @@ using static System.Collections.Specialized.BitVector32;
 
 namespace E_learning.Core.Entities.Courses___content
 {
-    public class Courses
+    public class Course
     {
         public Guid Id { get; set; }
 
@@ -44,15 +45,16 @@ namespace E_learning.Core.Entities.Courses___content
         public Guid? ApprovedById { get; set; }
         public ApplicationUser? ApprovedBy { get; set; }
         public DateTime? ApprovedAt { get; set; }
-
-        public ICollection<Sections> Sections { get; set; } = new List<Sections>();
-        public ICollection<Quizzes> Quizzes { get; set; } = new List<Quizzes>();
-        public ICollection<Exams> Exams { get; set; } = new List<Exams>();
-        public ICollection<PaymentTransactions> PaymentTransactions { get; set; } = new List<PaymentTransactions>();
-        public ICollection<InstructorEarnings> InstructorEarnings { get; set; } = new List<InstructorEarnings>();
+        public ICollection<LiveSession> LiveSessions { get; set; } = new List<LiveSession>();
+        public ICollection<Section> Sections { get; set; } = new List<Section>();
+        public ICollection<Quiz> Quizzes { get; set; } = new List<Quiz>();
+        public ICollection<Exam> Exams { get; set; } = new List<Exam>();
+        public ICollection<PaymentTransaction> PaymentTransactions { get; set; } = new List<PaymentTransaction>();
+        public ICollection<InstructorEarning> InstructorEarnings { get; set; } = new List<InstructorEarning>();
         public ICollection<CourseReview> CourseReviews { get; set; } = new List<CourseReview>();
         public ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
         public ICollection<Assignment> Assignments { get; set; } = new List<Assignment>();
         public ICollection<Certificate> Certificates { get; set; } = new List<Certificate>();
+        public ICollection<CourseAnalyticsSnapshots> AnalyticsSnapshots { get; set; }
     }
 }

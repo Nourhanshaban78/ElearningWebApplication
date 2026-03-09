@@ -1,4 +1,5 @@
 ﻿using E_learning.Core.Entities.Base;
+using E_learning.Core.Entities.Courses___content;
 using E_learning.Core.Entities.Identity;
 using E_learning.Core.Entities.Profiles;
 using E_learning.Core.Enums;
@@ -37,6 +38,7 @@ namespace E_learning.Core.Entities.LiveSessions
 
         public LiveSessionStatus Status { get; set; } = LiveSessionStatus.Scheduled;
 
+        public Course Course { get; set; } = null!;
         public ICollection<LiveSessionAttendee> Attendees { get; set; }
             = new List<LiveSessionAttendee>();
     }

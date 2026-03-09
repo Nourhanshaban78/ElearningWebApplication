@@ -1,5 +1,6 @@
 ﻿using E_learning.Core.Entities.Courses___content;
 using E_learning.Core.Entities.Identity;
+using E_learning.Core.Entities.Profiles;
 
 namespace E_learning.Core.Entities.Review_Certification_Schedule
 {
@@ -7,7 +8,7 @@ namespace E_learning.Core.Entities.Review_Certification_Schedule
     {
         public Guid Id { get; set; }
 
-        public Guid UserId { get; set; }
+        public Guid InstructorId { get; set; }
 
         public Guid? CourseId { get; set; }
 
@@ -24,7 +25,7 @@ namespace E_learning.Core.Entities.Review_Certification_Schedule
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         // Navigation
-        public ApplicationUser User { get; set; }
-        public Courses? Course { get; set; }
+        public Instructor Instructor { get; set; } = null!;
+        public Course? Course { get; set; } = null!;
     }
 }

@@ -10,30 +10,34 @@ namespace E_learning.Repository.Config
         {
             builder.ToTable("StudyReminders");
 
-            builder.HasKey(sr => sr.Id);
+            // Primary Key
+            builder.HasKey(r => r.Id);
 
-            builder.Property(sr => sr.Title)
+            // Properties
+            builder.Property(r => r.Title)
                    .IsRequired()
                    .HasMaxLength(200);
 
-            builder.Property(sr => sr.ReminderTime)
+            builder.Property(r => r.ReminderTime)
                    .IsRequired();
 
-            builder.Property(sr => sr.IsDaily)
+            builder.Property(r => r.IsDaily)
                    .HasDefaultValue(true);
 
-            builder.Property(sr => sr.IsActive)
+            builder.Property(r => r.IsActive)
                    .HasDefaultValue(true);
 
-            builder.Property(sr => sr.CreatedAt)
-                   .HasDefaultValueSql("GETUTCDATE()");
+            builder.Property(r => r.CreatedAt)
+                   .IsRequired();
 
-            // Relationships
-
-            builder.HasOne(sr => sr.User)
-                   .WithMany()
-                   .HasForeignKey(sr => sr.UserId)
+            // Relationship
+            builder.HasOne(r => r.User)
+                   .WithMany() // change if ApplicationUser has ICollection<StudyReminder>
+                   .HasForeignKey(r => r.UserId)
                    .OnDelete(DeleteBehavior.Cascade);
+
+            // Index (recommended for queries)
+            builder.HasIndex(r => r.UserId);
         }
     }
 }

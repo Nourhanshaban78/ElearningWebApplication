@@ -16,32 +16,31 @@ namespace E_learning.Repository.Config.Profiles
         {
             builder.ToTable("Admins");
 
-            // Primary Key
             builder.HasKey(x => x.Id);
 
-            // Properties
             builder.Property(x => x.IsSuperAdmin)
-                   .IsRequired()
-                   .HasDefaultValue(false);
+                   .HasDefaultValue(false)
+                   .IsRequired();
 
             builder.Property(x => x.CreatedAt)
                    .IsRequired();
 
-            // Relationship: Admin -> ApplicationUser (1:1)
+            // ApplicationUser Relation (One-to-One)
             builder.HasOne(x => x.User)
-                   .WithOne(x => x.Admin)
+                   .WithOne(u => u.Admin)
                    .HasForeignKey<Admin>(x => x.UserId)
                    .OnDelete(DeleteBehavior.Cascade);
 
-            // Relationship: Admin -> PayoutApprovals (1:M)
+            // Payout Approvals Relation
             builder.HasMany(x => x.PayoutApprovals)
-                   .WithOne(x => x.Admin)
-                   .HasForeignKey(x => x.AdminId)
+                   .WithOne(p => p.Admin)
+                   .HasForeignKey(p => p.AdminId)
                    .OnDelete(DeleteBehavior.Restrict);
 
             // Index
             builder.HasIndex(x => x.UserId)
                    .IsUnique();
-        }
+        
+    }
     }
 }

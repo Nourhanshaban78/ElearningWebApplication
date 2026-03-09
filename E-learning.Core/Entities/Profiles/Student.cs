@@ -18,8 +18,9 @@ namespace E_learning.Core.Entities.Profiles
     {
         public Guid Id { get; set; }
         public Guid UserId { get; set; }
-        public ApplicationUser? User { get; set; }
-
+        public ApplicationUser? User { get; set; } = null!;
+        public Guid InstructorId { get; set; }
+        public Instructor Instructor { get; set; } = null!;
         public decimal EngagementRate { get; set; }
 
         public DateTime CreatedAt { get; set; }
@@ -27,11 +28,12 @@ namespace E_learning.Core.Entities.Profiles
 
         public ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
         public ICollection<CourseReview> CourseReviews { get; set; } = new List<CourseReview>();
-        public ICollection<QuizAttempts> QuizAttempts { get; set; } = new List<QuizAttempts>();
-        public ICollection<ExamAttempts> ExamAttempts { get; set; } = new List<ExamAttempts>();
+        public ICollection<QuizAttempt> QuizAttempts { get; set; } = new List<QuizAttempt>();
+        public ICollection<ExamAttempt> ExamAttempts { get; set; } = new List<ExamAttempt>();
         public ICollection<Certificate> Certificates { get; set; } = new List<Certificate>();
         public ICollection<LessonProgress> LessonProgresses { get; set; } = new List<LessonProgress>();
         public ICollection<LiveSessionAttendee> LiveSessionAttendees { get; set; } = new List<LiveSessionAttendee>();
-        public ICollection<AssignmentSubmissions> AssignmentSubmissions { get; set; } = new List<AssignmentSubmissions>();
+        public ICollection<AssignmentSubmission> AssignmentSubmissions { get; set; } = new List<AssignmentSubmission>();
+        public ICollection<PaymentTransaction> PaymentTransactions { get; set; } = new List<PaymentTransaction>();
     }
 }

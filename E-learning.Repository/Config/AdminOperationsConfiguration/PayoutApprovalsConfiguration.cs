@@ -16,29 +16,38 @@ namespace E_learning.Repository.Config.AdminOperationsConfiguration
             builder.ToTable("PayoutApprovals");
 
             // Primary Key
-            builder.HasKey(x => x.Id);
+            builder.HasKey(p => p.Id);
 
             // Properties
-            builder.Property(x => x.Decision)
+            builder.Property(p => p.Decision)
                    .IsRequired();
 
-            builder.Property(x => x.Notes)
-                   .HasMaxLength(500);
+            builder.Property(p => p.Notes)
+                   .HasMaxLength(1000);
 
-            builder.Property(x => x.ProcessedAt)
-                   .IsRequired();
+            builder.Property(p => p.ProcessedAt)
+                   .HasDefaultValueSql("GETUTCDATE()");
 
-            // Relationship with PayoutRequests
-            builder.HasOne(x => x.PayoutRequest)
-                   .WithMany() // change if PayoutRequests has collection
-                   .HasForeignKey(x => x.PayoutRequestId)
+            // Relationship: PayoutApprovals -> PayoutRequest
+            builder.HasOne(p => p.PayoutRequest)
+                   .WithMany(r => r.PayoutApprovals)
+                   .HasForeignKey(p => p.PayoutRequestId)
                    .OnDelete(DeleteBehavior.Cascade);
 
-            // Relationship with Admin
-            builder.HasOne(x => x.Admin)
-                   .WithMany() // change if Admin has collection
-                   .HasForeignKey(x => x.AdminId)
+            // Relationship: PayoutApprovals -> Admin
+            builder.HasOne(p => p.Admin)
+                   .WithMany(a => a.PayoutApprovals)
+                   .HasForeignKey(p => p.AdminId)
                    .OnDelete(DeleteBehavior.Restrict);
+
+            // Indexes
+            builder.HasIndex(p => p.PayoutRequestId);
+
+            builder.HasIndex(p => p.AdminId);
+
+            // Prevent same admin approving same request twice
+            builder.HasIndex(p => new { p.PayoutRequestId, p.AdminId })
+                   .IsUnique();
         }
 
 

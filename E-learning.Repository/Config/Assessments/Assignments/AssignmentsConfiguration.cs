@@ -16,34 +16,44 @@ namespace E_learning.Repository.Config.Assessments.Assignments
 
             builder.ToTable("Assignments");
 
+            // Primary Key
             builder.HasKey(a => a.Id);
 
+            // Properties
             builder.Property(a => a.Title)
-                .IsRequired()
-                .HasMaxLength(200);
+                   .IsRequired()
+                   .HasMaxLength(200);
 
             builder.Property(a => a.Description)
-                .HasMaxLength(int.MaxValue);
-
-            builder.Property(a => a.DueDate)
-                .IsRequired();
+                   .HasMaxLength(2000);
 
             builder.Property(a => a.TotalMarks)
-                .IsRequired()
-                .HasPrecision(7, 2);
+                   .HasColumnType("decimal(6,2)")
+                   .IsRequired();
+
+            builder.Property(a => a.DueDate)
+                   .IsRequired();
 
             builder.Property(a => a.IsActive)
-                .HasDefaultValue(true);
+                   .HasDefaultValue(true);
 
             builder.Property(a => a.CreatedAt)
-                .HasDefaultValueSql("GETUTCDATE()");
+                   .HasDefaultValueSql("GETUTCDATE()");
 
+            // Relationship: Assignment -> Course
+            builder.HasOne(a => a.Course)
+                   .WithMany(c => c.Assignments)
+                   .HasForeignKey(a => a.CourseId)
+                   .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasOne(a => a.Courses)
-                .WithMany(c => c.Assignments)
-                .HasForeignKey(a => a.CourseId)
-                .OnDelete(DeleteBehavior.Cascade);
+            // Relationship: Assignment -> Submissions
+            builder.HasMany(a => a.AssignmentSubmissions)
+                   .WithOne(s => s.Assignment)
+                   .HasForeignKey(s => s.AssignmentId)
+                   .OnDelete(DeleteBehavior.Cascade);
 
+            // Index
+            builder.HasIndex(a => a.CourseId);
 
         }
     }

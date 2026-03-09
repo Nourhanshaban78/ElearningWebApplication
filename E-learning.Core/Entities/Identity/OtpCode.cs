@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace E_learning.Core.Entities.Identity
 {
-    public class OtpCodes
+    public class OtpCode
     {
         public Guid Id { get; set; }
         public Guid UserId { get; set; }
@@ -15,6 +15,6 @@ namespace E_learning.Core.Entities.Identity
         public bool IsUsed { get; set; } = false;
         public DateTime ExpiresAt { get; set; }
         public DateTime CreatedAt { get; set; }
-        public ApplicationUser User { get; set; } 
+        public ApplicationUser User { get; set; } = null!;
     }
 }

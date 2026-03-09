@@ -12,8 +12,8 @@ namespace E_learning.Core.Entities.LiveSessions
     public class LiveSessionAttendee : BaseEntity
     {
         // ─── Foreign Keys ───────────────────────
-        public Guid SessionId { get; set; }
-        public LiveSession Session { get; set; } = null!;
+        public Guid LiveSessionId { get; set; }
+        public LiveSession LiveSession { get; set; } = null!;
 
         public Guid StudentId { get; set; }
         public Student Student { get; set; } = null!;

@@ -1,7 +1,10 @@
-﻿using E_learning.Core.Entities.Billing___Payments;
+﻿using E_learning.Core.Entities.Assessments.Exams;
+using E_learning.Core.Entities.Assessments.Quizzes;
+using E_learning.Core.Entities.Billing___Payments;
 using E_learning.Core.Entities.Courses___content;
 using E_learning.Core.Entities.Identity;
 using E_learning.Core.Entities.LiveSessions;
+using E_learning.Core.Entities.Review_Certification_Schedule;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,9 +28,13 @@ namespace E_learning.Core.Entities.Profiles
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
-
-        public ICollection<Courses> Courses { get; set; } = new List<Courses>();
-        public ICollection<InstructorEarnings> InstructorEarnings { get; set; } = new List<InstructorEarnings>();
+        public ICollection<PayoutRequest> PayoutRequests { get; set; } = new List<PayoutRequest>();
+        public ICollection<Student> Students { get; set; }  = new List<Student>();
+        public ICollection<Course> Courses { get; set; } = new List<Course>();
+        public ICollection<Exam> Exams { get; set; } = new List<Exam>();
+        public ICollection<Quiz> Quizzes { get; set; } = new List<Quiz>();
+        public ICollection<InstructorEarning> InstructorEarnings { get; set; } = new List<InstructorEarning>();
         public ICollection<LiveSession> LiveSessions { get; set; } = new List<LiveSession>();
+        public ICollection<ScheduleEvent> ScheduleEvents { get; set; } = new List<ScheduleEvent>();
     }
 }

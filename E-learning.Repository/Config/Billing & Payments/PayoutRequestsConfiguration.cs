@@ -10,61 +10,53 @@ using System.Threading.Tasks;
 
 namespace E_learning.Repository.Config.Billing___Payments
 {
-    public class PayoutRequestsConfiguration : IEntityTypeConfiguration<PayoutRequests>
+    public class PayoutRequestsConfiguration : IEntityTypeConfiguration<PayoutRequest>
     {
-        public void Configure(EntityTypeBuilder<PayoutRequests> builder)
+        public void Configure(EntityTypeBuilder<PayoutRequest> builder)
         {
-            // Table
             builder.ToTable("PayoutRequests");
 
-            // Primary Key
-            builder.HasKey(p => p.Id);
+            builder.HasKey(x => x.Id);
 
+            builder.Property(x => x.Amount)
+                   .HasColumnType("decimal(18,2)")
+                   .IsRequired();
 
-            // Properties
+            builder.Property(x => x.Method)
+                   .HasMaxLength(100)
+                   .IsRequired();
 
+            builder.Property(x => x.AccountDetails)
+                   .HasMaxLength(500);
 
-            builder.Property(p => p.Amount)
-                .HasColumnType("decimal(18,2)")
-                .IsRequired();
+            builder.Property(x => x.Status)
+                   .IsRequired()
+                   .HasDefaultValue(PaymentTransactionsStatus.Pending);
 
-            builder.Property(p => p.Method)
-                .HasMaxLength(50)
-                .IsRequired();
+            builder.Property(x => x.RequestedAt)
+                   .IsRequired();
 
-            builder.Property(p => p.AccountDetails)
-                .HasMaxLength(500);
+            builder.Property(x => x.ProcessedAt);
 
-            builder.Property(p => p.Status)
-                .HasConversion<int>()
-                .HasDefaultValue(PaymentTransactionsStatus.Pending);
+            builder.Property(x => x.AdminNotes)
+                   .HasMaxLength(1000);
 
-            builder.Property(p => p.AdminNotes)
-                .HasMaxLength(1000);
+            // Instructor Relation
+            builder.HasOne(x => x.Instructor)
+                   .WithMany(i => i.PayoutRequests)
+                   .HasForeignKey(x => x.InstructorId)
+                   .OnDelete(DeleteBehavior.Restrict);
 
-            builder.Property(p => p.RequestedAt)
-                .HasDefaultValueSql("GETUTCDATE()");
+            // Approvals Relation
+            builder.HasMany(x => x.PayoutApprovals)
+                   .WithOne(a => a.PayoutRequest)
+                   .HasForeignKey(a => a.PayoutRequestId)
+                   .OnDelete(DeleteBehavior.Cascade);
 
-            builder.Property(p => p.ProcessedAt)
-                .IsRequired(false);
-
-
-            // Relationships
-
-
-            // Instructor → PayoutRequests (1 : many)
-            builder.HasOne(p => p.Instructor)
-                .WithMany(u => u.PayoutRequests)
-                .HasForeignKey(p => p.InstructorId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-
-            // Indexes (Recommended)
-
-
-            builder.HasIndex(p => p.InstructorId);
-            builder.HasIndex(p => p.Status);
-            builder.HasIndex(p => p.RequestedAt);
-        }
+            // Index for faster instructor queries
+            builder.HasIndex(x => x.InstructorId);
+            builder.HasIndex(x => x.Status);
+        
+    }
     }
     }

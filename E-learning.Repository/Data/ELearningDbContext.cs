@@ -31,9 +31,9 @@ namespace E_learning.Repository.Data
 
         #region DbSet
         #region Courses & Content
-        public DbSet<Courses> Courses { get; set; }
-        public DbSet<Lessons> Lessons { get; set; }
-        public DbSet<Sections> Sections { get; set; }
+        public DbSet<Course> Courses { get; set; }
+        public DbSet<Lesson> Lessons { get; set; }
+        public DbSet<Section> Sections { get; set; }
         #endregion
 
         #region Enrollment
@@ -42,7 +42,7 @@ namespace E_learning.Repository.Data
         #endregion
 
         #region Identity
-        public DbSet<OtpCodes> OtpCodes { get; set; }
+        public DbSet<OtpCode> OtpCodes { get; set; }
         public DbSet <UserSession> UserSessions { get; set; }
         #endregion
         #region Profile
@@ -60,8 +60,8 @@ namespace E_learning.Repository.Data
         #endregion
         #region Notifications & NotificationsSettings
 
-        public DbSet<Notifications> Notifications { get; set; }
-        public DbSet<NotificationSettings> NotificationSettings { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
+        public DbSet<NotificationSetting> NotificationSettings { get; set; }
 
         #endregion
         #region Academic Structure
@@ -83,25 +83,25 @@ namespace E_learning.Repository.Data
          #endregion
 
         #region Payment 
-        public DbSet<PaymentMethods> PaymentMethods { get; set; }
-        public DbSet<InstructorEarnings> InstructorEarnings { get; set; }
-        public DbSet<PaymentTransactions> PaymentTransactions { get; set; }
-        public DbSet<PayoutRequests> PayoutRequests { get; set; }
+        public DbSet<PaymentMethod> PaymentMethods { get; set; }
+        public DbSet<InstructorEarning> InstructorEarnings { get; set; }
+        public DbSet<PaymentTransaction> PaymentTransactions { get; set; }
+        public DbSet<PayoutRequest> PayoutRequests { get; set; }
          #endregion
 
         #region Assesments
         public DbSet<Assignment> Assignments { get; set; }
-        public DbSet<AssignmentSubmissions> AssignmentSubmissions { get; set; }
-        public DbSet<Quizzes> Quizzes { get; set; }
-        public DbSet<QuizQuestions> QuizQuestions { get; set; }
-        public DbSet<QuizOptions> QuizOptions { get; set; }
-        public DbSet<QuizAttempts> QuizAttempts { get; set; }
-        public DbSet<QuizAttemptAnswers> QuizAttemptAnswers { get; set; }
-        public DbSet<Exams> Exams { get; set; }
-        public DbSet<ExamQuestions> ExamQuestions { get; set; }
-        public DbSet<ExamOptions> ExamOptions { get; set; }
-        public DbSet<ExamAttempts> ExamAttempts { get; set; }
-        public DbSet<ExamAttemptAnswers> ExamAttemptAnswers { get; set; }
+        public DbSet<AssignmentSubmission> AssignmentSubmissions { get; set; }
+        public DbSet<Quiz> Quizzes { get; set; }
+        public DbSet<QuizQuestion> QuizQuestions { get; set; }
+        public DbSet<QuizOption> QuizOptions { get; set; }
+        public DbSet<QuizAttempt> QuizAttempts { get; set; }
+        public DbSet<QuizAttemptAnswer> QuizAttemptAnswers { get; set; }
+        public DbSet<Exam> Exams { get; set; }
+        public DbSet<ExamQuestion> ExamQuestions { get; set; }
+        public DbSet<ExamOption> ExamOptions { get; set; }
+        public DbSet<ExamAttempt> ExamAttempts { get; set; }
+        public DbSet<ExamAttemptAnswer> ExamAttemptAnswers { get; set; }
         #endregion
 
         #endregion

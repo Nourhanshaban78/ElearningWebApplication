@@ -15,10 +15,10 @@ namespace E_learning.Core.Entities.AdminOperations
         public Guid Id { get; set; }
 
         public Guid PayoutRequestId { get; set; }
-        public virtual PayoutRequests PayoutRequest { get; set; } = new PayoutRequests();
+        public PayoutRequest PayoutRequest { get; set; } = null!;
 
         public Guid AdminId { get; set; }
-        public virtual Admin Admin { get; set; }
+        public Admin Admin { get; set; } = null!;
 
         public Decision Decision { get; set; }
         public string? Notes { get; set; }

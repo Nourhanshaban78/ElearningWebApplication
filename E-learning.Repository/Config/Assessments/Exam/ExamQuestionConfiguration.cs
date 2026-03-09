@@ -9,33 +9,58 @@ using Microsoft.EntityFrameworkCore;
 
 namespace E_learning.Repository.Config.Assessments.Exam
 {
-    public class ExamQuestionConfiguration : IEntityTypeConfiguration<ExamQuestions>
+    public class ExamQuestionConfiguration : IEntityTypeConfiguration<ExamQuestion>
     {
-        public void Configure(EntityTypeBuilder<ExamQuestions> builder)
+        public void Configure(EntityTypeBuilder<ExamQuestion> builder)
         {
             builder.ToTable("ExamQuestions");
 
+            // Primary Key
             builder.HasKey(q => q.Id);
 
+            // Properties
             builder.Property(q => q.Text)
                    .IsRequired()
-                   .HasMaxLength(1000);
+                   .HasMaxLength(2000);
 
             builder.Property(q => q.Type)
-                     .IsRequired()
-                   .HasMaxLength(20);
+                   .IsRequired()
+                   .HasMaxLength(50);
 
             builder.Property(q => q.Points)
-                   .HasColumnType("decimal(5,2)");
-            builder.Property(q => q.IsAIGenerated)
-                .HasDefaultValue(false);
+                   .HasColumnType("decimal(6,2)")
+                   .IsRequired();
 
-            builder.HasOne(q => q.Exams)
+            builder.Property(q => q.IsAIGenerated)
+                   .HasDefaultValue(false);
+
+            builder.Property(q => q.OrderIndex)
+                   .IsRequired();
+
+            // Relationship: Question -> Exam
+            builder.HasOne(q => q.Exam)
                    .WithMany(e => e.ExamQuestions)
                    .HasForeignKey(q => q.ExamId)
                    .OnDelete(DeleteBehavior.Cascade);
-            builder.Property(q => q.OrderIndex)
-                .IsRequired();
+
+            // Relationship: Question -> Options
+            builder.HasMany(q => q.ExamOptions)
+                   .WithOne(o => o.ExamQuestion)
+                   .HasForeignKey(o => o.QuestionId)
+                   .OnDelete(DeleteBehavior.Cascade);
+
+            // Relationship: Question -> AttemptAnswers
+            builder.HasMany(q => q.ExamAttemptAnswers)
+                   .WithOne(a => a.ExamQuestion)
+                   .HasForeignKey(a => a.QuestionId)
+                   .OnDelete(DeleteBehavior.Restrict);
+
+            // Indexes
+            builder.HasIndex(q => q.ExamId);
+
+            // Prevent duplicate order in same exam
+            builder.HasIndex(q => new { q.ExamId, q.OrderIndex })
+                   .IsUnique();
 
         }
     }

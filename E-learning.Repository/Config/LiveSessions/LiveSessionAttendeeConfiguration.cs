@@ -15,38 +15,32 @@ namespace E_learning.Repository.Config.LiveSessions
         {
             builder.ToTable("LiveSessionAttendees");
 
-            // ─── Primary Key ─────────────────────
-
             builder.HasKey(x => x.Id);
-
-            // ─── Session Relation ────────────────
-
-            builder.HasOne(x => x.Session)
-                   .WithMany(x => x.Attendees)
-                   .HasForeignKey(x => x.SessionId)
-                   .OnDelete(DeleteBehavior.Cascade);
-
-            // ─── Student Relation ────────────────
-
-            builder.HasOne(x => x.Student)
-                   .WithMany(x => x.LiveSessionAttendees)
-                   .HasForeignKey(x => x.StudentId)
-                   .OnDelete(DeleteBehavior.Restrict);
-
-            // ─── Properties ──────────────────────
 
             builder.Property(x => x.JoinedAt)
                    .IsRequired();
 
-            builder.Property(x => x.LeftAt)
-                   .IsRequired(false);
+            builder.Property(x => x.LeftAt);
 
-            builder.Property(x => x.DurationSeconds)
-                   .IsRequired(false);
+            builder.Property(x => x.DurationSeconds);
 
-            // ─── Prevent duplicate attendance ───
+            builder.HasOne(x => x.LiveSession)
+                .WithMany(x => x.Attendees)
+                .HasForeignKey(x => x.LiveSessionId);
 
-            builder.HasIndex(x => new { x.SessionId, x.StudentId })
+            builder.HasOne(x => x.Student)
+                   .WithMany(s => s.LiveSessionAttendees)
+                   .HasForeignKey(x => x.StudentId);
+
+            builder.HasIndex(x => new { x.LiveSessionId, x.StudentId })
+                   .IsUnique(); // prevent duplicate attendance
+
+            // Indexes
+            builder.HasIndex(x => x.LiveSessionId);
+            builder.HasIndex(x => x.StudentId);
+
+            // Prevent same student joining the same session twice
+            builder.HasIndex(x => new { x.LiveSessionId, x.StudentId })
                    .IsUnique();
         }
     }

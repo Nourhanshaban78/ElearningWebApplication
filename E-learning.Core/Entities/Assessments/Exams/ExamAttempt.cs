@@ -9,18 +9,18 @@ using System.Threading.Tasks;
 
 namespace E_learning.Core.Entities.Assessments.Exams
 {
-    public class ExamAttempts
+    public class ExamAttempt
     {
         public Guid Id { get; set; }
 
         public Guid StudentId { get; set; }
         public Student Student { get; set; } = null!;
-
+     
         public Guid ExamId { get; set; }
-        public Exams Exams { get; set; }
+        public Exam Exam { get; set; }
 
         public Guid? ReviewedBy { get; set; }
-        public ApplicationUser User { get; set; }
+        public ApplicationUser? Reviewer { get; set; } = null!;
 
         public DateTime StartedAt { get; set; } = DateTime.UtcNow;
         public DateTime? SubmittedAt { get; set; }
@@ -32,6 +32,7 @@ namespace E_learning.Core.Entities.Assessments.Exams
         public string? TeacherComment { get; set; }
         public ExamAttemptsStatus Status { get; set; } = ExamAttemptsStatus.InProgress;
 
-        public ICollection<ExamAttemptAnswers> ExamAttemptAnswers { get; set; }
+        public ICollection<ExamAttemptAnswer> ExamAttemptAnswers { get; set; } = new List<ExamAttemptAnswer>(); public Guid? SelectedOptionId { get; set; }
+        public ExamOption? SelectedOption { get; set; }
     }
 }

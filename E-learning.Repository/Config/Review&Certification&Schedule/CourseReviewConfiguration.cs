@@ -11,39 +11,38 @@ namespace E_learning.Repository.Config
             builder.ToTable("CourseReviews");
 
             // Primary Key
-            builder.HasKey(x => x.Id);
+            builder.HasKey(r => r.Id);
 
             // Properties
-            builder.Property(x => x.Rating)
+            builder.Property(r => r.Rating)
                    .IsRequired();
 
-            builder.Property(x => x.Comment)
-                   .HasMaxLength(2000);
+            builder.Property(r => r.Comment)
+                   .HasMaxLength(1000);
 
-            builder.Property(x => x.InstructorReply)
-                   .HasMaxLength(2000);
+            builder.Property(r => r.InstructorReply)
+                   .HasMaxLength(1000);
 
-            builder.Property(x => x.CreatedAt)
+            builder.Property(r => r.CreatedAt)
                    .IsRequired();
 
-            // Relationship: Course
-            builder.HasOne(x => x.Course)
-                   .WithMany(x => x.CourseReviews)
-                   .HasForeignKey(x => x.CourseId)
+            // Relationships
+            builder.HasOne(r => r.Course)
+                   .WithMany() // change if Course has ICollection<CourseReview>
+                   .HasForeignKey(r => r.CourseId)
                    .OnDelete(DeleteBehavior.Cascade);
 
-            // Relationship: Student
-            builder.HasOne(x => x.Student)
-                   .WithMany(x => x.CourseReviews)
-                   .HasForeignKey(x => x.StudentId)
+            builder.HasOne(r => r.Student)
+                   .WithMany() // change if Student has ICollection<CourseReview>
+                   .HasForeignKey(r => r.StudentId)
                    .OnDelete(DeleteBehavior.Restrict);
 
-            // Prevent duplicate review by same student for the same course
-            builder.HasIndex(x => new { x.CourseId, x.StudentId })
+            // Prevent duplicate review from same student for same course
+            builder.HasIndex(r => new { r.CourseId, r.StudentId })
                    .IsUnique();
 
-            // Index for performance
-            builder.HasIndex(x => x.CourseId);
+            // Optional: index for faster rating queries
+            builder.HasIndex(r => r.CourseId);
         }
     }
 }

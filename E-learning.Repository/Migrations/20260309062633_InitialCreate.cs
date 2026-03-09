@@ -26,14 +26,30 @@ namespace E_learning.Repository.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AspNetUsers",
+                name: "Stages",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    OrderIndex = table.Column<int>(type: "int", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Stages", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Users",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     FullName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    Bio = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ProfileImage = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Location = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Bio = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    ProfileImage = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    Location = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     DateOfBirth = table.Column<DateOnly>(type: "date", nullable: true),
                     IsActive = table.Column<int>(type: "int", nullable: false),
                     MemberSince = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -55,23 +71,7 @@ namespace E_learning.Repository.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Stages",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    OrderIndex = table.Column<int>(type: "int", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Stages", x => x.Id);
+                    table.PrimaryKey("PK_Users", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -96,6 +96,29 @@ namespace E_learning.Repository.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Levels",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    StageId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    OrderIndex = table.Column<int>(type: "int", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
+                    CourseCount = table.Column<int>(type: "int", nullable: false, defaultValue: 0)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Levels", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Levels_Stages_StageId",
+                        column: x => x.StageId,
+                        principalTable: "Stages",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Admins",
                 columns: table => new
                 {
@@ -108,9 +131,9 @@ namespace E_learning.Repository.Migrations
                 {
                     table.PrimaryKey("PK_Admins", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Admins_AspNetUsers_UserId",
+                        name: "FK_Admins_Users_UserId",
                         column: x => x.UserId,
-                        principalTable: "AspNetUsers",
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -129,9 +152,9 @@ namespace E_learning.Repository.Migrations
                 {
                     table.PrimaryKey("PK_AspNetUserClaims", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AspNetUserClaims_AspNetUsers_UserId",
+                        name: "FK_AspNetUserClaims_Users_UserId",
                         column: x => x.UserId,
-                        principalTable: "AspNetUsers",
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -149,9 +172,9 @@ namespace E_learning.Repository.Migrations
                 {
                     table.PrimaryKey("PK_AspNetUserLogins", x => new { x.LoginProvider, x.ProviderKey });
                     table.ForeignKey(
-                        name: "FK_AspNetUserLogins_AspNetUsers_UserId",
+                        name: "FK_AspNetUserLogins_Users_UserId",
                         column: x => x.UserId,
-                        principalTable: "AspNetUsers",
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -173,9 +196,9 @@ namespace E_learning.Repository.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_AspNetUserRoles_AspNetUsers_UserId",
+                        name: "FK_AspNetUserRoles_Users_UserId",
                         column: x => x.UserId,
-                        principalTable: "AspNetUsers",
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -193,9 +216,9 @@ namespace E_learning.Repository.Migrations
                 {
                     table.PrimaryKey("PK_AspNetUserTokens", x => new { x.UserId, x.LoginProvider, x.Name });
                     table.ForeignKey(
-                        name: "FK_AspNetUserTokens_AspNetUsers_UserId",
+                        name: "FK_AspNetUserTokens_Users_UserId",
                         column: x => x.UserId,
-                        principalTable: "AspNetUsers",
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -217,9 +240,9 @@ namespace E_learning.Repository.Migrations
                 {
                     table.PrimaryKey("PK_Instructors", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Instructors_AspNetUsers_UserId",
+                        name: "FK_Instructors_Users_UserId",
                         column: x => x.UserId,
-                        principalTable: "AspNetUsers",
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -240,9 +263,9 @@ namespace E_learning.Repository.Migrations
                 {
                     table.PrimaryKey("PK_Notifications", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Notifications_AspNetUsers_UserId",
+                        name: "FK_Notifications_Users_UserId",
                         column: x => x.UserId,
-                        principalTable: "AspNetUsers",
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -264,9 +287,9 @@ namespace E_learning.Repository.Migrations
                 {
                     table.PrimaryKey("PK_NotificationSettings", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_NotificationSettings_AspNetUsers_UserId",
+                        name: "FK_NotificationSettings_Users_UserId",
                         column: x => x.UserId,
-                        principalTable: "AspNetUsers",
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -287,9 +310,9 @@ namespace E_learning.Repository.Migrations
                 {
                     table.PrimaryKey("PK_OtpCodes", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_OtpCodes_AspNetUsers_UserId",
+                        name: "FK_OtpCodes_Users_UserId",
                         column: x => x.UserId,
-                        principalTable: "AspNetUsers",
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -302,10 +325,10 @@ namespace E_learning.Repository.Migrations
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Type = table.Column<int>(type: "int", nullable: false),
                     CardLastFour = table.Column<string>(type: "nvarchar(4)", maxLength: 4, nullable: true),
-                    CardHolderName = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
+                    CardHolderName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     ExpiryMonth = table.Column<int>(type: "int", nullable: true),
                     ExpiryYear = table.Column<int>(type: "int", nullable: true),
-                    PayPalEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    PayPalEmail = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     IsDefault = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()")
                 },
@@ -313,55 +336,9 @@ namespace E_learning.Repository.Migrations
                 {
                     table.PrimaryKey("PK_PaymentMethods", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_PaymentMethods_AspNetUsers_UserId",
+                        name: "FK_PaymentMethods_Users_UserId",
                         column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "PayoutRequests",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    InstructorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Method = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    AccountDetails = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    Status = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
-                    RequestedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
-                    ProcessedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    AdminNotes = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PayoutRequests", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_PayoutRequests_AspNetUsers_InstructorId",
-                        column: x => x.InstructorId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Students",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    EngagementRate = table.Column<decimal>(type: "decimal(5,2)", nullable: false, defaultValue: 0m),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Students", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Students_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -377,15 +354,15 @@ namespace E_learning.Repository.Migrations
                     IsDaily = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
                     SpecificDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()")
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_StudyReminders", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_StudyReminders_AspNetUsers_UserId",
+                        name: "FK_StudyReminders_Users_UserId",
                         column: x => x.UserId,
-                        principalTable: "AspNetUsers",
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -397,9 +374,9 @@ namespace E_learning.Repository.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Subject = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    Body = table.Column<string>(type: "NVARCHAR(MAX)", nullable: false),
-                    Type = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false, defaultValue: "Open"),
+                    Body = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: false),
+                    Type = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     AssignedTo = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
                     ResolvedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -408,15 +385,15 @@ namespace E_learning.Repository.Migrations
                 {
                     table.PrimaryKey("PK_SupportTickets", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_SupportTickets_AspNetUsers_AssignedTo",
+                        name: "FK_SupportTickets_Users_AssignedTo",
                         column: x => x.AssignedTo,
-                        principalTable: "AspNetUsers",
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
-                        name: "FK_SupportTickets_AspNetUsers_UserId",
+                        name: "FK_SupportTickets_Users_UserId",
                         column: x => x.UserId,
-                        principalTable: "AspNetUsers",
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -431,92 +408,15 @@ namespace E_learning.Repository.Migrations
                     DeviceInfo = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
                     IsActive = table.Column<int>(type: "int", nullable: false),
                     ExpiresAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true, defaultValueSql: "GETUTCDATE()")
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()")
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_UserSessions", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_UserSessions_AspNetUsers_UserId",
+                        name: "FK_UserSessions_Users_UserId",
                         column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Levels",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    StageId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    OrderIndex = table.Column<int>(type: "int", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Levels", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Levels_Stages_StageId",
-                        column: x => x.StageId,
-                        principalTable: "Stages",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "PayoutApprovals",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    PayoutRequestId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    AdminId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Decision = table.Column<int>(type: "int", nullable: false),
-                    Notes = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    ProcessedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PayoutApprovals", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_PayoutApprovals_Admins_AdminId",
-                        column: x => x.AdminId,
-                        principalTable: "Admins",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_PayoutApprovals_PayoutRequests_PayoutRequestId",
-                        column: x => x.PayoutRequestId,
-                        principalTable: "PayoutRequests",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "SupportTicketReplies",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    TicketId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    SenderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Body = table.Column<string>(type: "NVARCHAR(MAX)", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SupportTicketReplies", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_SupportTicketReplies_AspNetUsers_SenderId",
-                        column: x => x.SenderId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_SupportTicketReplies_SupportTickets_TicketId",
-                        column: x => x.TicketId,
-                        principalTable: "SupportTickets",
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -529,34 +429,22 @@ namespace E_learning.Repository.Migrations
                     InstructorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     LevelId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     Title = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    WhatYouWillLearn = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ThumbnailUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Language = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
-                    Price = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: false),
+                    WhatYouWillLearn = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: true),
+                    ThumbnailUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    Language = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false, defaultValue: "en"),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Duration = table.Column<int>(type: "int", nullable: true),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ApprovedById = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    ApprovedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ApplicationUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    ApprovedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Courses", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Courses_AspNetUsers_ApplicationUserId",
-                        column: x => x.ApplicationUserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Courses_AspNetUsers_ApprovedById",
-                        column: x => x.ApprovedById,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Courses_Instructors_InstructorId",
                         column: x => x.InstructorId,
@@ -569,6 +457,99 @@ namespace E_learning.Repository.Migrations
                         principalTable: "Levels",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.SetNull);
+                    table.ForeignKey(
+                        name: "FK_Courses_Users_ApprovedById",
+                        column: x => x.ApprovedById,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PayoutRequests",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    InstructorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Method = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    AccountDetails = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    Status = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    RequestedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ProcessedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    AdminNotes = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PayoutRequests", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PayoutRequests_Instructors_InstructorId",
+                        column: x => x.InstructorId,
+                        principalTable: "Instructors",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Students",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    InstructorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    EngagementRate = table.Column<decimal>(type: "decimal(5,2)", nullable: false, defaultValue: 0m),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Students", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Students_Instructors_InstructorId",
+                        column: x => x.InstructorId,
+                        principalTable: "Instructors",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Students_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SupportTicketReplies",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TicketId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    SenderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Body = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
+                    ParentReplyId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SupportTicketReplies", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SupportTicketReplies_SupportTicketReplies_ParentReplyId",
+                        column: x => x.ParentReplyId,
+                        principalTable: "SupportTicketReplies",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_SupportTicketReplies_SupportTickets_TicketId",
+                        column: x => x.TicketId,
+                        principalTable: "SupportTickets",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_SupportTicketReplies_Users_SenderId",
+                        column: x => x.SenderId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -577,9 +558,9 @@ namespace E_learning.Repository.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Title = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", maxLength: 2147483647, nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
                     DueDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    TotalMarks = table.Column<decimal>(type: "decimal(7,2)", precision: 7, scale: 2, nullable: false),
+                    TotalMarks = table.Column<decimal>(type: "decimal(6,2)", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
                     CourseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
@@ -596,41 +577,6 @@ namespace E_learning.Repository.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Certificates",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    StudentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CourseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CertificateCode = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    IssuedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    FileUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    StudentId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Certificates", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Certificates_Courses_CourseId",
-                        column: x => x.CourseId,
-                        principalTable: "Courses",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Certificates_Students_StudentId",
-                        column: x => x.StudentId,
-                        principalTable: "Students",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Certificates_Students_StudentId1",
-                        column: x => x.StudentId1,
-                        principalTable: "Students",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "CourseAnalyticsSnapshots",
                 columns: table => new
                 {
@@ -639,9 +585,9 @@ namespace E_learning.Repository.Migrations
                     SnapshotDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     TotalStudents = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     ActiveStudents = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
-                    AverageGrade = table.Column<decimal>(type: "DECIMAL(5,2)", nullable: true),
-                    CompletionRate = table.Column<decimal>(type: "DECIMAL(5,2)", nullable: true),
-                    AvgWeeklyHours = table.Column<decimal>(type: "DECIMAL(5,2)", nullable: true),
+                    AverageGrade = table.Column<decimal>(type: "decimal(5,2)", nullable: true),
+                    CompletionRate = table.Column<decimal>(type: "decimal(5,2)", nullable: true),
+                    AvgWeeklyHours = table.Column<decimal>(type: "decimal(5,2)", nullable: true),
                     NewEnrollments = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()")
                 },
@@ -657,61 +603,25 @@ namespace E_learning.Repository.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "CourseReviews",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CourseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    StudentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Rating = table.Column<int>(type: "int", nullable: false),
-                    Comment = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    InstructorReply = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
-                    InstructorRepliedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    StudentId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CourseReviews", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_CourseReviews_Courses_CourseId",
-                        column: x => x.CourseId,
-                        principalTable: "Courses",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_CourseReviews_Students_StudentId",
-                        column: x => x.StudentId,
-                        principalTable: "Students",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_CourseReviews_Students_StudentId1",
-                        column: x => x.StudentId1,
-                        principalTable: "Students",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Exams",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CourseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    InstructorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Title = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    Instructions = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Rules = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    TechnicalRequirements = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    EducationLevel = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    Instructions = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
+                    Rules = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
+                    TechnicalRequirements = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
+                    EducationLevel = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     ScheduledAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EndDateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     DurationSeconds = table.Column<int>(type: "int", nullable: false),
-                    TotalMarks = table.Column<decimal>(type: "decimal(7,2)", nullable: false),
-                    PassingScore = table.Column<decimal>(type: "decimal(5,2)", nullable: false, defaultValue: 60m),
+                    TotalMarks = table.Column<decimal>(type: "decimal(6,2)", nullable: false),
+                    PassingScore = table.Column<decimal>(type: "decimal(6,2)", nullable: false, defaultValue: 60m),
                     MaxAttempts = table.Column<int>(type: "int", nullable: false, defaultValue: 1),
                     AIShuffleEnabled = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
-                    SourceFileUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    SourceFileUrl = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true)
                 },
                 constraints: table =>
@@ -723,6 +633,43 @@ namespace E_learning.Repository.Migrations
                         principalTable: "Courses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Exams_Instructors_InstructorId",
+                        column: x => x.InstructorId,
+                        principalTable: "Instructors",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "InstructorEarnings",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    InstructorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CourseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    GrossAmount = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
+                    PlatformFee = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
+                    NetAmount = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    AvailableAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_InstructorEarnings", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_InstructorEarnings_Courses_CourseId",
+                        column: x => x.CourseId,
+                        principalTable: "Courses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_InstructorEarnings_Instructors_InstructorId",
+                        column: x => x.InstructorId,
+                        principalTable: "Instructors",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -731,17 +678,16 @@ namespace E_learning.Repository.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     InstructorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    InstructorId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CourseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Title = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
                     ScheduledAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DurationMinutes = table.Column<int>(type: "int", nullable: false),
+                    DurationMinutes = table.Column<int>(type: "int", nullable: false, defaultValue: 60),
                     MeetingLink = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
                     RecordingUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    IsRecorded = table.Column<bool>(type: "bit", nullable: false),
-                    IsVisibleToStudents = table.Column<bool>(type: "bit", nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsRecorded = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    IsVisibleToStudents = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    Status = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -755,62 +701,11 @@ namespace E_learning.Repository.Migrations
                         column: x => x.CourseId,
                         principalTable: "Courses",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_LiveSessions_Instructors_InstructorId",
                         column: x => x.InstructorId,
                         principalTable: "Instructors",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_LiveSessions_Instructors_InstructorId1",
-                        column: x => x.InstructorId1,
-                        principalTable: "Instructors",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "PaymentTransactions",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    StudentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CourseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    PaymentMethodId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Currency = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    GatewayReference = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
-                    FailureReason = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CompletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    CoursesId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PaymentTransactions", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_PaymentTransactions_Courses_CourseId",
-                        column: x => x.CourseId,
-                        principalTable: "Courses",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_PaymentTransactions_Courses_CoursesId",
-                        column: x => x.CoursesId,
-                        principalTable: "Courses",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_PaymentTransactions_PaymentMethods_PaymentMethodId",
-                        column: x => x.PaymentMethodId,
-                        principalTable: "PaymentMethods",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_PaymentTransactions_Students_StudentId",
-                        column: x => x.StudentId,
-                        principalTable: "Students",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -820,30 +715,36 @@ namespace E_learning.Repository.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    InstructorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CourseId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     Title = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    Type = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    Priority = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false, defaultValue: "Medium"),
+                    Type = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Priority = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false, defaultValue: "Medium"),
                     StartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EndTime = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()")
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    InstructorId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ScheduleEvents", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ScheduleEvents_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_ScheduleEvents_Courses_CourseId",
                         column: x => x.CourseId,
                         principalTable: "Courses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.SetNull);
+                    table.ForeignKey(
+                        name: "FK_ScheduleEvents_Instructors_InstructorId",
+                        column: x => x.InstructorId,
+                        principalTable: "Instructors",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ScheduleEvents_Instructors_InstructorId1",
+                        column: x => x.InstructorId1,
+                        principalTable: "Instructors",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -868,19 +769,104 @@ namespace E_learning.Repository.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "PayoutApprovals",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    PayoutRequestId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    AdminId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Decision = table.Column<int>(type: "int", nullable: false),
+                    Notes = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    ProcessedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PayoutApprovals", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PayoutApprovals_Admins_AdminId",
+                        column: x => x.AdminId,
+                        principalTable: "Admins",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_PayoutApprovals_PayoutRequests_PayoutRequestId",
+                        column: x => x.PayoutRequestId,
+                        principalTable: "PayoutRequests",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Certificates",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    StudentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CourseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CertificateCode = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    IssuedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    FileUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Certificates", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Certificates_Courses_CourseId",
+                        column: x => x.CourseId,
+                        principalTable: "Courses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Certificates_Students_StudentId",
+                        column: x => x.StudentId,
+                        principalTable: "Students",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CourseReviews",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CourseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    StudentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Rating = table.Column<int>(type: "int", nullable: false),
+                    Comment = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    InstructorReply = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    InstructorRepliedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CourseReviews", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CourseReviews_Courses_CourseId",
+                        column: x => x.CourseId,
+                        principalTable: "Courses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CourseReviews_Students_StudentId",
+                        column: x => x.StudentId,
+                        principalTable: "Students",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AssignmentSubmissions",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     SubmittedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    FileUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    Notes = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
-                    Score = table.Column<decimal>(type: "decimal(7,2)", precision: 7, scale: 2, nullable: true),
-                    TeacherComment = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
-                    Status = table.Column<int>(type: "int", maxLength: 20, nullable: false, defaultValue: 0),
+                    FileUrl = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    Notes = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
+                    Score = table.Column<decimal>(type: "decimal(6,2)", nullable: true),
+                    TeacherComment = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
+                    Status = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     AssignmentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    StudentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    StudentId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    StudentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -897,58 +883,6 @@ namespace E_learning.Repository.Migrations
                         principalTable: "Students",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_AssignmentSubmissions_Students_StudentId1",
-                        column: x => x.StudentId1,
-                        principalTable: "Students",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ExamAttempts",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    StudentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ExamId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ReviewedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    StartedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    SubmittedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ReviewedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Score = table.Column<decimal>(type: "decimal(5,2)", nullable: true),
-                    IsPublished = table.Column<bool>(type: "bit", nullable: false),
-                    IsPassed = table.Column<bool>(type: "bit", nullable: true),
-                    TeacherComment = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    ExamsId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ExamAttempts", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ExamAttempts_AspNetUsers_ReviewedBy",
-                        column: x => x.ReviewedBy,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_ExamAttempts_Exams_ExamId",
-                        column: x => x.ExamId,
-                        principalTable: "Exams",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ExamAttempts_Exams_ExamsId",
-                        column: x => x.ExamsId,
-                        principalTable: "Exams",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_ExamAttempts_Students_StudentId",
-                        column: x => x.StudentId,
-                        principalTable: "Students",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -957,9 +891,9 @@ namespace E_learning.Repository.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ExamId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Text = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
-                    Type = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    Points = table.Column<decimal>(type: "decimal(5,2)", nullable: false),
+                    Text = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: false),
+                    Type = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Points = table.Column<decimal>(type: "decimal(6,2)", nullable: false),
                     IsAIGenerated = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     OrderIndex = table.Column<int>(type: "int", nullable: false)
                 },
@@ -975,13 +909,58 @@ namespace E_learning.Repository.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "PaymentTransactions",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    StudentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CourseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    PaymentMethodId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Currency = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false, defaultValue: "USD"),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    GatewayReference = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    FailureReason = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CompletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    InstructorEarningId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PaymentTransactions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PaymentTransactions_Courses_CourseId",
+                        column: x => x.CourseId,
+                        principalTable: "Courses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_PaymentTransactions_InstructorEarnings_InstructorEarningId",
+                        column: x => x.InstructorEarningId,
+                        principalTable: "InstructorEarnings",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PaymentTransactions_PaymentMethods_PaymentMethodId",
+                        column: x => x.PaymentMethodId,
+                        principalTable: "PaymentMethods",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_PaymentTransactions_Students_StudentId",
+                        column: x => x.StudentId,
+                        principalTable: "Students",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "LiveSessionAttendees",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    SessionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    LiveSessionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     StudentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    StudentId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     JoinedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     LeftAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     DurationSeconds = table.Column<int>(type: "int", nullable: true)
@@ -990,8 +969,8 @@ namespace E_learning.Repository.Migrations
                 {
                     table.PrimaryKey("PK_LiveSessionAttendees", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_LiveSessionAttendees_LiveSessions_SessionId",
-                        column: x => x.SessionId,
+                        name: "FK_LiveSessionAttendees_LiveSessions_LiveSessionId",
+                        column: x => x.LiveSessionId,
                         principalTable: "LiveSessions",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -999,104 +978,6 @@ namespace E_learning.Repository.Migrations
                         name: "FK_LiveSessionAttendees_Students_StudentId",
                         column: x => x.StudentId,
                         principalTable: "Students",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_LiveSessionAttendees_Students_StudentId1",
-                        column: x => x.StudentId1,
-                        principalTable: "Students",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Enrollments",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    StudentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CourseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    TransactionId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    ProgressPercentage = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    CompletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DeletedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ApplicationUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Enrollments", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Enrollments_AspNetUsers_ApplicationUserId",
-                        column: x => x.ApplicationUserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Enrollments_Courses_CourseId",
-                        column: x => x.CourseId,
-                        principalTable: "Courses",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Enrollments_PaymentTransactions_TransactionId",
-                        column: x => x.TransactionId,
-                        principalTable: "PaymentTransactions",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.SetNull);
-                    table.ForeignKey(
-                        name: "FK_Enrollments_Students_StudentId",
-                        column: x => x.StudentId,
-                        principalTable: "Students",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "InstructorEarnings",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    InstructorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    TransactionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CourseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    GrossAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    PlatformFee = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    NetAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    AvailableAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CoursesId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_InstructorEarnings", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_InstructorEarnings_Courses_CourseId",
-                        column: x => x.CourseId,
-                        principalTable: "Courses",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_InstructorEarnings_Courses_CoursesId",
-                        column: x => x.CoursesId,
-                        principalTable: "Courses",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_InstructorEarnings_Instructors_InstructorId",
-                        column: x => x.InstructorId,
-                        principalTable: "Instructors",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_InstructorEarnings_PaymentTransactions_TransactionId",
-                        column: x => x.TransactionId,
-                        principalTable: "PaymentTransactions",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -1109,11 +990,11 @@ namespace E_learning.Repository.Migrations
                     SectionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Title = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Type = table.Column<int>(type: "int", nullable: false),
-                    VideoUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    VideoUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     DurationSeconds = table.Column<int>(type: "int", nullable: false),
                     OrderIndex = table.Column<int>(type: "int", nullable: false),
-                    IsFreePreview = table.Column<bool>(type: "bit", nullable: false),
+                    IsFreePreview = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
@@ -1149,6 +1030,135 @@ namespace E_learning.Repository.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Enrollments",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    StudentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CourseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TransactionId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Status = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    ProgressPercentage = table.Column<decimal>(type: "decimal(5,2)", nullable: false, defaultValue: 0m),
+                    CompletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeletedBy = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Enrollments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Enrollments_Courses_CourseId",
+                        column: x => x.CourseId,
+                        principalTable: "Courses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Enrollments_PaymentTransactions_TransactionId",
+                        column: x => x.TransactionId,
+                        principalTable: "PaymentTransactions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
+                    table.ForeignKey(
+                        name: "FK_Enrollments_Students_StudentId",
+                        column: x => x.StudentId,
+                        principalTable: "Students",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Quizzes",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CourseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    LessonId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    InstructorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Topic = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    Type = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    TimeLimitSeconds = table.Column<int>(type: "int", nullable: true),
+                    TimePerQuestionSeconds = table.Column<int>(type: "int", nullable: false, defaultValue: 30),
+                    PassingScore = table.Column<decimal>(type: "decimal(6,2)", nullable: false, defaultValue: 60m),
+                    MaxAttempts = table.Column<int>(type: "int", nullable: false),
+                    ShuffleQuestions = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    ShowResultsImmediately = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Quizzes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Quizzes_Courses_CourseId",
+                        column: x => x.CourseId,
+                        principalTable: "Courses",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Quizzes_Instructors_InstructorId",
+                        column: x => x.InstructorId,
+                        principalTable: "Instructors",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Quizzes_Lessons_LessonId",
+                        column: x => x.LessonId,
+                        principalTable: "Lessons",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ExamAttempts",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    StudentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ExamId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ReviewedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    StartedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
+                    SubmittedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ReviewedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Score = table.Column<decimal>(type: "decimal(6,2)", nullable: true),
+                    IsPublished = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    IsPassed = table.Column<bool>(type: "bit", nullable: true),
+                    TeacherComment = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
+                    Status = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    SelectedOptionId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ExamAttempts", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ExamAttempts_ExamOptions_SelectedOptionId",
+                        column: x => x.SelectedOptionId,
+                        principalTable: "ExamOptions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ExamAttempts_Exams_ExamId",
+                        column: x => x.ExamId,
+                        principalTable: "Exams",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ExamAttempts_Students_StudentId",
+                        column: x => x.StudentId,
+                        principalTable: "Students",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ExamAttempts_Users_ReviewedBy",
+                        column: x => x.ReviewedBy,
+                        principalTable: "Users",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "LessonProgresses",
                 columns: table => new
                 {
@@ -1156,7 +1166,7 @@ namespace E_learning.Repository.Migrations
                     EnrollmentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     LessonId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     StudentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     WatchedSeconds = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     CompletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     LastAccessedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
@@ -1175,89 +1185,11 @@ namespace E_learning.Repository.Migrations
                         column: x => x.LessonId,
                         principalTable: "Lessons",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_LessonProgresses_Students_StudentId",
                         column: x => x.StudentId,
                         principalTable: "Students",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Quizzes",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CourseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    LessonId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    Title = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    Topic = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
-                    Type = table.Column<int>(type: "int", maxLength: 20, nullable: false, defaultValue: 0),
-                    TimeLimitSeconds = table.Column<int>(type: "int", nullable: true),
-                    TimePerQuestionSeconds = table.Column<int>(type: "int", nullable: false, defaultValue: 30),
-                    PassingScore = table.Column<decimal>(type: "decimal(5,2)", nullable: false, defaultValue: 60m),
-                    MaxAttempts = table.Column<int>(type: "int", nullable: false, defaultValue: 3),
-                    ShuffleQuestions = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
-                    ShowResultsImmediately = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Quizzes", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Quizzes_Courses_CourseId",
-                        column: x => x.CourseId,
-                        principalTable: "Courses",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Quizzes_Lessons_LessonId",
-                        column: x => x.LessonId,
-                        principalTable: "Lessons",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.SetNull);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ExamAttemptAnswers",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    AttemptId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ExamAttemptsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    QuestionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    SelectedOption = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    TextAnswer = table.Column<string>(type: "nvarchar(max)", maxLength: 2147483647, nullable: true),
-                    Score = table.Column<decimal>(type: "decimal(5,2)", nullable: true),
-                    IsCorrect = table.Column<bool>(type: "bit", nullable: true),
-                    ExamAttemptId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ExamAttemptAnswers", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ExamAttemptAnswers_ExamAttempts_ExamAttemptId",
-                        column: x => x.ExamAttemptId,
-                        principalTable: "ExamAttempts",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ExamAttemptAnswers_ExamAttempts_ExamAttemptsId",
-                        column: x => x.ExamAttemptsId,
-                        principalTable: "ExamAttempts",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ExamAttemptAnswers_ExamOptions_SelectedOption",
-                        column: x => x.SelectedOption,
-                        principalTable: "ExamOptions",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.SetNull);
-                    table.ForeignKey(
-                        name: "FK_ExamAttemptAnswers_ExamQuestions_QuestionId",
-                        column: x => x.QuestionId,
-                        principalTable: "ExamQuestions",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -1269,12 +1201,11 @@ namespace E_learning.Repository.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     StudentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     QuizId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    StartedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    StartedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
                     SubmittedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Score = table.Column<decimal>(type: "decimal(5,2)", nullable: true),
+                    Score = table.Column<decimal>(type: "decimal(6,2)", nullable: true),
                     IsPassed = table.Column<bool>(type: "bit", nullable: true),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    QuizzesId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    Status = table.Column<int>(type: "int", nullable: false, defaultValue: 0)
                 },
                 constraints: table =>
                 {
@@ -1285,11 +1216,6 @@ namespace E_learning.Repository.Migrations
                         principalTable: "Quizzes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_QuizAttempts_Quizzes_QuizzesId",
-                        column: x => x.QuizzesId,
-                        principalTable: "Quizzes",
-                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_QuizAttempts_Students_StudentId",
                         column: x => x.StudentId,
@@ -1304,9 +1230,9 @@ namespace E_learning.Repository.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     QuizId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Text = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
-                    Type = table.Column<int>(type: "int", maxLength: 20, nullable: false),
-                    Points = table.Column<decimal>(type: "decimal(5,2)", nullable: false, defaultValue: 1m),
+                    Text = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: false),
+                    Type = table.Column<int>(type: "int", nullable: false),
+                    Points = table.Column<decimal>(type: "decimal(6,2)", nullable: false, defaultValue: 1m),
                     IsAIGenerated = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     OrderIndex = table.Column<int>(type: "int", nullable: false)
                 },
@@ -1319,6 +1245,41 @@ namespace E_learning.Repository.Migrations
                         principalTable: "Quizzes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ExamAttemptAnswers",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    AttemptId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    QuestionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    SelectedOptionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TextAnswer = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: true),
+                    Score = table.Column<decimal>(type: "decimal(6,2)", nullable: true),
+                    IsCorrect = table.Column<bool>(type: "bit", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ExamAttemptAnswers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ExamAttemptAnswers_ExamAttempts_AttemptId",
+                        column: x => x.AttemptId,
+                        principalTable: "ExamAttempts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ExamAttemptAnswers_ExamOptions_SelectedOptionId",
+                        column: x => x.SelectedOptionId,
+                        principalTable: "ExamOptions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ExamAttemptAnswers_ExamQuestions_QuestionId",
+                        column: x => x.QuestionId,
+                        principalTable: "ExamQuestions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -1348,46 +1309,32 @@ namespace E_learning.Repository.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     AttemptId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    QuizAttemptsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     QuestionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    SelectedOption = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    TextAnswer = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
-                    IsCorrect = table.Column<bool>(type: "bit", nullable: true),
-                    QuizAttemptId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    QuizQuestionsId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    SelectedOptionId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    TextAnswer = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: true),
+                    IsCorrect = table.Column<bool>(type: "bit", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_QuizAttemptAnswers", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_QuizAttemptAnswers_QuizAttempts_QuizAttemptId",
-                        column: x => x.QuizAttemptId,
+                        name: "FK_QuizAttemptAnswers_QuizAttempts_AttemptId",
+                        column: x => x.AttemptId,
                         principalTable: "QuizAttempts",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_QuizAttemptAnswers_QuizAttempts_QuizAttemptsId",
-                        column: x => x.QuizAttemptsId,
-                        principalTable: "QuizAttempts",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_QuizAttemptAnswers_QuizOptions_SelectedOption",
-                        column: x => x.SelectedOption,
+                        name: "FK_QuizAttemptAnswers_QuizOptions_SelectedOptionId",
+                        column: x => x.SelectedOptionId,
                         principalTable: "QuizOptions",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.SetNull);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_QuizAttemptAnswers_QuizQuestions_QuestionId",
                         column: x => x.QuestionId,
                         principalTable: "QuizQuestions",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_QuizAttemptAnswers_QuizQuestions_QuizQuestionsId",
-                        column: x => x.QuizQuestionsId,
-                        principalTable: "QuizQuestions",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -1424,37 +1371,25 @@ namespace E_learning.Repository.Migrations
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
-                name: "EmailIndex",
-                table: "AspNetUsers",
-                column: "NormalizedEmail");
-
-            migrationBuilder.CreateIndex(
-                name: "UserNameIndex",
-                table: "AspNetUsers",
-                column: "NormalizedUserName",
-                unique: true,
-                filter: "[NormalizedUserName] IS NOT NULL");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Assignments_CourseId",
                 table: "Assignments",
                 column: "CourseId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AssignmentSubmissions_StudentId",
+                name: "IX_AssignmentSubmissions_AssignmentId",
                 table: "AssignmentSubmissions",
-                column: "StudentId");
+                column: "AssignmentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AssignmentSubmissions_StudentId1",
-                table: "AssignmentSubmissions",
-                column: "StudentId1");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Unique_Student_Assignment",
+                name: "IX_AssignmentSubmissions_AssignmentId_StudentId",
                 table: "AssignmentSubmissions",
                 columns: new[] { "AssignmentId", "StudentId" },
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AssignmentSubmissions_StudentId",
+                table: "AssignmentSubmissions",
+                column: "StudentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Certificates_CertificateCode",
@@ -1473,12 +1408,12 @@ namespace E_learning.Repository.Migrations
                 column: "StudentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Certificates_StudentId1",
-                table: "Certificates",
-                column: "StudentId1");
+                name: "IX_CourseAnalyticsSnapshots_CourseId",
+                table: "CourseAnalyticsSnapshots",
+                column: "CourseId");
 
             migrationBuilder.CreateIndex(
-                name: "UX_CourseAnalyticsSnapshots_CourseId_SnapshotDate",
+                name: "IX_CourseAnalyticsSnapshots_CourseId_SnapshotDate",
                 table: "CourseAnalyticsSnapshots",
                 columns: new[] { "CourseId", "SnapshotDate" },
                 unique: true);
@@ -1500,16 +1435,6 @@ namespace E_learning.Repository.Migrations
                 column: "StudentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CourseReviews_StudentId1",
-                table: "CourseReviews",
-                column: "StudentId1");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Courses_ApplicationUserId",
-                table: "Courses",
-                column: "ApplicationUserId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Courses_ApprovedById",
                 table: "Courses",
                 column: "ApprovedById");
@@ -1520,14 +1445,19 @@ namespace E_learning.Repository.Migrations
                 column: "InstructorId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Courses_IsActive",
+                table: "Courses",
+                column: "IsActive");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Courses_LevelId",
                 table: "Courses",
                 column: "LevelId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Enrollments_ApplicationUserId",
-                table: "Enrollments",
-                column: "ApplicationUserId");
+                name: "IX_Courses_Status",
+                table: "Courses",
+                column: "Status");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Enrollments_CourseId",
@@ -1540,19 +1470,26 @@ namespace E_learning.Repository.Migrations
                 column: "StudentId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Enrollments_StudentId_CourseId",
+                table: "Enrollments",
+                columns: new[] { "StudentId", "CourseId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Enrollments_TransactionId",
                 table: "Enrollments",
                 column: "TransactionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ExamAttemptAnswers_ExamAttemptId",
+                name: "IX_ExamAttemptAnswers_AttemptId",
                 table: "ExamAttemptAnswers",
-                column: "ExamAttemptId");
+                column: "AttemptId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ExamAttemptAnswers_ExamAttemptsId",
+                name: "IX_ExamAttemptAnswers_AttemptId_QuestionId",
                 table: "ExamAttemptAnswers",
-                column: "ExamAttemptsId");
+                columns: new[] { "AttemptId", "QuestionId" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_ExamAttemptAnswers_QuestionId",
@@ -1560,9 +1497,9 @@ namespace E_learning.Repository.Migrations
                 column: "QuestionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ExamAttemptAnswers_SelectedOption",
+                name: "IX_ExamAttemptAnswers_SelectedOptionId",
                 table: "ExamAttemptAnswers",
-                column: "SelectedOption");
+                column: "SelectedOptionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ExamAttempts_ExamId",
@@ -1570,14 +1507,14 @@ namespace E_learning.Repository.Migrations
                 column: "ExamId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ExamAttempts_ExamsId",
-                table: "ExamAttempts",
-                column: "ExamsId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_ExamAttempts_ReviewedBy",
                 table: "ExamAttempts",
                 column: "ReviewedBy");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ExamAttempts_SelectedOptionId",
+                table: "ExamAttempts",
+                column: "SelectedOptionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ExamAttempts_StudentId",
@@ -1585,9 +1522,20 @@ namespace E_learning.Repository.Migrations
                 column: "StudentId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ExamAttempts_StudentId_ExamId",
+                table: "ExamAttempts",
+                columns: new[] { "StudentId", "ExamId" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ExamOptions_QuestionId",
                 table: "ExamOptions",
                 column: "QuestionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ExamOptions_QuestionId_OrderIndex",
+                table: "ExamOptions",
+                columns: new[] { "QuestionId", "OrderIndex" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_ExamQuestions_ExamId",
@@ -1595,9 +1543,25 @@ namespace E_learning.Repository.Migrations
                 column: "ExamId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ExamQuestions_ExamId_OrderIndex",
+                table: "ExamQuestions",
+                columns: new[] { "ExamId", "OrderIndex" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Exams_CourseId",
                 table: "Exams",
                 column: "CourseId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Exams_InstructorId",
+                table: "Exams",
+                column: "InstructorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Exams_ScheduledAt",
+                table: "Exams",
+                column: "ScheduledAt");
 
             migrationBuilder.CreateIndex(
                 name: "IX_InstructorEarnings_CourseId",
@@ -1605,19 +1569,14 @@ namespace E_learning.Repository.Migrations
                 column: "CourseId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_InstructorEarnings_CoursesId",
-                table: "InstructorEarnings",
-                column: "CoursesId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_InstructorEarnings_InstructorId",
                 table: "InstructorEarnings",
                 column: "InstructorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_InstructorEarnings_TransactionId",
+                name: "IX_InstructorEarnings_Status",
                 table: "InstructorEarnings",
-                column: "TransactionId");
+                column: "Status");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Instructors_UserId",
@@ -1631,15 +1590,20 @@ namespace E_learning.Repository.Migrations
                 column: "EnrollmentId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_LessonProgresses_EnrollmentId_LessonId",
+                table: "LessonProgresses",
+                columns: new[] { "EnrollmentId", "LessonId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_LessonProgresses_LessonId",
                 table: "LessonProgresses",
                 column: "LessonId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LessonProgresses_StudentId_LessonId",
+                name: "IX_LessonProgresses_StudentId",
                 table: "LessonProgresses",
-                columns: new[] { "StudentId", "LessonId" },
-                unique: true);
+                column: "StudentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Lessons_SectionId",
@@ -1647,25 +1611,31 @@ namespace E_learning.Repository.Migrations
                 column: "SectionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Levels_StageId",
-                table: "Levels",
-                column: "StageId");
+                name: "IX_Lessons_SectionId_OrderIndex",
+                table: "Lessons",
+                columns: new[] { "SectionId", "OrderIndex" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_LiveSessionAttendees_SessionId_StudentId",
+                name: "IX_Levels_StageId_OrderIndex",
+                table: "Levels",
+                columns: new[] { "StageId", "OrderIndex" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LiveSessionAttendees_LiveSessionId",
                 table: "LiveSessionAttendees",
-                columns: new[] { "SessionId", "StudentId" },
+                column: "LiveSessionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LiveSessionAttendees_LiveSessionId_StudentId",
+                table: "LiveSessionAttendees",
+                columns: new[] { "LiveSessionId", "StudentId" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_LiveSessionAttendees_StudentId",
                 table: "LiveSessionAttendees",
                 column: "StudentId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_LiveSessionAttendees_StudentId1",
-                table: "LiveSessionAttendees",
-                column: "StudentId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_LiveSessions_CourseId",
@@ -1676,11 +1646,6 @@ namespace E_learning.Repository.Migrations
                 name: "IX_LiveSessions_InstructorId",
                 table: "LiveSessions",
                 column: "InstructorId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_LiveSessions_InstructorId1",
-                table: "LiveSessions",
-                column: "InstructorId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_LiveSessions_ScheduledAt",
@@ -1714,6 +1679,11 @@ namespace E_learning.Repository.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_PaymentMethods_UserId",
+                table: "PaymentMethods",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_PaymentMethods_UserId_IsDefault",
                 table: "PaymentMethods",
                 columns: new[] { "UserId", "IsDefault" });
@@ -1724,9 +1694,9 @@ namespace E_learning.Repository.Migrations
                 column: "CourseId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PaymentTransactions_CoursesId",
+                name: "IX_PaymentTransactions_InstructorEarningId",
                 table: "PaymentTransactions",
-                column: "CoursesId");
+                column: "InstructorEarningId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PaymentTransactions_PaymentMethodId",
@@ -1754,14 +1724,15 @@ namespace E_learning.Repository.Migrations
                 column: "PayoutRequestId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_PayoutApprovals_PayoutRequestId_AdminId",
+                table: "PayoutApprovals",
+                columns: new[] { "PayoutRequestId", "AdminId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_PayoutRequests_InstructorId",
                 table: "PayoutRequests",
                 column: "InstructorId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PayoutRequests_RequestedAt",
-                table: "PayoutRequests",
-                column: "RequestedAt");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PayoutRequests_Status",
@@ -1769,29 +1740,25 @@ namespace E_learning.Repository.Migrations
                 column: "Status");
 
             migrationBuilder.CreateIndex(
+                name: "IX_QuizAttemptAnswers_AttemptId",
+                table: "QuizAttemptAnswers",
+                column: "AttemptId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_QuizAttemptAnswers_AttemptId_QuestionId",
+                table: "QuizAttemptAnswers",
+                columns: new[] { "AttemptId", "QuestionId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_QuizAttemptAnswers_QuestionId",
                 table: "QuizAttemptAnswers",
                 column: "QuestionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_QuizAttemptAnswers_QuizAttemptId",
+                name: "IX_QuizAttemptAnswers_SelectedOptionId",
                 table: "QuizAttemptAnswers",
-                column: "QuizAttemptId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_QuizAttemptAnswers_QuizAttemptsId",
-                table: "QuizAttemptAnswers",
-                column: "QuizAttemptsId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_QuizAttemptAnswers_QuizQuestionsId",
-                table: "QuizAttemptAnswers",
-                column: "QuizQuestionsId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_QuizAttemptAnswers_SelectedOption",
-                table: "QuizAttemptAnswers",
-                column: "SelectedOption");
+                column: "SelectedOptionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_QuizAttempts_QuizId",
@@ -1799,14 +1766,14 @@ namespace E_learning.Repository.Migrations
                 column: "QuizId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_QuizAttempts_QuizzesId",
-                table: "QuizAttempts",
-                column: "QuizzesId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_QuizAttempts_StudentId",
                 table: "QuizAttempts",
                 column: "StudentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_QuizAttempts_StudentId_QuizId",
+                table: "QuizAttempts",
+                columns: new[] { "StudentId", "QuizId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_QuizOptions_QuestionId",
@@ -1814,14 +1781,31 @@ namespace E_learning.Repository.Migrations
                 column: "QuestionId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_QuizOptions_QuestionId_OrderIndex",
+                table: "QuizOptions",
+                columns: new[] { "QuestionId", "OrderIndex" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_QuizQuestions_QuizId",
                 table: "QuizQuestions",
                 column: "QuizId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_QuizQuestions_QuizId_OrderIndex",
+                table: "QuizQuestions",
+                columns: new[] { "QuizId", "OrderIndex" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Quizzes_CourseId",
                 table: "Quizzes",
                 column: "CourseId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Quizzes_InstructorId",
+                table: "Quizzes",
+                column: "InstructorId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Quizzes_LessonId",
@@ -1834,14 +1818,40 @@ namespace E_learning.Repository.Migrations
                 column: "CourseId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ScheduleEvents_UserId",
+                name: "IX_ScheduleEvents_InstructorId",
                 table: "ScheduleEvents",
-                column: "UserId");
+                column: "InstructorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ScheduleEvents_InstructorId1",
+                table: "ScheduleEvents",
+                column: "InstructorId1");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ScheduleEvents_StartTime",
+                table: "ScheduleEvents",
+                column: "StartTime");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Sections_CourseId",
                 table: "Sections",
                 column: "CourseId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Sections_CourseId_OrderIndex",
+                table: "Sections",
+                columns: new[] { "CourseId", "OrderIndex" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Stages_OrderIndex",
+                table: "Stages",
+                column: "OrderIndex",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Students_InstructorId",
+                table: "Students",
+                column: "InstructorId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Students_UserId",
@@ -1853,6 +1863,11 @@ namespace E_learning.Repository.Migrations
                 name: "IX_StudyReminders_UserId",
                 table: "StudyReminders",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SupportTicketReplies_ParentReplyId",
+                table: "SupportTicketReplies",
+                column: "ParentReplyId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SupportTicketReplies_SenderId",
@@ -1870,9 +1885,36 @@ namespace E_learning.Repository.Migrations
                 column: "AssignedTo");
 
             migrationBuilder.CreateIndex(
+                name: "IX_SupportTickets_Status",
+                table: "SupportTickets",
+                column: "Status");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_SupportTickets_UserId",
                 table: "SupportTickets",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "EmailIndex",
+                table: "Users",
+                column: "NormalizedEmail");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_IsActive",
+                table: "Users",
+                column: "IsActive");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_MemberSince",
+                table: "Users",
+                column: "MemberSince");
+
+            migrationBuilder.CreateIndex(
+                name: "UserNameIndex",
+                table: "Users",
+                column: "NormalizedUserName",
+                unique: true,
+                filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserSessions_RefreshToken",
@@ -1920,9 +1962,6 @@ namespace E_learning.Repository.Migrations
                 name: "ExamAttemptAnswers");
 
             migrationBuilder.DropTable(
-                name: "InstructorEarnings");
-
-            migrationBuilder.DropTable(
                 name: "LessonProgresses");
 
             migrationBuilder.DropTable(
@@ -1965,9 +2004,6 @@ namespace E_learning.Repository.Migrations
                 name: "ExamAttempts");
 
             migrationBuilder.DropTable(
-                name: "ExamOptions");
-
-            migrationBuilder.DropTable(
                 name: "Enrollments");
 
             migrationBuilder.DropTable(
@@ -1989,7 +2025,7 @@ namespace E_learning.Repository.Migrations
                 name: "SupportTickets");
 
             migrationBuilder.DropTable(
-                name: "ExamQuestions");
+                name: "ExamOptions");
 
             migrationBuilder.DropTable(
                 name: "PaymentTransactions");
@@ -1998,7 +2034,10 @@ namespace E_learning.Repository.Migrations
                 name: "QuizQuestions");
 
             migrationBuilder.DropTable(
-                name: "Exams");
+                name: "ExamQuestions");
+
+            migrationBuilder.DropTable(
+                name: "InstructorEarnings");
 
             migrationBuilder.DropTable(
                 name: "PaymentMethods");
@@ -2008,6 +2047,9 @@ namespace E_learning.Repository.Migrations
 
             migrationBuilder.DropTable(
                 name: "Quizzes");
+
+            migrationBuilder.DropTable(
+                name: "Exams");
 
             migrationBuilder.DropTable(
                 name: "Lessons");
@@ -2025,7 +2067,7 @@ namespace E_learning.Repository.Migrations
                 name: "Levels");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "Users");
 
             migrationBuilder.DropTable(
                 name: "Stages");

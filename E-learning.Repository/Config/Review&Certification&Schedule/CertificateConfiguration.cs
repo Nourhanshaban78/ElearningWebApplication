@@ -8,29 +8,36 @@ namespace E_learning.Repository.Config
     {
         public void Configure(EntityTypeBuilder<Certificate> builder)
         {
-            builder.HasKey(x => x.Id);
+            builder.ToTable("Certificates");
 
-            builder.Property(x => x.CertificateCode)
-                .IsRequired()
-                .HasMaxLength(100);
+            // Primary Key
+            builder.HasKey(c => c.Id);
 
-            builder.Property(x => x.FileUrl)
-                .HasMaxLength(500);
+            // Properties
+            builder.Property(c => c.CertificateCode)
+                   .IsRequired()
+                   .HasMaxLength(100);
 
-            // Student relation
-            builder.HasOne(x => x.Student)
-                .WithMany(x => x.Certificates)
-                .HasForeignKey(x => x.StudentId)
-                .OnDelete(DeleteBehavior.Restrict);
+            builder.Property(c => c.FileUrl)
+                   .HasMaxLength(500);
 
-            // Course relation
-            builder.HasOne(x => x.Course)
-                .WithMany(x => x.Certificates)
-                .HasForeignKey(x => x.CourseId)
-                .OnDelete(DeleteBehavior.Restrict);
+            builder.Property(c => c.IssuedAt)
+                   .IsRequired();
 
-            builder.HasIndex(x => x.CertificateCode)
-                .IsUnique();
+            // Relationships
+            builder.HasOne(c => c.Student)
+                   .WithMany() // change if Student has ICollection<Certificate>
+                   .HasForeignKey(c => c.StudentId)
+                   .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(c => c.Course)
+                   .WithMany() // change if Course has ICollection<Certificate>
+                   .HasForeignKey(c => c.CourseId)
+                   .OnDelete(DeleteBehavior.Restrict);
+
+            // Index (recommended)
+            builder.HasIndex(c => c.CertificateCode)
+                   .IsUnique();
         }
     }
 }

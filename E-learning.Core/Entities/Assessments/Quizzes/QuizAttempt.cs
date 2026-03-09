@@ -9,22 +9,20 @@ using System.Threading.Tasks;
 
 namespace E_learning.Core.Entities.Assessments.Quizzes
 {
-    public class QuizAttempts
+    public class QuizAttempt
     {
         public Guid Id { get; set; }
 
         public Guid StudentId { get; set; }
-        public Student  Student { get; set; }
+        public Student Student { get; set; } = null!;
 
         public Guid QuizId { get; set; }
-        public Quizzes Quizzes { get; set; }
-
         public DateTime StartedAt { get; set; } = DateTime.UtcNow;
         public DateTime? SubmittedAt { get; set; }
         public decimal? Score { get; set; }
         public bool? IsPassed { get; set; }
         public QuizAttemptsStatus Status { get; set; } = QuizAttemptsStatus.InProgress;
-
-        public ICollection<QuizAttemptAnswers> QuizAttemptAnswers { get; set; }
+        public Quiz Quiz { get; set; } = null!;
+        public ICollection<QuizAttemptAnswer> QuizAttemptAnswers { get; set; } = new List<QuizAttemptAnswer>();
     }
 }

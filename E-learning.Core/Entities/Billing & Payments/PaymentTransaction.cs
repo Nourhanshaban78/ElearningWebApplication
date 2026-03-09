@@ -10,27 +10,31 @@ using System.Threading.Tasks;
 
 namespace E_learning.Core.Entities.Billing___Payments
 {
-    public class PaymentTransactions
+    public class PaymentTransaction
     {
         public Guid Id { get; set; }
 
         public Guid StudentId { get; set; }
-        public Student? Student { get; set; }
+        public Student Student { get; set; } = null!;
 
         public Guid CourseId { get; set; }
-        public Courses? Courses { get; set; }
+        public Course Course { get; set; } = null!;
 
         public Guid PaymentMethodId { get; set; }
-        public PaymentMethods? PaymentMethods { get; set; }
+        public PaymentMethod PaymentMethod { get; set; } = null!;
 
         public decimal Amount { get; set; }
         public string Currency { get; set; } = "USD";
+
         public PaymentTransactionsStatus Status { get; set; }
+
         public string? GatewayReference { get; set; }
         public string? FailureReason { get; set; }
+
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? CompletedAt { get; set; }
 
-        public ICollection<InstructorEarnings> InstructorEarnings { get; set; } = new List<InstructorEarnings>();
+        public Guid InstructorEarningId { get; set; }
+        public InstructorEarning InstructorEarning { get; set; } = null!;
     }
 }

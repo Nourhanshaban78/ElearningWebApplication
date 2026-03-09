@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace E_learning.Core.Entities.Billing___Payments
 {
-    public class PaymentMethods
+    public class PaymentMethod
     {
         public Guid Id { get; set; }
 
@@ -24,6 +24,6 @@ namespace E_learning.Core.Entities.Billing___Payments
         public bool IsDefault { get; set; } = false;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        public ICollection<PaymentTransactions> PaymentTransactions { get; set; } = new List<PaymentTransactions>();
+        public ICollection<PaymentTransaction> PaymentTransactions { get; set; } = new List<PaymentTransaction>();
     }
 }

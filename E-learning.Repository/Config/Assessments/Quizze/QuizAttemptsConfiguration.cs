@@ -10,38 +10,50 @@ using Microsoft.EntityFrameworkCore;
 
 namespace E_learning.Repository.Config.Assessments.Quizze
 {
-    public class QuizAttemptsConfiguration : IEntityTypeConfiguration<QuizAttempts>
+    public class QuizAttemptsConfiguration : IEntityTypeConfiguration<QuizAttempt>
     {
-        public void Configure(EntityTypeBuilder<QuizAttempts> builder)
+        public void Configure(EntityTypeBuilder<QuizAttempt> builder)
         {
             builder.ToTable("QuizAttempts");
 
-            builder.HasKey(x => x.Id);
+            // Primary Key
+            builder.HasKey(a => a.Id);
 
-            builder.Property(x => x.Score)
-                   .HasColumnType("decimal(5,2)");
+            // Properties
+            builder.Property(a => a.StartedAt)
+                   .HasDefaultValueSql("GETUTCDATE()");
 
-            builder.Property(x => x.Status)
-                   .IsRequired();
+            builder.Property(a => a.Score)
+                   .HasColumnType("decimal(6,2)");
 
-            builder.Property(x => x.StartedAt)
-                   .IsRequired();
+            builder.Property(a => a.Status)
+                   .HasDefaultValue(QuizAttemptsStatus.InProgress);
 
-            builder.HasOne(x => x.Student)
-                   .WithMany()
-                   .HasForeignKey(x => x.StudentId)
+            // Relationship: Attempt -> Student
+            builder.HasOne(a => a.Student)
+                   .WithMany(s => s.QuizAttempts)
+                   .HasForeignKey(a => a.StudentId)
+                   .OnDelete(DeleteBehavior.Restrict);
+
+            // Relationship: Attempt -> Quiz
+            builder.HasOne(a => a.Quiz)
+                   .WithMany(q => q.QuizAttempts)
+                   .HasForeignKey(a => a.QuizId)
                    .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasOne(x => x.Quizzes)
-                   .WithMany()
-                   .HasForeignKey(x => x.QuizId)
+            // Relationship: Attempt -> Answers
+            builder.HasMany(a => a.QuizAttemptAnswers)
+                   .WithOne(ans => ans.QuizAttempt)
+                   .HasForeignKey(ans => ans.AttemptId)
                    .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasMany(x => x.QuizAttemptAnswers)
-                   .WithOne()
-                   .HasForeignKey("QuizAttemptId")
-                   .OnDelete(DeleteBehavior.Cascade);
-        
-    }
+            // Indexes
+            builder.HasIndex(a => a.StudentId);
+            builder.HasIndex(a => a.QuizId);
+
+            // Prevent duplicate attempts tracking optimization
+            builder.HasIndex(a => new { a.StudentId, a.QuizId });
+
+        }
     }
 }

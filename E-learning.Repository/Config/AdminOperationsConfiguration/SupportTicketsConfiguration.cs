@@ -1,10 +1,11 @@
+using E_learning.Core.Entities.AdminOperations;
+using E_learning.Core.Enums;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using E_learning.Core.Entities.AdminOperations;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace E_learning.Repository.Config.AdminOperationsConfiguration
 {
@@ -14,47 +15,49 @@ namespace E_learning.Repository.Config.AdminOperationsConfiguration
         {
             builder.ToTable("SupportTickets");
 
+            // Primary Key
             builder.HasKey(t => t.Id);
 
-            builder.HasOne(t => t.User)
-                   .WithMany()  
-                   .HasForeignKey(t => t.UserId)
-                   .OnDelete(DeleteBehavior.Restrict);
-                       
+            // Properties
             builder.Property(t => t.Subject)
-                   .HasMaxLength(200)
-                   .IsRequired();
+                   .IsRequired()
+                   .HasMaxLength(200);
 
-            builder.Property(t => t.Body)                  
-                   .HasColumnType("NVARCHAR(MAX)")
-                   .IsRequired();
+            builder.Property(t => t.Body)
+                   .IsRequired()
+                   .HasMaxLength(4000);
 
             builder.Property(t => t.Type)
-                   .HasConversion<string>()
-                   .HasMaxLength(20)
                    .IsRequired();
 
             builder.Property(t => t.Status)
-                   .HasConversion<string>()
-                   .HasMaxLength(20)
-                   .HasDefaultValue(Core.Enums.TicketStatus.Open);
-
-            builder.HasOne(t => t.Assigned)
-                   .WithMany()
-                   .HasForeignKey(t => t.AssignedTo)
-                   .OnDelete(DeleteBehavior.SetNull); 
+                   .HasDefaultValue(TicketStatus.Open);
 
             builder.Property(t => t.CreatedAt)
                    .HasDefaultValueSql("GETUTCDATE()");
 
-            builder.Property(t => t.ResolvedAt)
-                   .IsRequired(false);
+            // Relationship: Ticket -> User (creator)
+            builder.HasOne(t => t.User)
+                   .WithMany()
+                   .HasForeignKey(t => t.UserId)
+                   .OnDelete(DeleteBehavior.Restrict);
 
-            // Replies (One-to-Many)
+            // Relationship: Ticket -> Assigned Admin/User
+            builder.HasOne(t => t.Assigned)
+                   .WithMany()
+                   .HasForeignKey(t => t.AssignedTo)
+                   .OnDelete(DeleteBehavior.SetNull);
+
+            // Relationship: Ticket -> Replies
             builder.HasMany(t => t.Replies)
-                   .WithOne(r => r.Ticket)  
+                   .WithOne(r => r.Ticket)
                    .HasForeignKey(r => r.TicketId)
                    .OnDelete(DeleteBehavior.Cascade);
+
+            // Indexes
+            builder.HasIndex(t => t.UserId);
+            builder.HasIndex(t => t.AssignedTo);
+            builder.HasIndex(t => t.Status);
         }
     }
 }

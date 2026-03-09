@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace E_learning.Repository.Config.NotificationsConfigurations
 {
-    public class NotificationsSettingsConfiguration : IEntityTypeConfiguration<NotificationSettings>
+    public class NotificationsSettingsConfiguration : IEntityTypeConfiguration<NotificationSetting>
     {
-        public void Configure(EntityTypeBuilder<NotificationSettings> builder)
+        public void Configure(EntityTypeBuilder<NotificationSetting> builder)
         {
             builder.ToTable("NotificationSettings");
 
@@ -41,7 +41,7 @@ namespace E_learning.Repository.Config.NotificationsConfigurations
 
             builder.HasOne(x => x.User)
                 .WithOne(u => u.NotificationSettings)
-                .HasForeignKey<NotificationSettings>(x => x.UserId)
+                .HasForeignKey<NotificationSetting>(x => x.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

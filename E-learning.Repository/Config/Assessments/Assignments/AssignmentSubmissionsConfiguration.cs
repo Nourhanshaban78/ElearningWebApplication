@@ -10,50 +10,53 @@ using Microsoft.EntityFrameworkCore;
 
 namespace E_learning.Repository.Config.Assessments.Assignments
 {
-    public class AssignmentSubmissionsConfiguration : IEntityTypeConfiguration<AssignmentSubmissions>
+    public class AssignmentSubmissionsConfiguration : IEntityTypeConfiguration<AssignmentSubmission>
     {
-        public void Configure(EntityTypeBuilder<AssignmentSubmissions> builder)
+        public void Configure(EntityTypeBuilder<AssignmentSubmission> builder)
         {
-           
+
             builder.ToTable("AssignmentSubmissions");
 
-            builder.HasKey(asub => asub.Id);
+            // Primary Key
+            builder.HasKey(s => s.Id);
 
-            
-            builder.Property(asub => asub.FileUrl)
-                .HasMaxLength(500);
+            // Properties
+            builder.Property(s => s.FileUrl)
+                   .HasMaxLength(1000);
 
-            builder.Property(asub => asub.Notes)
-                .HasMaxLength(1000);
+            builder.Property(s => s.Notes)
+                   .HasMaxLength(2000);
 
-            builder.Property(asub => asub.Score)
-                .HasPrecision(7, 2);
+            builder.Property(s => s.TeacherComment)
+                   .HasMaxLength(2000);
 
-            builder.Property(asub => asub.TeacherComment)
-                .HasMaxLength(1000);
+            builder.Property(s => s.Score)
+                   .HasColumnType("decimal(6,2)");
 
-            builder.Property(asub => asub.Status)
-                .IsRequired()
-                .HasMaxLength(20)
-                .HasDefaultValue(AssignmentStatus.Pending);
+            builder.Property(s => s.Status)
+                   .HasDefaultValue(AssignmentStatus.Pending);
 
-            
-            builder.HasOne(asub => asub.Assignment)
-                .WithMany(a => a.AssignmentSubmissions)
-                .HasForeignKey(asub => asub.AssignmentId)
-                .OnDelete(DeleteBehavior.Cascade);
+            // Relationship: Submission -> Assignment
+            builder.HasOne(s => s.Assignment)
+                   .WithMany(a => a.AssignmentSubmissions)
+                   .HasForeignKey(s => s.AssignmentId)
+                   .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasOne(asub => asub.Student)
-                .WithMany(u => u.AssignmentSubmissions)
-                .HasForeignKey(asub => asub.StudentId)
-                .OnDelete(DeleteBehavior.Cascade);
-          
-            builder.HasIndex(asub => new { asub.AssignmentId, asub.StudentId })
-                .IsUnique()
-                .HasDatabaseName("IX_Unique_Student_Assignment");
+            // Relationship: Submission -> Student
+            builder.HasOne(s => s.Student)
+                   .WithMany(st => st.AssignmentSubmissions)
+                   .HasForeignKey(s => s.StudentId)
+                   .OnDelete(DeleteBehavior.Restrict);
+
+            // Indexes
+            builder.HasIndex(s => s.AssignmentId);
+            builder.HasIndex(s => s.StudentId);
+
+            // Prevent student submitting same assignment multiple times
+            builder.HasIndex(s => new { s.AssignmentId, s.StudentId })
+                   .IsUnique();
 
 
-           
         }
     }
 }

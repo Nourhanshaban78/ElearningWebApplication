@@ -11,7 +11,7 @@ namespace E_learning.Core.Entities
         public Guid Id { get; set; }
 
         public Guid CourseId { get; set; }
-        public virtual Courses Course { get; set; } = new Courses();
+        public virtual Course Course { get; set; } = new Course();
 
         public DateTime SnapshotDate { get; set; }
         public int TotalStudents { get; set; } = 0;

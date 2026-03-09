@@ -22,17 +22,13 @@ namespace E_learning.Core.Entities.Identity
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
         // Notifications
-        public ICollection<Notifications> Notifications { get; set; } = new List<Notifications>();
-        public NotificationSettings? NotificationSettings { get; set; }
+        public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
+        public NotificationSetting? NotificationSettings { get; set; }
 
         // Relations
-        public ICollection<Courses> Courses { get; set; } = new List<Courses>();
-        public ICollection<Courses> ApprovedCourses { get; set; } = new List<Courses>();
-        public ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
-        public ICollection<PaymentMethods> PaymentMethods { get; set; } = new List<PaymentMethods>();
-        public ICollection<PayoutRequests> PayoutRequests { get; set; } = new List<PayoutRequests>();
+        public ICollection<PaymentMethod> PaymentMethods { get; set; } = new List<PaymentMethod>();
         public ICollection<UserSession> UserSessions { get; set; } = new List<UserSession>();
-        public ICollection<OtpCodes> OtpCodes { get; set; } = new List<OtpCodes>();
+        public ICollection<OtpCode> OtpCodes { get; set; } = new List<OtpCode>();
 
         // Profiles
         public Student? Student { get; set; }

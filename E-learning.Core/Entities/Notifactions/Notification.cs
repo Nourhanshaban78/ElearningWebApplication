@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace E_learning.Core.Entities.Notifactions
 {
-    public class Notifications
+    public class Notification
     {
         public Guid Id { get; set; }
         public Guid UserId { get; set; }

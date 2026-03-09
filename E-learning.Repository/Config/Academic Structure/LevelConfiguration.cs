@@ -14,27 +14,45 @@ namespace E_learning.Repository.Config.Academic_Structure
        
             public void Configure(EntityTypeBuilder<Level> builder)
             {
-                builder.HasKey(x => x.Id);
+            builder.ToTable("Levels");
 
-                builder.Property(x => x.Name)
-                    .IsRequired()
-                    .HasMaxLength(100);
+            // Primary Key
+            builder.HasKey(l => l.Id);
 
-                builder.Property(x => x.OrderIndex)
-                    .IsRequired();
+            // Properties
+            builder.Property(l => l.Name)
+                   .IsRequired()
+                   .HasMaxLength(100);
 
-                builder.Ignore(x => x.CourseCount);
+            builder.Property(l => l.OrderIndex)
+                   .IsRequired();
 
-                builder.HasOne(x => x.Stage)
-                    .WithMany(x => x.Levels)
-                    .HasForeignKey(x => x.StageId)
-                    .OnDelete(DeleteBehavior.Restrict);
+            builder.Property(l => l.IsActive)
+                   .HasDefaultValue(true);
 
-                builder.HasMany(x => x.Courses)
-                    .WithOne(x => x.Level)
-                    .HasForeignKey(x => x.LevelId)
-                    .OnDelete(DeleteBehavior.SetNull);
-            
-        }
+            builder.Property(l => l.CreatedAt)
+                   .HasDefaultValueSql("GETUTCDATE()");
+
+            builder.Property(l => l.CourseCount)
+                   .HasDefaultValue(0);
+
+            // Relationship with Stage
+            builder.HasOne(l => l.Stage)
+                   .WithMany(s => s.Levels)
+                   .HasForeignKey(l => l.StageId)
+                   .OnDelete(DeleteBehavior.Restrict);
+
+            // Relationship with Courses
+            builder.HasMany(l => l.Courses)
+                   .WithOne(c => c.Level)
+                   .HasForeignKey(c => c.LevelId)
+                   .OnDelete(DeleteBehavior.Cascade);
+
+            // Index (recommended)
+            builder.HasIndex(l => new { l.StageId, l.OrderIndex })
+                   .IsUnique();
+        
+
+    }
     }
 }

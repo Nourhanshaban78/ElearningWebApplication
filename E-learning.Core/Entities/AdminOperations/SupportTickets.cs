@@ -12,7 +12,7 @@ namespace E_learning.Core.Entities.AdminOperations
         public Guid Id { get; set; }
 
         public Guid UserId { get; set; }
-        public virtual ApplicationUser User { get; set; }
+        public ApplicationUser User { get; set; } = null!;
 
         public string Subject { get; set; }= string.Empty;
         public string Body { get; set; }= string.Empty;
@@ -21,11 +21,11 @@ namespace E_learning.Core.Entities.AdminOperations
         public TicketStatus Status { get; set; }=TicketStatus.Open;
 
         public Guid? AssignedTo { get; set; }
-        public virtual ApplicationUser? Assigned { get; set; }
+        public  ApplicationUser? Assigned { get; set; }
 
         public DateTime CreatedAt { get; set; }=DateTime.UtcNow;
         public DateTime? ResolvedAt { get; set; }
 
-        public virtual ICollection<SupportTicketReplies> Replies { get; set; }
+        public ICollection<SupportTicketReplies> Replies { get; set; } = new List<SupportTicketReplies>();
     }
 }

@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 namespace E_learning.Repository.Config.Identity
 {
     public class OtpCodesConfiguration
-     : IEntityTypeConfiguration<OtpCodes>
+     : IEntityTypeConfiguration<OtpCode>
     {
-        public void Configure(EntityTypeBuilder<OtpCodes> builder)
+        public void Configure(EntityTypeBuilder<OtpCode> builder)
         {
             builder.ToTable("OtpCodes");
 

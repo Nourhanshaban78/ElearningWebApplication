@@ -18,10 +18,10 @@ namespace E_learning.Core.Entities.Enrollment___Progress
         public Student? Student { get; set; }
 
         public Guid CourseId { get; set; }
-        public Courses Course { get; set; } = null!;
+        public Course Course { get; set; } = null!;
 
         public Guid? TransactionId { get; set; }
-        public PaymentTransactions? Transaction { get; set; }
+        public PaymentTransaction? Transaction { get; set; }
 
         public EnrollmentStatus Status { get; set; } = EnrollmentStatus.NotStarted;
         public decimal ProgressPercentage { get; set; }

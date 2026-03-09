@@ -16,7 +16,7 @@ namespace E_learning.Core.Entities.Identity
         public string? DeviceInfo { get; set; }
         public  Status IsActive { get; set; }
         public  DateTime  ExpiresAt { get; set; }
-        public DateTime? CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; }
 
 
     }

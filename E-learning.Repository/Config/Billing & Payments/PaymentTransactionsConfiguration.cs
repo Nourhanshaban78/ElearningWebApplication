@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace E_learning.Repository.Config.Billing___Payments
 {
-    public class PaymentTransactionsConfiguration : IEntityTypeConfiguration<PaymentTransactions>
+    public class PaymentTransactionsConfiguration : IEntityTypeConfiguration<PaymentTransaction>
     {
-        public void Configure(EntityTypeBuilder<PaymentTransactions> builder)
+        public void Configure(EntityTypeBuilder<PaymentTransaction> builder)
         {
             builder.ToTable("PaymentTransactions");
 
@@ -24,7 +24,8 @@ namespace E_learning.Repository.Config.Billing___Payments
 
             builder.Property(x => x.Currency)
                    .HasMaxLength(10)
-                   .IsRequired();
+                   .IsRequired()
+                   .HasDefaultValue("USD");
 
             builder.Property(x => x.Status)
                    .IsRequired();
@@ -38,29 +39,33 @@ namespace E_learning.Repository.Config.Billing___Payments
             builder.Property(x => x.CreatedAt)
                    .IsRequired();
 
+            builder.Property(x => x.CompletedAt);
+
+            // Student Relation
             builder.HasOne(x => x.Student)
-                   .WithMany()
+                   .WithMany(s => s.PaymentTransactions)
                    .HasForeignKey(x => x.StudentId)
                    .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(x => x.Courses)
-                   .WithMany()
+            // Course Relation
+            builder.HasOne(x => x.Course)
+                   .WithMany(c => c.PaymentTransactions)
                    .HasForeignKey(x => x.CourseId)
                    .OnDelete(DeleteBehavior.Restrict);
 
-                    builder.HasOne(t => t.PaymentMethods)
-                .WithMany(p => p.PaymentTransactions)
-               .HasForeignKey(t => t.PaymentMethodId)
-               .OnDelete(DeleteBehavior.Restrict);
+            // Payment Method Relation
+            builder.HasOne(x => x.PaymentMethod)
+                   .WithMany(p => p.PaymentTransactions)
+                   .HasForeignKey(x => x.PaymentMethodId)
+                   .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasMany(x => x.InstructorEarnings)
-                   .WithOne(x => x.PaymentTransactions)
-                   .HasForeignKey(x => x.TransactionId)
-                   .OnDelete(DeleteBehavior.Cascade);
+           
 
+            // Indexes (recommended)
             builder.HasIndex(x => x.StudentId);
             builder.HasIndex(x => x.CourseId);
             builder.HasIndex(x => x.Status);
         }
     }
+    
 }

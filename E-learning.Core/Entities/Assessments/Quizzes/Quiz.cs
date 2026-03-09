@@ -1,4 +1,5 @@
 ﻿using E_learning.Core.Entities.Courses___content;
+using E_learning.Core.Entities.Profiles;
 using E_learning.Core.Enums;
 using System;
 using System.Collections.Generic;
@@ -8,16 +9,15 @@ using System.Threading.Tasks;
 
 namespace E_learning.Core.Entities.Assessments.Quizzes
 {
-    public class Quizzes
+    public class Quiz
     {
         public Guid Id { get; set; }
 
         public Guid CourseId { get; set; }
-        public Courses Courses { get; set; }
-
+        public Course Course { get; set; } = null!;
         public Guid? LessonId { get; set; }
-        public Lessons Lessons { get; set; }
-
+        public Guid InstructorId { get; set; }
+         public Instructor Instructor { get; set; } = null!;
         public string Title { get; set; }
         public string? Topic { get; set; }
         public QuizzesType Type { get; set; } = QuizzesType.Regular;
@@ -30,8 +30,12 @@ namespace E_learning.Core.Entities.Assessments.Quizzes
         public bool ShowResultsImmediately { get; set; } = true;
         public bool IsActive { get; set; } = true;
 
-        public ICollection<QuizQuestions> QuizQuestions { get; set; }
-        public ICollection<QuizAttempts> QuizAttempts { get; set; }
+      
+        public Lesson? Lesson { get; set; }
+      
+
+        public ICollection<QuizQuestion> QuizQuestions { get; set; } = new List<QuizQuestion>();
+        public ICollection<QuizAttempt> QuizAttempts { get; set; } = new List<QuizAttempt>();
 
     }
 }

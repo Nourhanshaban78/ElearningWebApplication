@@ -10,37 +10,44 @@ namespace E_learning.Repository.Config
         {
             builder.ToTable("ScheduleEvents");
 
-            builder.HasKey(se => se.Id);
+            // Primary Key
+            builder.HasKey(e => e.Id);
 
-            builder.Property(se => se.Title)
+            // Properties
+            builder.Property(e => e.Title)
                    .IsRequired()
                    .HasMaxLength(200);
 
-            builder.Property(se => se.Type)
+            builder.Property(e => e.Type)
                    .IsRequired()
-                   .HasMaxLength(20);
+                   .HasMaxLength(50);
 
-            builder.Property(se => se.Priority)
-                   .HasMaxLength(10)
+            builder.Property(e => e.Priority)
+                   .IsRequired()
+                   .HasMaxLength(20)
                    .HasDefaultValue("Medium");
 
-            builder.Property(se => se.StartTime)
+            builder.Property(e => e.StartTime)
                    .IsRequired();
 
-            builder.Property(se => se.CreatedAt)
-                   .HasDefaultValueSql("GETUTCDATE()");
+            builder.Property(e => e.CreatedAt)
+                   .IsRequired();
 
             // Relationships
 
-            builder.HasOne(se => se.User)
-                   .WithMany()
-                   .HasForeignKey(se => se.UserId)
+            builder.HasOne(e => e.Instructor)
+                   .WithMany() // change if Instructor has ICollection<ScheduleEvent>
+                   .HasForeignKey(e => e.InstructorId)
                    .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasOne(se => se.Course)
-                   .WithMany()
-                   .HasForeignKey(se => se.CourseId)
+            builder.HasOne(e => e.Course)
+                   .WithMany() // change if Course has ICollection<ScheduleEvent>
+                   .HasForeignKey(e => e.CourseId)
                    .OnDelete(DeleteBehavior.SetNull);
+
+            // Indexes (recommended)
+            builder.HasIndex(e => e.InstructorId);
+            builder.HasIndex(e => e.StartTime);
         }
     }
 }

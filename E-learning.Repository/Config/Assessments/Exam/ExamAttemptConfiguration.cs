@@ -10,46 +10,65 @@ using E_learning.Core.Enums;
 
 namespace E_learning.Repository.Config.Assessments.Exam
 {
-    public class ExamAttemptConfiguration : IEntityTypeConfiguration<ExamAttempts>
+    public class ExamAttemptConfiguration : IEntityTypeConfiguration<ExamAttempt>
     {
-        public void Configure(EntityTypeBuilder<ExamAttempts> builder)
+        public void Configure(EntityTypeBuilder<ExamAttempt> builder)
         {
             builder.ToTable("ExamAttempts");
 
-            builder.HasKey(x => x.Id);
+            // Primary Key
+            builder.HasKey(a => a.Id);
 
-            builder.Property(x => x.Score)
-                   .HasColumnType("decimal(5,2)");
+            // Properties
+            builder.Property(a => a.Score)
+                   .HasColumnType("decimal(6,2)");
 
-            builder.Property(x => x.TeacherComment)
-                   .HasMaxLength(1000);
+            builder.Property(a => a.TeacherComment)
+                   .HasMaxLength(2000);
 
-            builder.Property(x => x.Status)
-                   .IsRequired();
+            builder.Property(a => a.Status)
+                   .HasDefaultValue(ExamAttemptsStatus.InProgress);
 
-            builder.Property(x => x.StartedAt)
-                   .IsRequired();
+            builder.Property(a => a.IsPublished)
+                   .HasDefaultValue(false);
 
-            builder.HasOne(x => x.Student)
-                   .WithMany()
-                   .HasForeignKey(x => x.StudentId)
-                   .OnDelete(DeleteBehavior.Cascade);
+            builder.Property(a => a.StartedAt)
+                   .HasDefaultValueSql("GETUTCDATE()");
 
-            
-            builder.HasOne(x => x.Exams)
-                   .WithMany()
-                   .HasForeignKey(x => x.ExamId)
-                   .OnDelete(DeleteBehavior.Cascade);
-
-            builder.HasOne(x => x.User)
-                   .WithMany()
-                   .HasForeignKey(x => x.ReviewedBy)
+            // Relationship: Attempt -> Student
+            builder.HasOne(a => a.Student)
+                   .WithMany(s => s.ExamAttempts)
+                   .HasForeignKey(a => a.StudentId)
                    .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasMany(x => x.ExamAttemptAnswers)
-                   .WithOne()
-                   .HasForeignKey("ExamAttemptId")
+            // Relationship: Attempt -> Exam
+            builder.HasOne(a => a.Exam)
+                   .WithMany(e => e.ExamAttempts)
+                   .HasForeignKey(a => a.ExamId)
                    .OnDelete(DeleteBehavior.Cascade);
+
+            // Relationship: Attempt -> Answers
+            builder.HasMany(a => a.ExamAttemptAnswers)
+                   .WithOne(ans => ans.ExamAttempt)
+                   .HasForeignKey(ans => ans.AttemptId)
+                   .OnDelete(DeleteBehavior.Cascade);
+
+            // Relationship: Attempt -> SelectedOption
+            builder.HasOne(a => a.SelectedOption)
+                   .WithMany()
+                   .HasForeignKey(a => a.SelectedOptionId)
+                   .OnDelete(DeleteBehavior.Restrict);
+         
+            builder.HasOne(e => e.Reviewer)
+                .WithMany()
+             .HasForeignKey(e => e.ReviewedBy)
+                     .OnDelete(DeleteBehavior.NoAction);
+
+
+            // Indexes
+            builder.HasIndex(a => a.StudentId);
+            builder.HasIndex(a => a.ExamId);
+            builder.HasIndex(a => new { a.StudentId, a.ExamId });
         }
     
     }

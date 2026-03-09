@@ -10,18 +10,19 @@ using System.Threading.Tasks;
 
 namespace E_learning.Core.Entities.Billing___Payments
 {
-    public class InstructorEarnings
+    public class InstructorEarning
     {
         public Guid Id { get; set; }
 
         public Guid InstructorId { get; set; }
-        public Instructor Instructor { get; set; } = new Instructor();
+        public Instructor Instructor { get; set; } = null!;
 
-        public Guid TransactionId { get; set; }
-        public PaymentTransactions PaymentTransactions { get; set; } = new PaymentTransactions();
+       
+        public ICollection<PaymentTransaction> PaymentTransactions { get; set; }
+        = new List<PaymentTransaction>();
 
         public Guid CourseId { get; set; }
-        public Courses Courses { get; set; } = new Courses();
+        public Course Course { get; set; } = null!;
 
         public decimal GrossAmount { get; set; }
         public decimal PlatformFee { get; set; }

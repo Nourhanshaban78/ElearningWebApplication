@@ -17,7 +17,7 @@ namespace E_learning.Core.Entities.Review_Certification_Schedule
 
         public string? FileUrl { get; set; }
 
-        public Student Student { get; set; }
-        public Courses Course { get; set; }
+        public Student Student { get; set; } = null!;
+        public Course Course { get; set; } = null!;
     }
 }

@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 namespace E_learning.Repository.Config.NotificationsConfigurations
 {
     public class NotificationsConfiguration
-        : IEntityTypeConfiguration<Notifications>
+        : IEntityTypeConfiguration<Notification>
     {
-        public void Configure(EntityTypeBuilder<Notifications> builder)
+        public void Configure(EntityTypeBuilder<Notification> builder)
         {
             builder.ToTable("Notifications");
 

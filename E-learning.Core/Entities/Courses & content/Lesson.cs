@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace E_learning.Core.Entities.Courses___content
 {
-    public class Lessons
+    public class Lesson
     {
         public Guid Id { get; set; }
 
         public Guid SectionId { get; set; }
-        public Sections? Sections { get; set; }
+        public Section? Sections { get; set; }
 
         public string Title { get; set; }
         public LessonsType Type { get; set; }
@@ -24,6 +24,6 @@ namespace E_learning.Core.Entities.Courses___content
         public bool IsFreePreview { get; set; } = false;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        public ICollection<Quizzes> Quizzes { get; set; } = new List<Quizzes>();
+        public ICollection<Quiz> Quizzes { get; set; } = new List<Quiz>();
     }
 }

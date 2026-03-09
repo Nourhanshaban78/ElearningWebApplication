@@ -9,7 +9,7 @@ using E_learning.Core.Enums;
 
 namespace E_learning.Core.Entities.Assessments.Assignments
 {
-    public class AssignmentSubmissions
+    public class AssignmentSubmission
     {
         public Guid Id { get; set; }
 

@@ -9,22 +9,41 @@ using System.Threading.Tasks;
 
 namespace E_learning.Repository.Config.Courses___content
 {
-    internal class SectionsConfiguration : IEntityTypeConfiguration<Sections>
+    internal class SectionsConfiguration : IEntityTypeConfiguration<Section>
     {
       
-            public void Configure(EntityTypeBuilder<Sections> builder)
+            public void Configure(EntityTypeBuilder<Section> builder)
             {
-                builder.HasKey(x => x.Id);
+            builder.ToTable("Sections");
 
-                builder.Property(x => x.Title)
-                    .IsRequired()
-                    .HasMaxLength(200);
+            builder.HasKey(x => x.Id);
 
-                builder.HasOne(x => x.Courses)
-                    .WithMany(x => x.Sections)
-                    .HasForeignKey(x => x.CourseId)
-                    .OnDelete(DeleteBehavior.Cascade);
-            }
+            builder.Property(x => x.Title)
+                   .HasMaxLength(200)
+                   .IsRequired();
+
+            builder.Property(x => x.OrderIndex)
+                   .IsRequired();
+
+            builder.Property(x => x.CreatedAt)
+                   .IsRequired();
+
+            // Course Relation
+            builder.HasOne(x => x.Course)
+                   .WithMany(c => c.Sections)
+                   .HasForeignKey(x => x.CourseId)
+                   .OnDelete(DeleteBehavior.Cascade);
+
+            // Lessons Relation
+            builder.HasMany(x => x.Lessons)
+                   .WithOne(l => l.Sections)
+                   .HasForeignKey(l => l.SectionId)
+                   .OnDelete(DeleteBehavior.Cascade);
+
+            // Indexes
+            builder.HasIndex(x => x.CourseId);
+            builder.HasIndex(x => new { x.CourseId, x.OrderIndex });
+        }
         
     }
 }

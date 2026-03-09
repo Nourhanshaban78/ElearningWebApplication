@@ -9,33 +9,44 @@ using Microsoft.EntityFrameworkCore;
 
 namespace E_learning.Repository.Config.Assessments.Quizze
 {
-    public class QuizAttemptAnswersConfiguration : IEntityTypeConfiguration<QuizAttemptAnswers>
+    public class QuizAttemptAnswersConfiguration : IEntityTypeConfiguration<QuizAttemptAnswer>
     {
-        public void Configure(EntityTypeBuilder<QuizAttemptAnswers> builder)
+        public void Configure(EntityTypeBuilder<QuizAttemptAnswer> builder)
         {
             builder.ToTable("QuizAttemptAnswers");
 
+            // Primary Key
             builder.HasKey(a => a.Id);
 
-             
-
+            // Properties
             builder.Property(a => a.TextAnswer)
-                   .HasMaxLength(1000);
+                   .HasMaxLength(4000);
 
-            builder.HasOne(a => a.QuizAttempts)
-                   .WithMany(a => a.QuizAttemptAnswers)
+            // Relationship: Answer -> Attempt
+            builder.HasOne(a => a.QuizAttempt)
+                   .WithMany(at => at.QuizAttemptAnswers)
                    .HasForeignKey(a => a.AttemptId)
                    .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasOne(a => a.QuizQuestions)
-                   .WithMany()
+            // Relationship: Answer -> Question
+            builder.HasOne(a => a.QuizQuestion)
+                   .WithMany(q => q.QuizAttemptAnswers)
                    .HasForeignKey(a => a.QuestionId)
                    .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(a => a.QuizOptions)
-                   .WithMany(qo=>qo.QuizAttemptAnswers)
-                   .HasForeignKey(a => a.SelectedOption)
-                   .OnDelete(DeleteBehavior.SetNull);
+            // Relationship: Answer -> Selected Option
+            builder.HasOne(a => a.QuizOption)
+                   .WithMany()
+                   .HasForeignKey(a => a.SelectedOptionId)
+                   .OnDelete(DeleteBehavior.Restrict);
+
+            // Indexes
+            builder.HasIndex(a => a.AttemptId);
+            builder.HasIndex(a => a.QuestionId);
+
+            // Prevent duplicate answers for the same question in one attempt
+            builder.HasIndex(a => new { a.AttemptId, a.QuestionId })
+                   .IsUnique();
         }
     }
 }

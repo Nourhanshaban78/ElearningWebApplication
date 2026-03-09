@@ -6,18 +6,18 @@ using System.Threading.Tasks;
 
 namespace E_learning.Core.Entities.Assessments.Quizzes
 {
-    public class QuizAttemptAnswers
+    public class QuizAttemptAnswer
     {
         public Guid Id { get; set; }
 
         public Guid AttemptId { get; set; }
-        public QuizAttempts QuizAttempts { get; set; }
+        public QuizAttempt QuizAttempt { get; set; } = null!;
 
         public Guid QuestionId { get; set; }
-        public QuizQuestions QuizQuestions { get; set; }
+        public QuizQuestion QuizQuestion { get; set; } = null!;
 
-        public Guid SelectedOption { get; set; }
-        public QuizOptions? QuizOptions { get; set; }
+        public Guid? SelectedOptionId { get; set; }
+        public QuizOption? QuizOption { get; set; }
 
         public string? TextAnswer { get; set; }
         public bool? IsCorrect { get; set; }

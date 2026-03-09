@@ -6,17 +6,15 @@ using System.Threading.Tasks;
 
 namespace E_learning.Core.Entities.Assessments.Quizzes
 {
-    public class QuizOptions
+    public class QuizOption
     {
         public Guid Id { get; set; }
 
         public Guid QuestionId { get; set; }
-        public QuizQuestions QuizQuestions { get; set; }
-
         public string Text { get; set; }
         public bool IsCorrect { get; set; } = false;
         public int OrderIndex { get; set; }
-
-        public ICollection<QuizAttemptAnswers> QuizAttemptAnswers { get; set; }
+        public QuizQuestion QuizQuestion { get; set; } = null!;
+        public ICollection<QuizAttemptAnswer> QuizAttemptAnswers { get; set; } = new List<QuizAttemptAnswer>();
     }
 }

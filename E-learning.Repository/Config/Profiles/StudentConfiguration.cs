@@ -15,10 +15,8 @@ namespace E_learning.Repository.Config.Profiles
         {
             builder.ToTable("Students");
 
-            // Primary Key
             builder.HasKey(x => x.Id);
 
-            // Properties
             builder.Property(x => x.EngagementRate)
                    .HasColumnType("decimal(5,2)")
                    .HasDefaultValue(0);
@@ -29,63 +27,75 @@ namespace E_learning.Repository.Config.Profiles
             builder.Property(x => x.UpdatedAt)
                    .IsRequired();
 
-            // ─── Relationship: Student ↔ ApplicationUser (1:1)
+            // User relation (1-1)
             builder.HasOne(x => x.User)
-                   .WithOne(x => x.Student)
+                   .WithOne(u => u.Student)
                    .HasForeignKey<Student>(x => x.UserId)
                    .OnDelete(DeleteBehavior.Cascade);
 
-            // ─── Enrollments
-            builder.HasMany(x => x.Enrollments)
-                   .WithOne(x => x.Student)
-                   .HasForeignKey(x => x.StudentId)
+            // Instructor relation
+            builder.HasOne(x => x.Instructor)
+                   .WithMany(i => i.Students)
+                   .HasForeignKey(x => x.InstructorId)
                    .OnDelete(DeleteBehavior.Restrict);
 
-            // ─── Course Reviews
+            // Enrollments
+            builder.HasMany(x => x.Enrollments)
+                   .WithOne(e => e.Student)
+                   .HasForeignKey(e => e.StudentId)
+                   .OnDelete(DeleteBehavior.Cascade);
+
+            // Course Reviews
             builder.HasMany(x => x.CourseReviews)
-                   .WithOne()
-                   .HasForeignKey("StudentId")
+                   .WithOne(r => r.Student)
+                   .HasForeignKey(r => r.StudentId)
                    .OnDelete(DeleteBehavior.Cascade);
 
-            // ─── Quiz Attempts
+            // Quiz Attempts
             builder.HasMany(x => x.QuizAttempts)
-                   .WithOne(x => x.Student)
-                   .HasForeignKey(x => x.StudentId)
+                   .WithOne(q => q.Student)
+                   .HasForeignKey(q => q.StudentId)
                    .OnDelete(DeleteBehavior.Cascade);
 
-            // ─── Exam Attempts
+            // Exam Attempts
             builder.HasMany(x => x.ExamAttempts)
-                   .WithOne(x => x.Student)
-                   .HasForeignKey(x => x.StudentId)
+                   .WithOne(e => e.Student)
+                   .HasForeignKey(e => e.StudentId)
                    .OnDelete(DeleteBehavior.Cascade);
 
-            // ─── Certificates
+            // Certificates
             builder.HasMany(x => x.Certificates)
-                   .WithOne()
-                   .HasForeignKey("StudentId")
-                   .OnDelete(DeleteBehavior.Cascade);
+                   .WithOne(c => c.Student)
+                   .HasForeignKey(c => c.StudentId)
+                   .OnDelete(DeleteBehavior.Restrict);
 
-            // ─── Lesson Progress
+            // Lesson Progress
             builder.HasMany(x => x.LessonProgresses)
-                   .WithOne(x => x.Student)
-                   .HasForeignKey(x => x.StudentId)
-                   .OnDelete(DeleteBehavior.Cascade);
+                   .WithOne(lp => lp.Student)
+                   .HasForeignKey(lp => lp.StudentId)
+                   .OnDelete(DeleteBehavior.Restrict);
 
-            // ─── Live Session Attendees
+            // Live Session Attendees
             builder.HasMany(x => x.LiveSessionAttendees)
-                   .WithOne()
-                   .HasForeignKey("StudentId")
+                   .WithOne(a => a.Student)
+                   .HasForeignKey(a => a.StudentId)
                    .OnDelete(DeleteBehavior.Cascade);
 
-            // ─── Assignment Submissions
+            // Assignment Submissions
             builder.HasMany(x => x.AssignmentSubmissions)
-                   .WithOne()
-                   .HasForeignKey("StudentId")
+                   .WithOne(a => a.Student)
+                   .HasForeignKey(a => a.StudentId)
                    .OnDelete(DeleteBehavior.Cascade);
 
-            // Index
-            builder.HasIndex(x => x.UserId).IsUnique();
+            // Payment Transactions
+            builder.HasMany(x => x.PaymentTransactions)
+                   .WithOne(p => p.Student)
+                   .HasForeignKey(p => p.StudentId)
+                   .OnDelete(DeleteBehavior.Restrict);
 
+            // Indexes
+            builder.HasIndex(x => x.UserId).IsUnique();
+            builder.HasIndex(x => x.InstructorId);
 
 
         }
