@@ -622,12 +622,7 @@ namespace E_learning.Repository.Migrations
                         principalTable: "Students",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Certificates_Students_StudentId1",
-                        column: x => x.StudentId1,
-                        principalTable: "Students",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                   
                 });
 
             migrationBuilder.CreateTable(
@@ -685,12 +680,7 @@ namespace E_learning.Repository.Migrations
                         principalTable: "Students",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_CourseReviews_Students_StudentId1",
-                        column: x => x.StudentId1,
-                        principalTable: "Students",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                  
                 });
 
             migrationBuilder.CreateTable(
@@ -762,12 +752,12 @@ namespace E_learning.Repository.Migrations
                         principalTable: "Instructors",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_LiveSessions_Instructors_InstructorId1",
-                        column: x => x.InstructorId1,
-                        principalTable: "Instructors",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                    //table.ForeignKey(
+                    //    name: "FK_LiveSessions_Instructors_InstructorId1",
+                    //    column: x => x.InstructorId1,
+                    //    principalTable: "Instructors",
+                    //    principalColumn: "Id",
+                    //    onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -897,12 +887,12 @@ namespace E_learning.Repository.Migrations
                         principalTable: "Students",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_AssignmentSubmissions_Students_StudentId1",
-                        column: x => x.StudentId1,
-                        principalTable: "Students",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                    //table.ForeignKey(
+                    //    name: "FK_AssignmentSubmissions_Students_StudentId1",
+                    //    column: x => x.StudentId1,
+                    //    principalTable: "Students",
+                    //    principalColumn: "Id",
+                    //    onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -999,14 +989,14 @@ namespace E_learning.Repository.Migrations
                         name: "FK_LiveSessionAttendees_Students_StudentId",
                         column: x => x.StudentId,
                         principalTable: "Students",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_LiveSessionAttendees_Students_StudentId1",
-                        column: x => x.StudentId1,
-                        principalTable: "Students",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id")
+;
+                    //table.ForeignKey(
+                    //    name: "FK_LiveSessionAttendees_Students_StudentId1",
+                    //    column: x => x.StudentId1,
+                    //    principalTable: "Students",
+                    //    principalColumn: "Id",
+                    //    onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -1175,7 +1165,7 @@ namespace E_learning.Repository.Migrations
                         column: x => x.LessonId,
                         principalTable: "Lessons",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_LessonProgresses_Students_StudentId",
                         column: x => x.StudentId,
@@ -1216,7 +1206,7 @@ namespace E_learning.Repository.Migrations
                         column: x => x.LessonId,
                         principalTable: "Lessons",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.SetNull);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -1242,18 +1232,18 @@ namespace E_learning.Repository.Migrations
                         principalTable: "ExamAttempts",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ExamAttemptAnswers_ExamAttempts_ExamAttemptsId",
-                        column: x => x.ExamAttemptsId,
-                        principalTable: "ExamAttempts",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                    //table.ForeignKey(
+                    //    name: "FK_ExamAttemptAnswers_ExamAttempts_ExamAttemptsId",
+                    //    column: x => x.ExamAttemptsId,
+                    //    principalTable: "ExamAttempts",
+                    //    principalColumn: "Id",
+                    //    onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_ExamAttemptAnswers_ExamOptions_SelectedOption",
                         column: x => x.SelectedOption,
                         principalTable: "ExamOptions",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.SetNull);
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_ExamAttemptAnswers_ExamQuestions_QuestionId",
                         column: x => x.QuestionId,
@@ -1365,24 +1355,24 @@ namespace E_learning.Repository.Migrations
                         principalTable: "QuizAttempts",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_QuizAttemptAnswers_QuizAttempts_QuizAttemptsId",
-                        column: x => x.QuizAttemptsId,
-                        principalTable: "QuizAttempts",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                    //table.ForeignKey(
+                    //    name: "FK_QuizAttemptAnswers_QuizAttempts_QuizAttemptsId",
+                    //    column: x => x.QuizAttemptsId,
+                    //    principalTable: "QuizAttempts",
+                    //    principalColumn: "Id",
+                    //    onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_QuizAttemptAnswers_QuizOptions_SelectedOption",
                         column: x => x.SelectedOption,
                         principalTable: "QuizOptions",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.SetNull);
-                    table.ForeignKey(
-                        name: "FK_QuizAttemptAnswers_QuizQuestions_QuestionId",
-                        column: x => x.QuestionId,
-                        principalTable: "QuizQuestions",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.NoAction);
+                    //table.ForeignKey(
+                    //    name: "FK_QuizAttemptAnswers_QuizQuestions_QuestionId",
+                    //    column: x => x.QuestionId,
+                    //    principalTable: "QuizQuestions",
+                    //    principalColumn: "Id",
+                    //    onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_QuizAttemptAnswers_QuizQuestions_QuizQuestionsId",
                         column: x => x.QuizQuestionsId,

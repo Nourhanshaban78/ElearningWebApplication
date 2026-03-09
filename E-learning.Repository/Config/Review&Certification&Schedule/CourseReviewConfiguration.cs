@@ -33,10 +33,10 @@ namespace E_learning.Repository.Config
                    .OnDelete(DeleteBehavior.Cascade);
 
             // Relationship: Student
-            builder.HasOne(x => x.Student)
-                   .WithMany(x => x.CourseReviews)
-                   .HasForeignKey(x => x.StudentId)
-                   .OnDelete(DeleteBehavior.Restrict);
+            //builder.HasOne(x => x.Student)
+            //       .WithMany(x => x.CourseReviews)
+            //       .HasForeignKey(x => x.StudentId)
+            //       .OnDelete(DeleteBehavior.Restrict);
 
             // Prevent duplicate review by same student for the same course
             builder.HasIndex(x => new { x.CourseId, x.StudentId })

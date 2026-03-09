@@ -28,10 +28,10 @@ namespace E_learning.Repository.Config.LiveSessions
 
             // ─── Student Relation ────────────────
 
-            builder.HasOne(x => x.Student)
-                   .WithMany(x => x.LiveSessionAttendees)
-                   .HasForeignKey(x => x.StudentId)
-                   .OnDelete(DeleteBehavior.Restrict);
+            //builder.HasOne(x => x.Student)
+            //       .WithMany(x => x.LiveSessionAttendees)
+            //       .HasForeignKey(x => x.StudentId)
+            //       .OnDelete(DeleteBehavior.Restrict);
 
             // ─── Properties ──────────────────────
 

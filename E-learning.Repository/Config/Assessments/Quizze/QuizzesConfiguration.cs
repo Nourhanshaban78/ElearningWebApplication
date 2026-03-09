@@ -58,7 +58,7 @@ namespace E_learning.Repository.Config.Assessments.Quizze
             builder.HasOne(q => q.Lessons)
                    .WithMany(l => l.Quizzes)
                    .HasForeignKey(q => q.LessonId)
-                   .OnDelete(DeleteBehavior.SetNull);
+                   .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

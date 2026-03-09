@@ -22,20 +22,20 @@ namespace E_learning.Repository.Config.Assessments.Quizze
             builder.Property(a => a.TextAnswer)
                    .HasMaxLength(1000);
 
-            builder.HasOne(a => a.QuizAttempts)
-                   .WithMany(a => a.QuizAttemptAnswers)
-                   .HasForeignKey(a => a.AttemptId)
-                   .OnDelete(DeleteBehavior.Cascade);
+            //builder.HasOne(a => a.QuizAttempts)
+            //       .WithMany(a => a.QuizAttemptAnswers)
+            //       .HasForeignKey(a => a.AttemptId)
+            //       .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasOne(a => a.QuizQuestions)
-                   .WithMany()
-                   .HasForeignKey(a => a.QuestionId)
-                   .OnDelete(DeleteBehavior.Restrict);
+            //builder.HasOne(a => a.QuizQuestions)
+            //       .WithMany()
+            //       .HasForeignKey(a => a.QuestionId)
+            //       .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(a => a.QuizOptions)
                    .WithMany(qo=>qo.QuizAttemptAnswers)
                    .HasForeignKey(a => a.SelectedOption)
-                   .OnDelete(DeleteBehavior.SetNull);
+                   .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

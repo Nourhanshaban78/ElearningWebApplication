@@ -43,10 +43,10 @@ namespace E_learning.Repository.Config.Assessments.Assignments
                 .HasForeignKey(asub => asub.AssignmentId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasOne(asub => asub.Student)
-                .WithMany(u => u.AssignmentSubmissions)
-                .HasForeignKey(asub => asub.StudentId)
-                .OnDelete(DeleteBehavior.Cascade);
+            //builder.HasOne(asub => asub.Student)
+            //    .WithMany(u => u.AssignmentSubmissions)
+            //    .HasForeignKey(asub => asub.StudentId)
+            //    .OnDelete(DeleteBehavior.Cascade);
           
             builder.HasIndex(asub => new { asub.AssignmentId, asub.StudentId })
                 .IsUnique()

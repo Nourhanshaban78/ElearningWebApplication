@@ -18,10 +18,10 @@ namespace E_learning.Repository.Config
                 .HasMaxLength(500);
 
             // Student relation
-            builder.HasOne(x => x.Student)
-                .WithMany(x => x.Certificates)
-                .HasForeignKey(x => x.StudentId)
-                .OnDelete(DeleteBehavior.Restrict);
+            //builder.HasOne(x => x.Student)
+            //    .WithMany(x => x.Certificates)
+            //    .HasForeignKey(x => x.StudentId)
+            //    .OnDelete(DeleteBehavior.Restrict);
 
             // Course relation
             builder.HasOne(x => x.Course)

@@ -20,10 +20,10 @@ namespace E_learning.Repository.Config.Assessments.Exam
             builder.Property(a => a.Score)
                    .HasColumnType("decimal(5,2)");
 
-            builder.HasOne(a => a.ExamAttempts)
-                   .WithMany(a => a.ExamAttemptAnswers)
-                   .HasForeignKey(a => a.AttemptId)
-                   .OnDelete(DeleteBehavior.Cascade);
+            //builder.HasOne(a => a.ExamAttempts)
+            //       .WithMany(a => a.ExamAttemptAnswers)
+            //       .HasForeignKey(a => a.AttemptId)
+            //       .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(a => a.ExamQuestions)
                    .WithMany(e=>e.ExamAttemptAnswers)
@@ -33,7 +33,7 @@ namespace E_learning.Repository.Config.Assessments.Exam
             builder.HasOne(a => a.ExamOptions)
                    .WithMany(a=>a.ExamAttemptAnswers)
                    .HasForeignKey(a => a.SelectedOption)
-                   .OnDelete(DeleteBehavior.SetNull);
+                   .OnDelete(DeleteBehavior.NoAction);
             builder.Property(a => a.TextAnswer)
                         .HasMaxLength(int.MaxValue);
         }

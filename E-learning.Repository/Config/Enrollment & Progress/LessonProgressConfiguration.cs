@@ -42,9 +42,11 @@ namespace E_learning.Repository.Config
             builder.HasOne(x => x.Lesson)
                    .WithMany()
                    .HasForeignKey(x => x.LessonId)
-                   .OnDelete(DeleteBehavior.Cascade);
+                   .OnDelete(DeleteBehavior.NoAction);
+                   //.OnDelete(DeleteBehavior.Cascade);
 
-           
+
+
             builder.HasOne(x => x.Student)
                    .WithMany()
                    .HasForeignKey(x => x.StudentId)

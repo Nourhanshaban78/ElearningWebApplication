@@ -47,10 +47,10 @@ namespace E_learning.Repository.Config.LiveSessions
             builder.Ignore(x => x.EndAt);
 
             // Instructor Relationship
-            builder.HasOne(x => x.Instructor)
-                .WithMany(x => x.LiveSessions)
-                .HasForeignKey(x => x.InstructorId)
-                .OnDelete(DeleteBehavior.Restrict);
+            //builder.HasOne(x => x.Instructor)
+            //    .WithMany(x => x.LiveSessions)
+            //    .HasForeignKey(x => x.InstructorId)
+            //    .OnDelete(DeleteBehavior.Restrict);
 
             // Course Relationship
             builder.HasOne<Courses>()
