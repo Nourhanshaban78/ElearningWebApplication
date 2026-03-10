@@ -25,4 +25,8 @@
     <ProjectReference Include="..\E-Learning.Service\E-Learning.Service.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Controllers\" />
+  </ItemGroup>
+
 </Project>

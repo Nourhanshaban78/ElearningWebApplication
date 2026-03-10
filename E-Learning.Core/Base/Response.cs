@@ -10,15 +10,31 @@ namespace E_Learning.Core.Base
 {
     public class Response<T> 
     {
-        public List<string>? Errors { get; set; }
-         public bool Succeeded { get; set; }
-        public string Message { get; set; } = string.Empty;
-        public T? Data { get; set; }
+        public Response() { }
+        public Response(T data, string message = null)
+        {
+            Succeeded = true;
+            Message = message;
+            Data = data;
+        }
 
-        public static Response<T> Ok(T data , string message = "Completed Sucessfully")
-            =>new() { Succeeded = true ,Message = message ,Data = data};
-        public static Response<T> Fail(string message ,List<string>? errors  = null)
-            => new() { Succeeded = false, Message = message, Errors = errors };
+        public Response(string message)
+        {
+            Succeeded = true;
+            Message = message;
+        }
+
+        public Response(string message, bool succeeded)
+        {
+            Succeeded = succeeded;
+            Message = message;
+        }
+        public HttpStatusCode HttpStatusCode { get; set; }
+        public List<string> Errors { get; set; }
+        public bool Succeeded { get; set; }
+        public string Message { get; set; }
+        public T Data { get; set; }
+
 
     }
 }
