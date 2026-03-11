@@ -6,10 +6,6 @@ namespace E_learning.Core.Entities.Identity
     {
         // ─── Basic Info ──────────────────────────
         public string FullName { get; set; } = string.Empty;
-        public string? Bio { get; set; }
-        public string? ProfilePicture { get; set; }
-        public string? Location { get; set; }
-        public DateOnly? DateOfBirth { get; set; }
         public bool IsActive { get; set; } = true;
         public DateTime MemberSince { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;

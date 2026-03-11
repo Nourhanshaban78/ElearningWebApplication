@@ -13,6 +13,10 @@ namespace E_Learning.Core.Entities.Profiles
         public Guid AppUserId { get; set; }
         public ApplicationUser AppUser { get; set; } = null!;
 
+        public string? Bio { get; set; }
+        public string? ProfilePicture { get; set; }
+        public string? Location { get; set; }
+        public DateOnly? DateOfBirth { get; set; }
         public string? Headline { get; set; }
         public string? About { get; set; }
 
