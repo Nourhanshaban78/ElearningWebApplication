@@ -2,9 +2,14 @@
 using E_learning.API.Extensions;
 using E_learning.Core.Entities.Identity;
 using E_learning.Repository.Interceptors;
+using E_Learning.API.Extensions;
+using E_Learning.API.Middleware;
 using E_Learning.Repository.Data;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace E_Learning.API
 {
@@ -37,6 +42,9 @@ namespace E_Learning.API
             builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>()
                 .AddEntityFrameworkStores<ELearningDbContext>().AddDefaultTokenProviders();
 
+            // Auth
+            builder.Services.AddApplicationServices(builder.Configuration);
+            builder.Services.AddJwtAuthentication(builder.Configuration);
             // Add services to the container.
 
             builder.Services.AddControllers();
@@ -53,9 +61,9 @@ namespace E_Learning.API
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-
+            app.UseMiddleware<ExceptionMiddleware>();
             app.UseHttpsRedirection();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
 
