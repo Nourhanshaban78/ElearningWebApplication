@@ -39,7 +39,7 @@ namespace E_Learning.Service.Services.Profiles
 
 
         // ================= Create Admin Profile =================
-        public async Task<Response<AdminProfileResponseDto>> CreateAdminProfile(Guid userId, CreateAdminProfileDTo dto, CancellationToken ct = default)
+        public async Task<Response<AdminProfileResponseDto>> CreateAdminProfile(Guid userId, CreateAdminProfileDto dto, CancellationToken ct = default)
         {
             var user = await _genericRepository.GetByIdAsync(userId, ct);
 
@@ -67,7 +67,7 @@ namespace E_Learning.Service.Services.Profiles
         }
 
         // ================= Update Admin Profile =================
-        public async Task<Response<AdminProfileResponseDto>> UpdateAdminProfile(Guid userId, CreateAdminProfileDTo dto)
+        public async Task<Response<AdminProfileResponseDto>> UpdateAdminProfile(Guid userId, CreateAdminProfileDto dto)
         {
             var profile = await _adminProfileRepository.GetAdminProfileWithUserByUserIdAsync(userId);
 

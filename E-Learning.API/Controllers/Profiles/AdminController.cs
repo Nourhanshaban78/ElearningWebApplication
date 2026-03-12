@@ -20,7 +20,7 @@ public class AdminController : ControllerBase
 
     // ================= Create Admin Profile =================
     [HttpPost("{userId}")]
-    public async Task<IActionResult> CreateAdminProfile(Guid userId, [FromBody] CreateAdminProfileDTo dto)
+    public async Task<IActionResult> CreateAdminProfile(Guid userId, [FromBody] CreateAdminProfileDto dto)
     {
         var response = await _adminService.CreateAdminProfile(userId, dto);
         return StatusCode((int)response.HttpStatusCode, response);
@@ -28,7 +28,7 @@ public class AdminController : ControllerBase
 
     // ================= Update Admin Profile =================
     [HttpPut("{userId}")]
-    public async Task<IActionResult> UpdateAdminProfile(Guid userId, [FromBody] CreateAdminProfileDTo dto)
+    public async Task<IActionResult> UpdateAdminProfile(Guid userId, [FromBody] CreateAdminProfileDto dto)
     {
         var response = await _adminService.UpdateAdminProfile(userId, dto);
         return StatusCode((int)response.HttpStatusCode, response);

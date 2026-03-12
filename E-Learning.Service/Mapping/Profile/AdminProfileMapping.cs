@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 
-namespace E_Learning.Service.Mapping.Profile
+namespace E_Learning.Service.Mapping
 {
     public class AdminProfileMapping : Profile
     {

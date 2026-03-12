@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace E_Learning.Service.DTOs.Profiles.Admin
 {
-    public class CreateAdminProfileDTo
+    public class CreateAdminProfileDto
     {
         public string FullName { get; set; }
         public string Email { get; set; }
