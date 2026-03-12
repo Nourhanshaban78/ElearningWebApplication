@@ -2,7 +2,11 @@
 using E_learning.API.Extensions;
 using E_learning.Core.Entities.Identity;
 using E_learning.Repository.Interceptors;
+using E_Learning.core.Interfaces.Repositories.Courses;
+using E_Learning.Core.Interfaces.Services.Courses;
 using E_Learning.Repository.Data;
+using E_Learning.Repository.Repositories.GenericesRepositories.Courses;
+using E_Learning.Service.Services.Courses;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -38,6 +42,8 @@ namespace E_Learning.API
                 .AddEntityFrameworkStores<ELearningDbContext>().AddDefaultTokenProviders();
 
             // Add services to the container.
+            builder.Services.AddScoped<ICourseService, CourseService>();
+
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
