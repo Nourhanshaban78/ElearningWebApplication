@@ -3,20 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using E_Learning.Core.Base;
+using E_Learning.Service.DTOs;
 using E_Learning.Service.DTOs.AssignmentsDto;
 
 namespace E_Learning.Service.Contract.Assignments
 {
     public interface IAssignmentService
     {
-        Task<int> CreateAsync(CreateAssignmentDto dto);
+   
 
-        Task UpdateAsync(int id, UpdateAssignmentDto dto);
+        Task<Response<AssignmentDto>> CreateAsync(CreateAssignmentDto dto);
 
-        Task DeleteAsync(int id);
+        Task<Response<AssignmentDto>> UpdateAsync(int id, UpdateAssignmentDto dto);
 
-        Task<AssignmentDto?> GetByIdAsync(int id);
+        Task<Response<string>> DeleteAsync(int id);
 
-        Task<IReadOnlyList<AssignmentDto>> GetAllAsync();
+        Task<Response<AssignmentDto>> GetByIdAsync(int id);
+
+         Task<Response<PagedResultDto<AssignmentDto>>> GetAllAsync(int pageNumber, int pageSize);
     }
 }
