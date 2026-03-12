@@ -19,6 +19,7 @@ namespace E_Learning.Core.Entities.Profiles
         public string? ProfilePicture { get; set; }
         public string? Location { get; set; }
         public DateOnly? DateOfBirth { get; set; }
+        public string? Gender { get; set; }
         public int? LevelId { get; set; }
         public Level? Level { get; set; }
 

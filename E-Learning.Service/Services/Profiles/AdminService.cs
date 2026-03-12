@@ -19,6 +19,6 @@ namespace E_Learning.Service.Services.Profiles
         {
             return await _adminProfileRepository.GetAdminProfileWithUserByUserIdAsync(userId);
         }
-        public async Task<AdminProfile>
+        //public async Task<AdminProfile>{ }
     }
 }
