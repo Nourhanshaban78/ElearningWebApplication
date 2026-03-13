@@ -24,8 +24,8 @@ namespace E_learning.Core.Entities.Identity
         public bool ShowProgressToOthers { get; set; } = true;
 
         // ─── NavProp ─────────────────────────────
-        public ICollection<Notification>? Notifications;
-        public NotificationSetting? NotificationSetting;
+        public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
+        public NotificationSetting? NotificationSetting { get; set; }
 
 
     }

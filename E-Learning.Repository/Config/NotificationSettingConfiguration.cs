@@ -33,9 +33,8 @@ public class NotificationSettingConfiguration
                .HasDefaultValue(true);
 
         builder.HasOne(ns => ns.User)
-               .WithOne(u => u.NotificationSetting);
-
-        builder.HasIndex(ns => ns.UserId)
-               .IsUnique();
+       .WithOne(u => u.NotificationSetting)
+       .HasForeignKey<NotificationSetting>(ns => ns.UserId)
+       .OnDelete(DeleteBehavior.Cascade);
     }
 }
