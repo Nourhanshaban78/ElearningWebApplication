@@ -23,4 +23,9 @@
     <ProjectReference Include="..\E-Learning.Core\E-Learning.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="DTOs\Profiles\Instructor\" />
+    <Folder Include="DTOs\Profiles\Student\" />
+  </ItemGroup>
+
 </Project>
