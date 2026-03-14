@@ -28,6 +28,18 @@ public class NotificationConfiguration
         builder.Property(n => n.CreatedAt)
                .HasDefaultValueSql("GETUTCDATE()");
 
-        
+        builder.HasOne(n => n.User)
+       .WithMany(u => u.Notifications)
+       .HasForeignKey(n => n.UserId)
+       .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasIndex(n => new { n.UserId, n.IsRead })
+               .HasDatabaseName("IX_Notifications_User_IsRead");
+
+        builder.HasIndex(n => n.CreatedAt)
+               .HasDatabaseName("IX_Notifications_CreatedAt");
+
+
+
     }
 }

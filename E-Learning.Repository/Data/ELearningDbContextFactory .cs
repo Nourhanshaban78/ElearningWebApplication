@@ -1,10 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace E_Learning.Repository.Data
 {
@@ -15,8 +10,7 @@ namespace E_Learning.Repository.Data
             var optionsBuilder = new DbContextOptionsBuilder<ELearningDbContext>();
 
             optionsBuilder.UseSqlServer(
-                "Server=(localdb)\\ProjectModels;Database=ELearning;Trusted_Connection=True;TrustServerCertificate=True");
-
+                   "Server=DESKTOP-TP134CS;Database=ELearningDb;Trusted_Connection=True;TrustServerCertificate=True");
             return new ELearningDbContext(optionsBuilder.Options, null);
         }
     }
