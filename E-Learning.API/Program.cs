@@ -8,6 +8,7 @@ using E_Learning.Core.Base;
 using E_Learning.Core.Interfaces.Repositories.Enrollments;
 using E_Learning.Core.Interfaces.Repositories.LiveSessions;
 using E_Learning.Core.Interfaces.Repositories.Profile;
+using E_Learning.Core.Interfaces.Services.Academic;
 using E_Learning.Core.Interfaces.Services.Courses;
 using E_Learning.Core.Interfaces.Services.Enrollments;
 using E_Learning.Core.Repository;
@@ -20,6 +21,11 @@ using E_Learning.Repository.Repositories.GenericesRepositories.Profile;
 using E_Learning.Service.Contract;
 using E_Learning.Service.Contract.Assignments;
 using E_Learning.Service.Mapping;
+using E_Learning.Service.Services;
+using E_Learning.Service.Services.Academic;
+using E_Learning.Service.Services.Academic.Stage;
+using E_Learning.Service.Services.AssignmentService;
+using E_Learning.Service.Services.Courses;
 using E_Learning.Service.Services.Enrollments;
 using E_Learning.Service.Services.Notifications;
 using E_Learning.Service.Services.LiveSessionServices;
@@ -69,16 +75,16 @@ namespace E_Learning.API
             builder.Services.AddScoped<IInstructorService, InstructorService>();
             builder.Services.AddScoped<IStudentService, StudentService>();
 
-  
+
             builder.Services.AddScoped<ILiveSessionService, LiveSessionService>();
             builder.Services.AddScoped<ILiveSessionAttendeeService, LiveSessionAttendeeService>();
-            
+
             builder.Services.AddScoped<ILiveSessionRepository, LiveSessionRepository>();
             builder.Services.AddScoped<ILiveSessionAttendeeRepository, LiveSessionAttendeeRepository>();
             builder.Services.AddScoped<IAdminProfileRepository, AdminProfileRepository>();
             builder.Services.AddScoped<IInstructorProfileRepository, InstructorProfileRepository>();
             builder.Services.AddScoped<IStudentProfileRepository, StudentProfileRepository>();
-            
+
 
 
             //// Auto Mapper
@@ -86,14 +92,21 @@ namespace E_Learning.API
             builder.Services.AddAutoMapper(typeof(AssignmentProfile).Assembly);
             builder.Services.AddAutoMapper(typeof(LiveSessionMappingProfile).Assembly);
             builder.Services.AddAutoMapper(typeof(AdminProfileMapping).Assembly);
+            builder.Services.AddAutoMapper(typeof(AcademicMappingProfile).Assembly);
+
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             // builder.Services.AddAutoMapper(typeof(LiveSessionMappingProfile));
             // ResponseHandler
             builder.Services.AddTransient<ResponseHandler>();
-
+            // Stage & Level Services
+            builder.Services.AddScoped<IStageService, StageService>();
+            builder.Services.AddScoped<ILevelService, LevelService>();
             // Enrollment Services
             builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
             builder.Services.AddScoped<ILessonProgressService, LessonProgressService>();
+            builder.Services.AddScoped<IAssignmentService, AssignmentService>();
+            builder.Services.AddScoped<IAssignmentSubmissionService, AssignmentSubmissionService>();
+            builder.Services.AddScoped<IFileService, FileService>();
             // Enrollment Repositories
             builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
             builder.Services.AddScoped<ILessonProgressRepository, LessonProgressRepository>();
