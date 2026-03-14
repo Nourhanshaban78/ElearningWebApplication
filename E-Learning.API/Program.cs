@@ -1,9 +1,10 @@
-﻿
-using E_learning.API.Extensions;
+﻿using E_learning.API.Extensions;
 using E_learning.Core.Entities.Identity;
 using E_learning.Repository.Interceptors;
-using E_Learning.Core.Interfaces.Repositories;
+using E_Learning.API.Extensions;
+using E_Learning.API.Hubs;  // NotificationHub
 using E_Learning.Core.Base;
+using E_Learning.Core.Interfaces.Repositories;
 using E_Learning.Core.Interfaces.Repositories.Enrollments;
 using E_Learning.Core.Interfaces.Repositories.LiveSessions;
 using E_Learning.Core.Interfaces.Repositories.Profile;
@@ -13,12 +14,13 @@ using E_Learning.Core.Interfaces.Services.Enrollments;
 using E_Learning.Core.Repository;
 using E_Learning.Repository.Data;
 using E_Learning.Repository.Repositories;
+using E_Learning.Repository.Repositories.GenericesRepositories;
 using E_Learning.Repository.Repositories.GenericesRepositories.Enrollments;
-using E_Learning.Service.Contract.Notifications;
 using E_Learning.Repository.Repositories.GenericesRepositories.LiveSessions;
 using E_Learning.Repository.Repositories.GenericesRepositories.Profile;
 using E_Learning.Service.Contract;
 using E_Learning.Service.Contract.Assignments;
+using E_Learning.Service.Contract.Notifications;
 using E_Learning.Service.Mapping;
 using E_Learning.Service.Services;
 using E_Learning.Service.Services.Academic;
@@ -26,13 +28,11 @@ using E_Learning.Service.Services.Academic.Stage;
 using E_Learning.Service.Services.AssignmentService;
 using E_Learning.Service.Services.Courses;
 using E_Learning.Service.Services.Enrollments;
-using E_Learning.Service.Services.Notifications;
 using E_Learning.Service.Services.LiveSessionServices;
+using E_Learning.Service.Services.Notifications;
 using E_Learning.Service.Services.Profiles;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using E_Learning.Repository.Repositories.GenericesRepositories;
-using E_Learning.API.Extensions;
 
 namespace E_Learning.API
 {
@@ -114,19 +114,45 @@ namespace E_Learning.API
             // Notifications Services
             builder.Services.AddScoped<INotificationService, NotificationService>();
             builder.Services.AddScoped<INotificationSettingService, NotificationSettingService>();
-            // Add services to the container.
 
-            // AddApplicationServices
+            
+            builder.Services.AddSignalR();
+
+            
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowFrontend", policy =>
+                {
+                    policy
+                        .WithOrigins(
+                            "http://localhost:3000",   // React
+                            "http://localhost:4200",   // Angular
+                            "http://localhost:5173"    // Vite
+                        )
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials();
+                });
+            });
+
+            // AddApplicationServices (repositories + services)
             builder.Services.AddApplicationServices(builder.Configuration);
+
+            // ══════════════════════════════════════════════════════
+            // ═══════════ JWT Authentication Registration ══════════
+            // ══════════════════════════════════════════════════════
+
+            builder.Services.AddJwtAuthentication(builder.Configuration);
+
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
+
             // ─── Migration & Seeding ─────────────────────
-            await app.MigrateDatabaseAsync();
-            // Configure the HTTP request pipeline.
+            // await app.MigrateDatabaseAsync();
+
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
@@ -135,10 +161,15 @@ namespace E_Learning.API
 
             app.UseHttpsRedirection();
 
+           
+            app.UseCors("AllowFrontend");
+            app.UseAuthentication();
             app.UseAuthorization();
 
-
             app.MapControllers();
+
+            
+            app.MapHub<NotificationHub>("/hubs/notifications");
 
             app.Run();
         }
