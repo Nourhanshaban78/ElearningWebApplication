@@ -9,8 +9,10 @@ using E_Learning.Core.Repository;
 using E_Learning.Repository.Data;
 using E_Learning.Repository.Repositories;
 using E_Learning.Repository.Repositories.GenericesRepositories.Enrollments;
+using E_Learning.Service.Contract.Notifications;
 using E_Learning.Service.Mapping;
 using E_Learning.Service.Services.Enrollments;
+using E_Learning.Service.Services.Notifications;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -58,6 +60,9 @@ namespace E_Learning.API
             // Enrollment Repositories
             builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
             builder.Services.AddScoped<ILessonProgressRepository, LessonProgressRepository>();
+            // Notifications Services
+            builder.Services.AddScoped<INotificationService, NotificationService>();
+            builder.Services.AddScoped<INotificationSettingService, NotificationSettingService>();
             // Add services to the container.
 
             builder.Services.AddControllers();
