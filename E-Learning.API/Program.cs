@@ -5,8 +5,6 @@ using E_learning.Repository.Interceptors;
 using E_Learning.API.Extensions;
 using E_Learning.API.Middleware;
 using E_Learning.Core.Base;
-using E_Learning.Core.Interfaces.Repositories;
-using E_Learning.Core.Interfaces.Repositories.Assessments.Assignments;
 using E_Learning.Core.Interfaces.Repositories.Enrollments;
 using E_Learning.Core.Interfaces.Repositories.LiveSessions;
 using E_Learning.Core.Interfaces.Repositories.Profile;
@@ -16,9 +14,8 @@ using E_Learning.Core.Interfaces.Services.Enrollments;
 using E_Learning.Core.Repository;
 using E_Learning.Repository.Data;
 using E_Learning.Repository.Repositories;
-using E_Learning.Repository.Repositories.GenericesRepositories;
-using E_Learning.Repository.Repositories.GenericesRepositories.Assessments.Assignments;
 using E_Learning.Repository.Repositories.GenericesRepositories.Enrollments;
+using E_Learning.Service.Contract.Notifications;
 using E_Learning.Repository.Repositories.GenericesRepositories.LiveSessions;
 using E_Learning.Repository.Repositories.GenericesRepositories.Profile;
 using E_Learning.Service.Contract;
@@ -30,6 +27,7 @@ using E_Learning.Service.Services.Academic.Stage;
 using E_Learning.Service.Services.AssignmentService;
 using E_Learning.Service.Services.Courses;
 using E_Learning.Service.Services.Enrollments;
+using E_Learning.Service.Services.Notifications;
 using E_Learning.Service.Services.LiveSessionServices;
 using E_Learning.Service.Services.Profiles;
 using Microsoft.AspNetCore.Identity;
@@ -43,9 +41,13 @@ namespace E_Learning.API
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            // For Auditing Interceptor
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddScoped<AuditInterceptor>();
 
+
+
+            // DbContext Default
             builder.Services.AddDbContext<ELearningDbContext>((serviceProvider, options) =>
             {
                 var interceptor = serviceProvider.GetRequiredService<AuditInterceptor>();
@@ -58,14 +60,14 @@ namespace E_Learning.API
                        .AddInterceptors(interceptor);
             });
 
+
             builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>()
                 .AddEntityFrameworkStores<ELearningDbContext>().AddDefaultTokenProviders();
 
-            // Auth
-            builder.Services.AddApplicationServices(builder.Configuration);
-            builder.Services.AddJwtAuthentication(builder.Configuration);
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+            // Auto Mapper
+            builder.Services.AddAutoMapper(typeof(EnrollmentMappingProfile).Assembly);
             builder.Services.AddScoped(typeof(IGenericRepository<,>), typeof(GenericRepository<,>));
 
             builder.Services.AddTransient<ResponseHandler>();
@@ -108,30 +110,30 @@ namespace E_Learning.API
             // Enrollment Repositories
             builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
             builder.Services.AddScoped<ILessonProgressRepository, LessonProgressRepository>();
-            builder.Services.AddScoped<IAssignmentRepository, AssignmentRepository>();
-            builder.Services.AddScoped<IAssignmentSubmissionRepository, AssignmentSubmissionRepository>();
+            // Notifications Services
+            builder.Services.AddScoped<INotificationService, NotificationService>();
+            builder.Services.AddScoped<INotificationSettingService, NotificationSettingService>();
             // Add services to the container.
-            builder.Services.AddScoped<ICourseService, CourseService>();
-
 
             builder.Services.AddControllers();
+            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
-
+            // ─── Migration & Seeding ─────────────────────
             await app.MigrateDatabaseAsync();
-
+            // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-            app.UseMiddleware<ExceptionMiddleware>();
+
             app.UseHttpsRedirection();
-            app.UseAuthentication();
+
             app.UseAuthorization();
-            app.UseStaticFiles();
+
 
             app.MapControllers();
 
@@ -139,4 +141,3 @@ namespace E_Learning.API
         }
     }
 }
-
