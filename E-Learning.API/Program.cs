@@ -3,6 +3,7 @@ using E_learning.Core.Entities.Identity;
 using E_learning.Repository.Interceptors;
 using E_Learning.API.Extensions;
 using E_Learning.API.Hubs;  // NotificationHub
+using E_Learning.API.Services;
 using E_Learning.Core.Base;
 using E_Learning.Core.Interfaces.Repositories;
 using E_Learning.Core.Interfaces.Repositories.Enrollments;
@@ -114,8 +115,8 @@ namespace E_Learning.API
             // Notifications Services
             builder.Services.AddScoped<INotificationService, NotificationService>();
             builder.Services.AddScoped<INotificationSettingService, NotificationSettingService>();
+            builder.Services.AddScoped<INotificationHubService, NotificationHubService>();  // ← ضيف السطر ده
 
-            
             builder.Services.AddSignalR();
 
             
