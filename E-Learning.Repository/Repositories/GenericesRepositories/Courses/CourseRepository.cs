@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace E_Learning.Repository.Repositories.GenericesRepositories.Courses
 {
+    
     public class CourseRepository: GenericRepository<Course,int>,ICourseRepository
     {
         public CourseRepository(ELearningDbContext context): base(context) 
