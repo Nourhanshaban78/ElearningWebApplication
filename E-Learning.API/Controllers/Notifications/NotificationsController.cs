@@ -1,4 +1,5 @@
 ﻿using E_Learning.Core.Base;
+using E_Learning.Core.Enums;
 using E_Learning.Service.Contract.Notifications;
 using E_Learning.Service.DTOs.Notification;
 using Microsoft.AspNetCore.Authorization;
@@ -124,6 +125,33 @@ namespace E_Learning.API.Controllers
                 var res = msg.Contains("not found", StringComparison.OrdinalIgnoreCase)
                     ? _response.NotFound<object>(msg)
                     : _response.BadRequest<object>(msg);
+                return StatusCode((int)res.HttpStatusCode, res);
+            }
+        }
+
+        // ══════════════════════════════════════════════════════════
+        // TEST ONLY — remove before production
+        // POST /api/notifications/test-send
+        // Sends a test notification to the currently logged-in user
+        // ══════════════════════════════════════════════════════════
+        [HttpPost("test-send")]
+        public async Task<IActionResult> TestSendNotification()
+        {
+            try
+            {
+                var userId = GetUserId();
+                await _service.SendNotificationAsync(
+                    userId,
+                    "Test Notification",
+                    "This is a real-time test notification at " + DateTime.UtcNow.ToString("HH:mm:ss"),
+                    NotificationType.General);
+
+                var res = _response.Success(new { message = "Test notification sent!" });
+                return StatusCode((int)res.HttpStatusCode, res);
+            }
+            catch (Exception ex)
+            {
+                var res = _response.BadRequest<object>(ex.Message);
                 return StatusCode((int)res.HttpStatusCode, res);
             }
         }
