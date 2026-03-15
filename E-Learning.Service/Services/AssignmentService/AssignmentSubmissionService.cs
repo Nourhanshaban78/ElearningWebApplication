@@ -109,6 +109,15 @@ namespace E_Learning.Service.Services.AssignmentService
 
 
         }
+        public async Task<Response<AssignmentSubmissionDto>> GetByIdAsync(int id)
+        {
+            var asb = await _unitOfWork.AssignmentSubmissions.GetAssignmentSubmissionByIdWithAssimentData(id);
+            if (asb is null)
+                return _responseHandler.NotFound<  AssignmentSubmissionDto >("Submission not found");
+            var r = _mapper.Map< AssignmentSubmissionDto>(asb);
+            return _responseHandler.Success<AssignmentSubmissionDto >(r);
+
+        }
     }
     
 }

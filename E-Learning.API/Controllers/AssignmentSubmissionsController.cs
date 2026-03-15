@@ -47,13 +47,18 @@ namespace E_Learning.API.Controllers
             return Ok(data);
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> Get(Guid id)
+        [HttpGet("Student/{id}")]
+        public async Task<IActionResult> GetbyStudent(Guid id)
         {
             var assignment = await _service.GetByStudentAsync(id);
             return Ok(assignment);
         }
 
-
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var assignment = await _service.GetByIdAsync(id);
+            return Ok(assignment);
+        }
     }
 }

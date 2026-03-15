@@ -1,4 +1,5 @@
 ﻿using E_Learning.core.Interfaces.Repositories.Courses;
+using E_Learning.Core.Entities.Assessments.Assignments;
 using E_Learning.Core.Entities.Courses;
 using E_Learning.Repository.Data;
 

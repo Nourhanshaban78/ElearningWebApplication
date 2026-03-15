@@ -30,6 +30,11 @@ namespace E_Learning.Service.Services.AssignmentService
 
         public async Task<Response<AssignmentDto>> CreateAsync(CreateAssignmentDto dto)
         {
+            var course=await _unitOfWork.Courses.GetByIdAsync(dto.CourseId);
+            if(course is null)
+            {
+                return _response.NotFound<AssignmentDto>("Course not found");
+            }
             var assignment = _mapper.Map<Assignment>(dto);
 
             await _unitOfWork.Assignments.AddAsync(assignment);
