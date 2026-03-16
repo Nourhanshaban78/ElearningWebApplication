@@ -18,5 +18,6 @@ namespace E_Learning.Service.Contract.Assignments
         Task<Response<IReadOnlyList<AssignmentSubmissionDto>>> GetAllByAssignmentAsync(int assignmentId);
 
         Task<Response<IReadOnlyList<AssignmentSubmissionDto>>>   GetByStudentAsync(Guid studentId);
+        Task<Response<AssignmentSubmissionDto>> GetByIdAsync(int id);
     }
 }

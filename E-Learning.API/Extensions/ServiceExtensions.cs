@@ -1,8 +1,11 @@
 ﻿using E_Learning.Core.Interfaces.Services;
+using E_Learning.Core.Interfaces.Services.Courses;
 using E_Learning.Core.Repository;
 using E_Learning.Repository.Repositories;
 using E_Learning.Service.Contract;
 using E_Learning.Service.Services;
+using E_Learning.Service.Services.Courses;
+using E_Learning.Service.Services.LiveSessionServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -20,6 +23,9 @@ public static class ServiceExtensions
         // Services
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IEmailService, EmailService>();
+
+        services.AddScoped<ICourseService, CourseService>();
+        services.AddScoped<ILiveSessionService, LiveSessionService>();
 
         return services;
     }
@@ -45,6 +51,27 @@ public static class ServiceExtensions
                 IssuerSigningKey = new SymmetricSecurityKey(
                                                Encoding.UTF8.GetBytes(config["Jwt:SecretKey"]!)),
                 ClockSkew = TimeSpan.Zero
+            };
+
+            // ══════════════════════════════════════════════════════════
+            // ═══════════════ SignalR JWT Support ══════════════════════
+            // ══════════════════════════════════════════════════════════
+
+            options.Events = new JwtBearerEvents
+            {
+                OnMessageReceived = context =>
+                {
+                    var accessToken = context.Request.Query["access_token"];
+                    var path = context.HttpContext.Request.Path;
+
+                    if (!string.IsNullOrEmpty(accessToken)
+                        && path.StartsWithSegments("/hubs"))
+                    {
+                        context.Token = accessToken;
+                    }
+
+                    return Task.CompletedTask;
+                }
             };
         });
 
