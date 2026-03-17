@@ -14,6 +14,7 @@ using E_Learning.Core.Interfaces.Repositories.Payments;
 using E_Learning.Core.Interfaces.Repositories.Profile;
 using E_Learning.Core.Interfaces.Repositories.Schedule;
 using E_Learning.Core.Repository;
+using E_Learning.Infrastructure.Repositories;
 using E_Learning.Repository.Data;
 using E_Learning.Repository.Repositories.GenericesRepositories;
 using E_Learning.Repository.Repositories.GenericesRepositories.Academic;

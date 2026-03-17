@@ -1,3 +1,5 @@
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
 ﻿
 using E_learning.API.Extensions;
 using E_learning.Core.Entities.Identity;
@@ -35,6 +37,12 @@ using E_Learning.Repository.Repositories.GenericesRepositories;
 using E_Learning.API.Extensions;
 
 namespace E_Learning.API
+=======
+﻿namespace E_Learning.API
+>>>>>>> Stashed changes
+=======
+﻿namespace E_Learning.API
+>>>>>>> Stashed changes
 {
     public class Program
     {
@@ -85,7 +93,18 @@ namespace E_Learning.API
             builder.Services.AddScoped<IAdminProfileRepository, AdminProfileRepository>();
             builder.Services.AddScoped<IInstructorProfileRepository, InstructorProfileRepository>();
             builder.Services.AddScoped<IStudentProfileRepository, StudentProfileRepository>();
+<<<<<<< Updated upstream
 
+=======
+            builder.Services.AddScoped<ICertificateServices, CertificateServices>();
+            builder.Services.AddScoped<IExamAttemptServices, ExamAttemptServices>();
+            builder.Services.AddScoped<IExamServices,ExamServices>();
+            builder.Services.AddScoped<IExamQuestionServices,ExamQuestionServices>();
+            builder.Services.AddScoped<IExamAttemptAnswerServices,ExamAttemptAnswerServices>();
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
 
 
             //// Auto Mapper
@@ -99,22 +118,8 @@ namespace E_Learning.API
             // builder.Services.AddAutoMapper(typeof(LiveSessionMappingProfile));
             // ResponseHandler
             builder.Services.AddTransient<ResponseHandler>();
-            // Stage & Level Services
-            builder.Services.AddScoped<IStageService, StageService>();
-            builder.Services.AddScoped<ILevelService, LevelService>();
-            // Enrollment Services
-            builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
-            builder.Services.AddScoped<ILessonProgressService, LessonProgressService>();
-            builder.Services.AddScoped<IAssignmentService, AssignmentService>();
-            builder.Services.AddScoped<IAssignmentSubmissionService, AssignmentSubmissionService>();
-            builder.Services.AddScoped<IFileService, FileService>();
-            // Enrollment Repositories
-            builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
-            builder.Services.AddScoped<ILessonProgressRepository, LessonProgressRepository>();
-            // Notifications Services
-            builder.Services.AddScoped<INotificationService, NotificationService>();
-            builder.Services.AddScoped<INotificationSettingService, NotificationSettingService>();
-            // Add services to the container.
+            builder.Services.AddApplicationServices();
+
 
             // AddApplicationServices
             builder.Services.AddApplicationServices(builder.Configuration);
@@ -124,6 +129,16 @@ namespace E_Learning.API
             builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
+            //Add fake data
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+
+                var context = services.GetRequiredService<ELearningDbContext>();
+                var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+
+                await DbSeeder.SeedAsync(context, userManager);
+            }
             // ─── Migration & Seeding ─────────────────────
             await app.MigrateDatabaseAsync();
             // Configure the HTTP request pipeline.
