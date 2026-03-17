@@ -1,26 +1,30 @@
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
 ﻿
 using E_learning.API.Extensions;
 using E_learning.Core.Entities.Identity;
 using E_learning.Repository.Interceptors;
-using E_Learning.Core.Interfaces.Repositories;
+using E_Learning.API.Extensions;
+using E_Learning.API.Hubs;  // NotificationHub
+using E_Learning.API.Services;
 using E_Learning.Core.Base;
+using E_Learning.Core.Interfaces.Repositories;
 using E_Learning.Core.Interfaces.Repositories.Enrollments;
 using E_Learning.Core.Interfaces.Repositories.LiveSessions;
 using E_Learning.Core.Interfaces.Repositories.Profile;
 using E_Learning.Core.Interfaces.Services.Academic;
 using E_Learning.Core.Interfaces.Services.Courses;
 using E_Learning.Core.Interfaces.Services.Enrollments;
+using E_Learning.Core.Interfaces.Services.Reviews_Certificates;
 using E_Learning.Core.Repository;
 using E_Learning.Repository.Data;
 using E_Learning.Repository.Repositories;
+using E_Learning.Repository.Repositories.GenericesRepositories;
 using E_Learning.Repository.Repositories.GenericesRepositories.Enrollments;
-using E_Learning.Service.Contract.Notifications;
 using E_Learning.Repository.Repositories.GenericesRepositories.LiveSessions;
 using E_Learning.Repository.Repositories.GenericesRepositories.Profile;
 using E_Learning.Service.Contract;
 using E_Learning.Service.Contract.Assignments;
+using E_Learning.Service.Hubs;
+using E_Learning.Service.Contract.Notifications;
 using E_Learning.Service.Mapping;
 using E_Learning.Service.Services;
 using E_Learning.Service.Services.Academic;
@@ -28,21 +32,16 @@ using E_Learning.Service.Services.Academic.Stage;
 using E_Learning.Service.Services.AssignmentService;
 using E_Learning.Service.Services.Courses;
 using E_Learning.Service.Services.Enrollments;
-using E_Learning.Service.Services.Notifications;
 using E_Learning.Service.Services.LiveSessionServices;
+using E_Learning.Service.Services.Notifications;
 using E_Learning.Service.Services.Profiles;
+using E_Learning.Service.Services.Reviews_Certificates;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using E_Learning.Repository.Repositories.GenericesRepositories;
-using E_Learning.API.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace E_Learning.API
-=======
+
 ﻿namespace E_Learning.API
->>>>>>> Stashed changes
-=======
-﻿namespace E_Learning.API
->>>>>>> Stashed changes
 {
     public class Program
     {
@@ -93,18 +92,9 @@ namespace E_Learning.API
             builder.Services.AddScoped<IAdminProfileRepository, AdminProfileRepository>();
             builder.Services.AddScoped<IInstructorProfileRepository, InstructorProfileRepository>();
             builder.Services.AddScoped<IStudentProfileRepository, StudentProfileRepository>();
-<<<<<<< Updated upstream
-
-=======
+          
             builder.Services.AddScoped<ICertificateServices, CertificateServices>();
-            builder.Services.AddScoped<IExamAttemptServices, ExamAttemptServices>();
-            builder.Services.AddScoped<IExamServices,ExamServices>();
-            builder.Services.AddScoped<IExamQuestionServices,ExamQuestionServices>();
-            builder.Services.AddScoped<IExamAttemptAnswerServices,ExamAttemptAnswerServices>();
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
+
 
 
             //// Auto Mapper
@@ -121,13 +111,76 @@ namespace E_Learning.API
             builder.Services.AddApplicationServices();
 
 
+            // CourseService
+            builder.Services.AddScoped<ICourseContentService, CourseContentService>();
+            builder.Services.AddScoped<ICourseService, CourseService>();
             // AddApplicationServices
+            builder.Services.AddScoped<INotificationHubService, NotificationHubService>();  // ← ضيف السطر ده
+
+            builder.Services.AddSignalR();
+
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowFrontend", policy =>
+                {
+                    policy
+                        .WithOrigins(
+                            "http://localhost:3000",   // React
+                            "http://localhost:4200",   // Angular
+                            "http://localhost:5173"    // Vite
+                        )
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials();
+                });
+            });
+
+            // AddApplicationServices (repositories + services)
+
             builder.Services.AddApplicationServices(builder.Configuration);
+
+
+
+            // ══════════════════════════════════════════════════════
+            // ═══════════ JWT Authentication Registration ══════════
+            // ══════════════════════════════════════════════════════
+
+            builder.Services.AddJwtAuthentication(builder.Configuration);
+
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(options =>
+            {
+                options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+                    Description = "Enter your JWT token"
+                });
 
+                options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    {
+        {
+            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            {
+                Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                {
+                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+            });
+
+            builder.Services.AddSignalR();
+               
             var app = builder.Build();
             //Add fake data
             using (var scope = app.Services.CreateScope())
@@ -140,8 +193,8 @@ namespace E_Learning.API
                 await DbSeeder.SeedAsync(context, userManager);
             }
             // ─── Migration & Seeding ─────────────────────
-            await app.MigrateDatabaseAsync();
-            // Configure the HTTP request pipeline.
+            // await app.MigrateDatabaseAsync();
+
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
@@ -150,10 +203,18 @@ namespace E_Learning.API
 
             app.UseHttpsRedirection();
 
+
+            app.UseCors("AllowFrontend");
+            app.UseAuthentication();
             app.UseAuthorization();
 
+            app.UseStaticFiles();
 
             app.MapControllers();
+            app.MapHub<LiveSessionHub>("/liveSessionHub");
+
+
+            app.MapHub<NotificationHub>("/hubs/notifications");
 
             app.Run();
         }
