@@ -22,8 +22,8 @@ using E_Learning.Repository.Repositories.GenericesRepositories.LiveSessions;
 using E_Learning.Repository.Repositories.GenericesRepositories.Profile;
 using E_Learning.Service.Contract;
 using E_Learning.Service.Contract.Assignments;
-using E_Learning.Service.Hubs;
 using E_Learning.Service.Contract.Notifications;
+using E_Learning.Service.Hubs;
 using E_Learning.Service.Mapping;
 using E_Learning.Service.Services;
 using E_Learning.Service.Services.Academic;
@@ -34,6 +34,7 @@ using E_Learning.Service.Services.Enrollments;
 using E_Learning.Service.Services.LiveSessionServices;
 using E_Learning.Service.Services.Notifications;
 using E_Learning.Service.Services.Profiles;
+using E_Learning.Service.Services.QuizServices;
 using E_Learning.Service.Services.Reviews_Certificates;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -120,7 +121,10 @@ namespace E_Learning.API
             // Notifications Services
             builder.Services.AddScoped<INotificationService, NotificationService>();
             builder.Services.AddScoped<INotificationSettingService, NotificationSettingService>();
-            builder.Services.AddScoped<INotificationHubService, NotificationHubService>();  // ← ضيف السطر ده
+            builder.Services.AddScoped<INotificationHubService, NotificationHubService>();
+            // Service فقط - الـ Repositories شغالة عن طريق UnitOfWork
+            builder.Services.AddScoped<IQuizService, QuizService>();
+            builder.Services.AddScoped<ResponseHandler>();// ← ضيف السطر ده
 
             builder.Services.AddSignalR();
 
