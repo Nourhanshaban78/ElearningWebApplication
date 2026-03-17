@@ -1,22 +1,16 @@
-﻿using E_Learning.Core.Base;
-using E_Learning.Core.Entities.Courses;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace E_Learning.Core.Entities.Assessments.Quiz
+namespace E_Learning.Service.DTOs
 {
-    public class Quiz : AuditableEntity
+    public class CreateQuizDto
     {
-        public int CourseId { get; set; }
-        public Course Course { get; set; } = null!;
-
-        public int? LessonId { get; set; }
-        public Lesson? Lesson { get; set; }
-
         public string Title { get; set; } = string.Empty;
+        public int CourseId { get; set; }
+        public int? LessonId { get; set; }
         public string? Topic { get; set; }
         public string Type { get; set; } = "Regular";
         public int? TimeLimitSeconds { get; set; }
@@ -25,11 +19,6 @@ namespace E_Learning.Core.Entities.Assessments.Quiz
         public int MaxAttempts { get; set; } = 3;
         public bool ShuffleQuestions { get; set; } = true;
         public bool ShowResultsImmediately { get; set; } = true;
-        public bool IsActive { get; set; } = true;
-        public DateTime? ScheduledAt { get; set; }
-        public ICollection<QuizQuestion> Questions { get; set; }
-            = new List<QuizQuestion>();
-        public ICollection<QuizAttempt> Attempts { get; set; }
-            = new List<QuizAttempt>();
+        public List<CreateQuizQuestionDto> Questions { get; set; } = new();
     }
 }
