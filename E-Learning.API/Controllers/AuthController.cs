@@ -1,7 +1,5 @@
-﻿// E_Learning.API/Controllers/AuthController.cs
-using E_Learning.Core.Enums;
+﻿using E_Learning.Core.Enums;
 using E_Learning.Core.Interfaces.Services;
-using E_Learning.Service.Contract;
 using E_Learning.Service.DTOs.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,12 +11,10 @@ namespace E_Learning.API.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _auth;
-    private readonly IEmailService _emailService;
-    public AuthController(IAuthService auth
-        , IEmailService emailService)
+    public AuthController(IAuthService auth)
+        
     {
         _auth = auth;
-        _emailService = emailService;
     }
 
     [HttpPost("register")]
@@ -118,10 +114,4 @@ public class AuthController : ControllerBase
     }
 
 
-    [HttpGet("test-email")]
-    public async Task<IActionResult> TestEmail()
-    {
-        await _emailService.SendEmailVerificationOtpAsync("test@test.com", "123456");
-        return Ok("Email sent");
-    }
 }
