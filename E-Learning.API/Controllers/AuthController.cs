@@ -1,5 +1,7 @@
 ﻿// E_Learning.API/Controllers/AuthController.cs
+using E_Learning.Core.Enums;
 using E_Learning.Core.Interfaces.Services;
+using E_Learning.Service.Contract;
 using E_Learning.Service.DTOs.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +13,13 @@ namespace E_Learning.API.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _auth;
-    public AuthController(IAuthService auth) => _auth = auth;
+    private readonly IEmailService _emailService;
+    public AuthController(IAuthService auth
+        , IEmailService emailService)
+    {
+        _auth = auth;
+        _emailService = emailService;
+    }
 
     [HttpPost("register")]
     public async Task<IActionResult> Register(
@@ -87,5 +95,33 @@ public class AuthController : ControllerBase
     {
         var result = await _auth.GoogleLoginAsync(dto, ct);
         return Ok(result);
+    }
+
+
+
+    [HttpPost("resend-email-verification")]
+    public async Task<IActionResult> ResendEmailVerification(
+        [FromBody] ResendOtpRequestDto dto,
+        CancellationToken ct)
+    {
+        await _auth.ResendOtpAsync(dto.Email, OtpPurpose.EmailVerification, ct);
+        return Ok(new { message = "OTP sent if email exists." });
+    }
+
+    [HttpPost("resend-reset-password")]
+    public async Task<IActionResult> ResendResetPassword(
+        [FromBody] ResendOtpRequestDto dto,
+        CancellationToken ct)
+    {
+        await _auth.ResendOtpAsync(dto.Email, OtpPurpose.ResetPassword, ct);
+        return Ok(new { message = "OTP sent if email exists." });
+    }
+
+
+    [HttpGet("test-email")]
+    public async Task<IActionResult> TestEmail()
+    {
+        await _emailService.SendEmailVerificationOtpAsync("test@test.com", "123456");
+        return Ok("Email sent");
     }
 }

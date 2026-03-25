@@ -1,5 +1,6 @@
 ﻿using E_learning.Core.Entities.Identity;
 using E_Learning.Core.Entities.Identity;
+using E_Learning.Core.Enums;
 using E_Learning.Core.Exceptions;
 using E_Learning.Core.Interfaces.Services;
 using E_Learning.Core.Repository;
@@ -75,7 +76,44 @@ public class AuthService : IAuthService
 
         return "Registration successful. Please check your email for the verification code.";
     }
+    public async Task ResendOtpAsync(
+    string email,
+    OtpPurpose purpose,
+    CancellationToken ct = default)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+        if (user == null)
+            return;
 
+        // Rate limit (60 sec)
+        var lastOtp = await _uow.OtpCodes.FirstOrDefaultAsync(
+            o => o.UserId == user.Id && o.Purpose == purpose.ToString(),
+            ct);
+
+        if (lastOtp != null && lastOtp.CreatedAt > DateTime.UtcNow.AddSeconds(-60))
+            throw new BadRequestException("Please wait before requesting another OTP.");
+
+        // Invalidate old OTPs
+        var oldOtps = await _uow.OtpCodes.FindAsync(
+            o => o.UserId == user.Id &&
+                 o.Purpose == purpose.ToString() &&
+                 !o.IsUsed,
+            ct);
+
+        foreach (var otp in oldOtps)
+            otp.IsUsed = true;
+
+        // Generate new OTP
+        var code = GenerateOtp();
+        await SaveOtpAsync(user.Id, code, purpose.ToString(), ct);
+
+        // Send email
+        if (purpose == OtpPurpose.EmailVerification)
+            await _emailService.SendEmailVerificationOtpAsync(user.Email!, code);
+
+        if (purpose == OtpPurpose.ResetPassword)
+            await _emailService.SendPasswordResetOtpAsync(user.Email!, code);
+    }
     // ═══════════════════════════════════════════════════════════
     // VERIFY EMAIL
     // ═══════════════════════════════════════════════════════════
