@@ -28,8 +28,17 @@ namespace E_Learning.Service.Services.QuizServices
             var courseExists = await _unitOfWork.Courses.AnyAsync(c => c.Id == dto.CourseId, ct);
             if (!courseExists)
                 return _responseHandler.NotFound<QuizDetailResponseDto>("Course not found.");
-            // Validate lessonId if provided ← هنا
+            // Validate lessonId if provided ← هنا 
+            // Validate course exists
 
+
+            // Validate lessonId if provided
+            if (dto.LessonId.HasValue)
+            {
+                var lesson = await _unitOfWork.Lessons.GetByIdAsync(dto.LessonId.Value, ct);
+                if (lesson == null)
+                    return _responseHandler.NotFound<QuizDetailResponseDto>("Lesson not found.");
+            }
 
             // Validate no duplicate title in same course
             var titleExists = await _unitOfWork.Quizzes.ExistsByTitleAsync(dto.Title, dto.CourseId, ct);
