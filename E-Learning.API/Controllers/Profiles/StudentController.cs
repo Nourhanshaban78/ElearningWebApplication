@@ -1,7 +1,9 @@
-﻿using E_Learning.Service.DTOs.Profiles.Admin;
+﻿using E_Learning.Service.DTOs.Profiles;
+using E_Learning.Service.DTOs.Profiles.Admin;
 using E_Learning.Service.DTOs.Profiles.Instructor;
 using E_Learning.Service.DTOs.Profiles.Student;
 using E_Learning.Service.Services.Profiles;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -12,6 +14,7 @@ namespace E_Learning.API.Controllers.Profiles
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class StudentController : ControllerBase
     {
         private readonly IStudentService _studentService;
@@ -20,15 +23,24 @@ namespace E_Learning.API.Controllers.Profiles
             _studentService = studentService;
         }
 
-        [HttpPost("create")]
-        public async Task<IActionResult> CreateInstructorProfile([FromBody] CreateStudentProfileDto dto)
+        /* [HttpPost("create")]
+         public async Task<IActionResult> CreateInstructorProfile([FromForm] UpdateStudentProfileDto dto)
+         {
+             var response = await _studentService.CreateStudentProfile(dto);
+             return StatusCode((int)response.HttpStatusCode, response);
+         }*/
+        [Authorize(Roles = "Student")]
+        //[HttpPut("{userId}")]
+        [HttpPut("me")]
+        public async Task<IActionResult> UpdateStudentProfile( [FromForm] UpdateStudentProfileDto dto)
         {
-            var response = await _studentService.CreateStudentProfile(dto);
-            return StatusCode((int)response.HttpStatusCode, response);
-        }
-        [HttpPut("{userId}")]
-        public async Task<IActionResult> UpdateStudentProfile(Guid userId, [FromBody] CreateStudentProfileDto dto)
-        {
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userIdString))
+                return Unauthorized("User not logged in");
+
+   
+            if (!Guid.TryParse(userIdString, out var userId))
+                return BadRequest("Invalid user ID");
             var response = await _studentService.UpdateStudentProfile(userId, dto);
             return StatusCode((int)response.HttpStatusCode, response);
         }
@@ -40,12 +52,12 @@ namespace E_Learning.API.Controllers.Profiles
             return StatusCode((int)response.HttpStatusCode, response);
         }
 
-        [HttpGet("exists/{userId}")]
+        /*[HttpGet("exists/{userId}")]
         public async Task<IActionResult> StudentProfileExists(Guid userId)
         {
             var response = await _studentService.StudentProfileExists(userId);
             return StatusCode((int)response.HttpStatusCode, response);
-        }
+        }*/
 
         [HttpGet("all")]
         public async Task<IActionResult> GetAllStudents()
@@ -60,21 +72,19 @@ namespace E_Learning.API.Controllers.Profiles
             var response = await _studentService.DeleteStudentProfile(userId);
             return StatusCode((int)response.HttpStatusCode, response);
         }
-
-        [HttpPost("upload-profile-picture")]
-       
-        public async Task<IActionResult> UploadProfilePicture(IFormFile file)
+        [Authorize(Roles = "Student")]
+        [HttpPost("change-password")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
         {
-            if (file == null)
-                return BadRequest("No file uploaded");
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userIdString))
+                return Unauthorized("User not logged in");
 
-            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userIdClaim))
-                return BadRequest("User not identified");
 
-            var response = await _studentService.UploadProfilePicture(Guid.Parse(userIdClaim), file);
+            if (!Guid.TryParse(userIdString, out var userId))
+                return BadRequest("Invalid user ID");
+            var response = await _studentService.ChangePasswordAsync(userId, dto);
             return StatusCode((int)response.HttpStatusCode, response);
         }
-
     }
 }

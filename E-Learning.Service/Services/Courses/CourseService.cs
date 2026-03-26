@@ -1,19 +1,21 @@
 ﻿using AutoMapper;
 using E_Learning.Core.Base;
 using E_Learning.Core.Entities.Courses;
+using E_Learning.Core.Features.Courses.Queries;
 using E_Learning.Core.Interfaces.Repositories;
 using E_Learning.Core.Interfaces.Services.Courses;
 using E_Learning.Core.Repository;
+using E_Learning.Core.Specifications.Courses;
 using E_Learning.Repository.Repositories;
 using E_Learning.Service.DTOs.Course;
 using E_Learning.Service.DTOs.CourseDto;
 using Microsoft.EntityFrameworkCore;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace E_Learning.Service.Services.Courses
 {
     public class CourseService : ICourseService
-    {
-        
+    {        
         private readonly IMapper _mapper;
         private  ResponseHandler _response;
         private readonly IUnitOfWork _unit;
@@ -73,14 +75,34 @@ namespace E_Learning.Service.Services.Courses
 
         public async Task<Response<IReadOnlyList<CourseDto>>> GetCoursesAsync(CancellationToken ct = default)
         {
-            var Courses = await _unit.Courses.GetAllAsync();
-            var Result = _mapper.Map<IReadOnlyList<CourseDto>>(Courses);
-            return  _response.Success(Result);
+
+            var courses = await _unit.Courses.GetAllAsync();
+
+            if (courses == null)
+                return _response.NotFound<IReadOnlyList<CourseDto>>("Course not found");
+
+            var Result = _mapper.Map<IReadOnlyList<CourseDto>>(courses);
+            return _response.Success(Result);
         }
 
-        public async Task<Response<string>> UpdateCourseAsync(UpdateCourseDto dto, CancellationToken ct = default)
+        public async Task<Response<IReadOnlyList<CourseDto>>> GetCoursesAsync(CourseQuery query,
+            CancellationToken ct = default)
         {
-            var Course =await _unit.Courses.GetByIdAsync(dto.Id);
+            var spec = new CourseSpecification(query);
+
+            var courses = await _unit.Courses.GetAllWithSpecAsync(spec, ct);
+
+            if (courses == null || !courses.Any())
+                return _response.NotFound<IReadOnlyList<CourseDto>>("No courses found");
+
+            var result = _mapper.Map<IReadOnlyList<CourseDto>>(courses);
+
+            return _response.Success(result);
+        }
+
+        public async Task<Response<string>> UpdateCourseAsync(int id,UpdateCourseDto dto, CancellationToken ct = default)
+        {
+            var Course =await _unit.Courses.GetByIdAsync(id);
             if (Course == null)
                 return _response.NotFound<string>("Course not found");
             

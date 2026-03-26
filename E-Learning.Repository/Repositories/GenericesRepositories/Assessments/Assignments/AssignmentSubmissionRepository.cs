@@ -29,6 +29,8 @@ namespace E_Learning.Repository.Repositories.GenericesRepositories.Assessments.A
             {
                 return await _context.AssignmentSubmissions
                     .Where(x => x.AssignmentId == assignmentId)
+                    .Include(a => a.Assignment)
+                     .Include(a => a.Student)
                     .ToListAsync();
             }
 
@@ -36,6 +38,8 @@ namespace E_Learning.Repository.Repositories.GenericesRepositories.Assessments.A
         {
             return await _context.AssignmentSubmissions
                 .Where(x => x.StudentId == studentId)
+                .Include(a => a.Assignment)
+                 .Include(a => a.Student)
                 .ToListAsync();
         }
     }

@@ -6,10 +6,12 @@ using E_Learning.Core.Interfaces.Repositories;
 using E_Learning.Core.Interfaces.Repositories.Profile;
 using E_Learning.Core.Repository;
 using E_Learning.Repository.Repositories.GenericesRepositories.Profile;
+using E_Learning.Service.Contract;
+using E_Learning.Service.DTOs.Profiles;
 using E_Learning.Service.DTOs.Profiles.Admin;
 using E_Learning.Service.DTOs.Profiles.Student;
 using Microsoft.AspNetCore.Http;
-
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -25,23 +27,34 @@ namespace E_Learning.Service.Services.Profiles
         private readonly IUnitOfWork _unit;
         private readonly IMapper _mapper;
         private readonly ResponseHandler _responseHandler;
+        private readonly IFileService _fileService;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole<Guid>> _roleManager;
 
         public StudentService(
             IStudentProfileRepository studentProfileRepository,
             IGenericRepository<ApplicationUser, Guid> genericRepository,
             IUnitOfWork unit,
             IMapper mapper,
-            ResponseHandler responseHandler)
+            ResponseHandler responseHandler,
+            IFileService fileService,
+            UserManager<ApplicationUser>userManager,
+            RoleManager<IdentityRole<Guid>> roleManager
+
+            )
         {
             _studentProfileRepository = studentProfileRepository;
             _genericRepository = genericRepository;
             _unit = unit;
             _mapper = mapper;
             _responseHandler = responseHandler;
+            _fileService = fileService;
+            _userManager = userManager;
+            _roleManager = roleManager;
         }
 
         // ================= Create Student Profile =================
-        public async Task<Response<StudentProfileResponseDto>> CreateStudentProfile(CreateStudentProfileDto dto, CancellationToken ct = default)
+       /* public async Task<Response<StudentProfileResponseDto>> CreateStudentProfile(UpdateStudentProfileDto dto, CancellationToken ct = default)
         {
             // 1️⃣ إنشاء الـ ApplicationUser جديد
             var user = new ApplicationUser
@@ -59,12 +72,18 @@ namespace E_Learning.Service.Services.Profiles
             await _genericRepository.AddAsync(user);
             await _unit.SaveChangesAsync(ct);
 
-            // 2️⃣ إنشاء الـ Profile وربطه بالـ user اللي اتعمل
+            string imagePath = null;
+
+            if (dto.ProfilePicture != null)
+            {
+                imagePath = await _fileService.UploadFileAsync<StudentProfile>(dto.ProfilePicture, "images/student");
+            }
             var profile = new StudentProfile
             {
                 AppUserId = user.Id, // هنا نستخدم الـ Id اللي اتعمل تلقائي
                 Location = dto.location,
-                DateOfBirth = dto.DateOfBirth
+                DateOfBirth = dto.DateOfBirth,
+                ProfilePicture = imagePath
             };
 
             await _studentProfileRepository.AddAsync(profile);
@@ -74,25 +93,88 @@ namespace E_Learning.Service.Services.Profiles
             var resultDto = _mapper.Map<StudentProfileResponseDto>(profile);
             return _responseHandler.Created(resultDto);
         }
-
+       */
         // ================= Update Student Profile =================
-        public async Task<Response<StudentProfileResponseDto>> UpdateStudentProfile(Guid userId, CreateStudentProfileDto dto)
+        public async Task<Response<StudentProfileResponseDto>> UpdateStudentProfile(Guid userId, UpdateStudentProfileDto dto)
         {
             var profile = await _studentProfileRepository.GetStudentProfileWithUserByUserIdAsync(userId);
+            //if (profile == null)
+            //    return _responseHandler.NotFound<StudentProfileResponseDto>("Student profile not found");
             if (profile == null)
-                return _responseHandler.NotFound<StudentProfileResponseDto>("Student profile not found");
+            {
+                profile = new StudentProfile
+                {
+                    AppUserId = userId,
+                    Location = dto.location,
+                    DateOfBirth = dto.DateOfBirth,
+                    ProfilePicture = null,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                };
+                await _studentProfileRepository.AddAsync(profile);
+                await _unit.SaveChangesAsync();
+            }
+            var user = profile.AppUser;
+            if (user == null)
+            {
+                user = await _userManager.FindByIdAsync(userId.ToString());
+                profile.AppUser = user;
+                if (user == null)
+                    return _responseHandler.NotFound<StudentProfileResponseDto>("User not found");
+            }
 
-            profile.AppUser.FullName = dto.FullName;
-            profile.AppUser.Email = dto.Email;
-            profile.AppUser.PhoneNumber = dto.phoneNumber;
-            profile.AppUser.MemberSince = DateTime.UtcNow;
-            profile.Location = dto.location;
-            profile.DateOfBirth = dto.DateOfBirth;
-            
+            //if (!string.IsNullOrEmpty(dto.Password))
+            //{
+            //    if (await _userManager.HasPasswordAsync(user))
+            //    {
+
+            //        await _userManager.RemovePasswordAsync(user);
+            //    }
+
+            //    await _userManager.AddPasswordAsync(user, dto.Password);
+            //}
+            string imagePath;
+
+            if (dto.ProfilePicture != null)
+            {
+                if (!string.IsNullOrEmpty(profile.ProfilePicture))
+                {
+                    var oldPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", profile.ProfilePicture.TrimStart('/'));
+                    if (File.Exists(oldPath))
+                        File.Delete(oldPath);
+                }
+
+                imagePath = await _fileService.UploadFileAsync<AdminProfile>(dto.ProfilePicture, "images/students");
+            }
+            else
+            {
+                imagePath = profile.ProfilePicture;
+            }
+
+            //if (!string.IsNullOrEmpty(profile.ProfilePicture))
+            //{
+            //    var oldPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", profile.ProfilePicture.TrimStart('/'));
+            //    if (File.Exists(oldPath))
+            //        File.Delete(oldPath);
+            //}
+
+          
+            //var newPath = await _fileService.UploadFileAsync<AdminProfile>(dto.ProfilePicture, "images/students");
+           
+            profile.AppUser.FullName = dto.FullName??profile.AppUser.FullName;
+            //profile.AppUser.Email = dto.Email;
+            profile.AppUser.PhoneNumber = dto.phoneNumber ?? profile.AppUser.PhoneNumber;
+            //profile.AppUser.MemberSince = DateTime.UtcNow;
+            profile.Location = dto.location??profile.Location;
+            profile.DateOfBirth = dto.DateOfBirth??profile.DateOfBirth;
+            profile.ProfilePicture = imagePath; 
+
 
             await _unit.SaveChangesAsync();
 
             var resultDto = _mapper.Map<StudentProfileResponseDto>(profile);
+        
+            //resultDto.Password = dto.Password;
             return _responseHandler.Success(resultDto);
         }
 
@@ -135,39 +217,33 @@ namespace E_Learning.Service.Services.Profiles
             return _responseHandler.Deleted<StudentProfileResponseDto>("Student profile deleted successfully");
         }
 
-        // ================= Upload Profile Picture =================
-        public async Task<Response<string>> UploadProfilePicture(Guid userId, IFormFile file)
+        public async Task<Response<string>> ChangePasswordAsync(Guid userId, ChangePasswordDto dto)
         {
-            if (file == null || file.Length == 0)
-                return _responseHandler.BadRequest<string>("No file uploaded");
-
-            var profile = await _studentProfileRepository.GetStudentProfileWithUserByUserIdAsync(userId);
-            if (profile == null)
-                return _responseHandler.NotFound<string>("Student profile not found");
-
-            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/students");
-            Directory.CreateDirectory(uploadsFolder);
-
-            var fileExtension = Path.GetExtension(file.FileName);
-            var fileName = $"{userId}_{Guid.NewGuid()}{fileExtension}";
-            var filePath = Path.Combine(uploadsFolder, fileName);
-
-            using (var stream = new FileStream(filePath, FileMode.Create))
+        
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            if (user == null)
+                return _responseHandler.NotFound<string>("User not found");
+ 
+            if (dto.NewPassword != dto.ConfirmPassword)
+                return _responseHandler.BadRequest<string>("New password and confirmation do not match");
+ 
+            var passwordValidation = await _userManager.PasswordValidators.First().ValidateAsync(_userManager, user, dto.NewPassword);
+            if (!passwordValidation.Succeeded)
             {
-                await file.CopyToAsync(stream);
+                var errors = string.Join(", ", passwordValidation.Errors.Select(e => e.Description));
+                return _responseHandler.BadRequest<string>($"New password invalid: {errors}");
             }
 
-            if (!string.IsNullOrEmpty(profile.ProfilePicture))
+          
+            var result = await _userManager.ChangePasswordAsync(user, dto.CurrentPassword, dto.NewPassword);
+            if (!result.Succeeded)
             {
-                var oldPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", profile.ProfilePicture.TrimStart('/'));
-                if (File.Exists(oldPath))
-                    File.Delete(oldPath);
+                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                return _responseHandler.BadRequest<string>($"Current password incorrect or change failed: {errors}");
             }
 
-            profile.ProfilePicture = $"/images/students/{fileName}";
-            await _unit.SaveChangesAsync();
-
-            return _responseHandler.Success(profile.ProfilePicture);
+           
+            return _responseHandler.Success("Password changed successfully");
         }
     }
 }
