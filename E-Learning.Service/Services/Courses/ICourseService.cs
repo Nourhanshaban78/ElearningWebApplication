@@ -7,7 +7,9 @@ namespace E_Learning.Core.Interfaces.Services.Courses
 {
     public interface ICourseService
     {
-        Task<Response<IReadOnlyList<CourseDto>>> GetCoursesAsync(CourseQuery query,CancellationToken ct = default);
+        Task<Response<IReadOnlyList<CourseDto>>> GetCoursesAsync(CourseQuery query,
+            CancellationToken ct = default);
+        Task<Response<IReadOnlyList<CourseDto>>> GetCoursesAsync(CancellationToken ct = default);
         Task<Response<CourseDto>> GetCourseByIdAsync(int id, CancellationToken ct = default);
 
         Task<Response<CourseDto>> CreateCourseAsync(CreateCourseDto course, CancellationToken ct = default);
