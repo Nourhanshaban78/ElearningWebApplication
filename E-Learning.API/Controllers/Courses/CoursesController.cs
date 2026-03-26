@@ -53,10 +53,10 @@ namespace E_Learning.API.Controllers.Courses
             return StatusCode((int)result.HttpStatusCode, result);
         }
 
-        [HttpPut]
-        public async Task<IActionResult> UpdateCourse(UpdateCourseDto dto)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateCourse(int id,UpdateCourseDto dto)
         {
-            var result = await _courseService.UpdateCourseAsync(dto);
+            var result = await _courseService.UpdateCourseAsync(id,dto);
             return StatusCode((int)result.HttpStatusCode, result);
         }
 

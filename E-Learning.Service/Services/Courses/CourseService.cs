@@ -85,9 +85,9 @@ namespace E_Learning.Service.Services.Courses
             return  _response.Success(Result);
         }
 
-        public async Task<Response<string>> UpdateCourseAsync(UpdateCourseDto dto, CancellationToken ct = default)
+        public async Task<Response<string>> UpdateCourseAsync(int id,UpdateCourseDto dto, CancellationToken ct = default)
         {
-            var Course =await _unit.Courses.GetByIdAsync(dto.Id);
+            var Course =await _unit.Courses.GetByIdAsync(id);
             if (Course == null)
                 return _response.NotFound<string>("Course not found");
             
