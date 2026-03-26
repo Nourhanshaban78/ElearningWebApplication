@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace E_Learning.Repository.Migrations
 {
     /// <inheritdoc />
-    public partial class Init : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -320,6 +320,7 @@ namespace E_Learning.Repository.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Type = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    StripePaymentMethodId = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     CardLastFour = table.Column<string>(type: "nvarchar(4)", maxLength: 4, nullable: true),
                     CardHolderName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     ExpiryMonth = table.Column<byte>(type: "tinyint", nullable: true),

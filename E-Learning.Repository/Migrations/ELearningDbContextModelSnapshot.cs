@@ -574,7 +574,7 @@ namespace E_Learning.Repository.Migrations
 
                     b.HasIndex("StudentId");
 
-                    b.ToTable("QuizAttempts", (string)null);
+                    b.ToTable("QuizAttempts");
                 });
 
             modelBuilder.Entity("E_Learning.Core.Entities.Assessments.Quiz.QuizAttemptAnswer", b =>
