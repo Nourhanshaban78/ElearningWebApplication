@@ -16,7 +16,7 @@ namespace E_Learning.API.Controllers.Courses
         {
             _service = service;
         }
-
+        #region Section
         [HttpPost("courses/{courseId}/sections")]
         public async Task<IActionResult> CreateSection(int courseId, CreateSectionDto dto, CancellationToken ct = default)
         {
@@ -44,18 +44,21 @@ namespace E_Learning.API.Controllers.Courses
             var result = await _service.GetSectionsByCourseIdAsync(courseId);
             return StatusCode((int)result.HttpStatusCode, result);
         }
+#endregion
 
+
+        #region Lesson
         [HttpPost("sections/{sectionId}/lessons")]
-        public async Task<IActionResult> CreateLesson(int sectionId, CreateLessonDto dto, CancellationToken ct = default)
+        public async Task<IActionResult> CreateLesson(int sectionId,[FromForm] CreateLessonDto dto, CancellationToken ct = default)
         {
-            var result = await _service.CreateLessonAsync(sectionId, dto);
+            var result = await _service.CreateLessonAsync(sectionId, dto, ct);
             return StatusCode((int)result.HttpStatusCode, result);
         }
 
         [HttpPut("lessons/{lessonId}")]
-        public async Task<IActionResult> UpdateLesson(int lessonId, UpdateLessonDto dto, CancellationToken ct = default)
+        public async Task<IActionResult> UpdateLesson(int lessonId,[FromForm] UpdateLessonDto dto, CancellationToken ct = default)
         {
-            var result = await _service.UpdateLessonAsync(lessonId, dto);
+            var result = await _service.UpdateLessonAsync(lessonId, dto, ct);
             return StatusCode((int)result.HttpStatusCode, result);
         }
 
@@ -79,5 +82,6 @@ namespace E_Learning.API.Controllers.Courses
             var result = await _service.GetLessonsByCourseIdAsync(courseId);
             return StatusCode((int)result.HttpStatusCode, result);
         }
+        #endregion
     }
 }

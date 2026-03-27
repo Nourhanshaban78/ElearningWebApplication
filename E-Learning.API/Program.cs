@@ -4,6 +4,7 @@ using E_Learning.API.Services;
 using E_Learning.Service.Hubs;
 using E_Learning.Service.Services.QuizServices;
 using E_Learning.Service.Services.Schedule;
+using FFMpegCore;
 
 namespace E_Learning.API
 {
@@ -18,6 +19,11 @@ namespace E_Learning.API
             builder.Services.AddScoped<AuditInterceptor>();
             builder.Services.AddHttpClient();
 
+            // ffmpeg
+            GlobalFFOptions.Configure(options =>
+            {
+                options.BinaryFolder = Path.Combine(Directory.GetCurrentDirectory(), "Infrastructure", "FFmpeg");
+            });
 
             // DbContext Default
             builder.Services.AddDbContext<ELearningDbContext>((serviceProvider, options) =>
