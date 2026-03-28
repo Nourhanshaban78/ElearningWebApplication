@@ -135,9 +135,9 @@ namespace E_Learning.Service.Services.LiveSessionServices
         // --- 2️⃣ ميثود جلب التوكن (خاصة بالـ Service) ---
         private async Task<string> GetZoomAccessTokenAsync(HttpClient client, CancellationToken ct)
         {
-            string clientId = "3h47Ymv_QyOA37FXEeAhZw";
-            string clientSecret = "4J380Ok1uQ9N4KwV610CV7sP2S7K4VFy";
-            string accountId = "OYNW2okMTDW4Xn1YakVoxQ";
+            string clientId = "JRcfzlFpQDmUPPYjamyefQ";
+            string clientSecret = "gUz6T6b2ph5uNLxbpwV6096Y1jfpJhhw";
+            string accountId = "v5qj43RhQ3uX0yYvFVqyBA";
 
             var authHeader = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{clientId}:{clientSecret}"));
 
