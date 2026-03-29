@@ -1,46 +1,12 @@
-﻿using E_learning.API.Extensions;
-using E_learning.Core.Entities.Identity;
-using E_learning.Repository.Interceptors;
-using E_Learning.API.Extensions;
-using E_Learning.API.Hubs;  // NotificationHub
+﻿using E_Learning.API.Hubs;
+using E_Learning.API.Middleware;
 using E_Learning.API.Services;
-using E_Learning.Core.Base;
-using E_Learning.Core.Interfaces.Repositories;
-using E_Learning.Core.Interfaces.Repositories.Enrollments;
-using E_Learning.Core.Interfaces.Repositories.LiveSessions;
-using E_Learning.Core.Interfaces.Repositories.Profile;
-using E_Learning.Core.Interfaces.Services.Academic;
-using E_Learning.Core.Interfaces.Services.Courses;
-using E_Learning.Core.Interfaces.Services.Enrollments;
-using E_Learning.Core.Interfaces.Services.Reviews_Certificates;
-using E_Learning.Core.Repository;
-using E_Learning.Repository.Data;
-using E_Learning.Repository.Repositories;
-using E_Learning.Repository.Repositories.GenericesRepositories;
-using E_Learning.Repository.Repositories.GenericesRepositories.Enrollments;
-using E_Learning.Repository.Repositories.GenericesRepositories.LiveSessions;
-using E_Learning.Repository.Repositories.GenericesRepositories.Profile;
-using E_Learning.Service.Contract;
-using E_Learning.Service.Contract.Assignments;
-using E_Learning.Service.Contract.Notifications;
+using E_Learning.Core.Interfaces.Repositories.Academic;
+using E_Learning.Repository.Repositories.GenericesRepositories.Academic;
 using E_Learning.Service.Hubs;
-using E_Learning.Service.Mapping;
-using E_Learning.Service.Services;
-using E_Learning.Service.Services.Academic;
-using E_Learning.Service.Services.Academic.Stage;
-using E_Learning.Service.Services.AssignmentService;
-using E_Learning.Service.Services.Courses;
-using E_Learning.Service.Services.Enrollments;
-using E_Learning.Service.Services.LiveSessionServices;
-using E_Learning.Service.Services.Notifications;
-using E_Learning.Service.Services.Profiles;
 using E_Learning.Service.Services.QuizServices;
-using E_Learning.Service.Services.Reviews_Certificates;
 using E_Learning.Service.Services.Schedule;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-
+using FFMpegCore;
 
 namespace E_Learning.API
 {
@@ -53,8 +19,13 @@ namespace E_Learning.API
             // For Auditing Interceptor
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddScoped<AuditInterceptor>();
+            builder.Services.AddHttpClient();
 
-
+            // ffmpeg
+            GlobalFFOptions.Configure(options =>
+            {
+                options.BinaryFolder = Path.Combine(Directory.GetCurrentDirectory(), "Infrastructure", "FFmpeg");
+            });
 
             // DbContext Default
             builder.Services.AddDbContext<ELearningDbContext>((serviceProvider, options) =>
@@ -79,6 +50,65 @@ namespace E_Learning.API
             builder.Services.AddAutoMapper(typeof(EnrollmentMappingProfile).Assembly);
             builder.Services.AddScoped(typeof(IGenericRepository<,>), typeof(GenericRepository<,>));
 
+
+            //// Auto Mapper
+            builder.Services.AddAutoMapper(typeof(EnrollmentMappingProfile).Assembly);
+            builder.Services.AddAutoMapper(typeof(AssignmentProfile).Assembly);
+            builder.Services.AddAutoMapper(typeof(LiveSessionMappingProfile).Assembly);
+            builder.Services.AddAutoMapper(typeof(AdminProfileMapping).Assembly);
+            builder.Services.AddAutoMapper(typeof(AcademicMappingProfile).Assembly);
+            builder.Services.AddAutoMapper(typeof(AdminProfileMapping).Assembly);
+            builder.Services.AddAutoMapper(typeof(InstructorProfileMapping).Assembly);
+            builder.Services.AddAutoMapper(typeof(StudentProfileMapping).Assembly);
+            builder.Services.AddAutoMapper(typeof(UserMappingProfile).Assembly);
+            builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+            // ResponseHandler
+            builder.Services.AddTransient<ResponseHandler>();
+
+            #region Services 
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+            builder.Services.AddSwaggerGen();
+            // Services
+            builder.Services.AddScoped<IStageService, StageService>();
+            builder.Services.AddScoped<ILevelService, LevelService>();
+            builder.Services.AddScoped<ILevelRepository, LevelRepository>();
+
+            // Enrollment Services
+            builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
+            builder.Services.AddScoped<ILessonProgressService, LessonProgressService>();
+            builder.Services.AddScoped<IAssignmentService, AssignmentService>();
+            builder.Services.AddScoped<IAssignmentSubmissionService, AssignmentSubmissionService>();
+            builder.Services.AddScoped<IFileService, FileService>();
+            //enralment Repositories
+            builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
+            builder.Services.AddScoped<ILessonProgressRepository, LessonProgressRepository>();
+            // notfications Services
+            builder.Services.AddScoped<INotificationService, NotificationService>();
+            builder.Services.AddScoped<INotificationSettingService, NotificationSettingService>();
+            // Add services to the container.
+            builder.Services.AddScoped<IStageService, StageService>();
+            builder.Services.AddScoped<ILevelService, LevelService>();
+            // Enrollment Services
+            builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
+            builder.Services.AddScoped<ILessonProgressService, LessonProgressService>();
+            builder.Services.AddScoped<IAssignmentService, AssignmentService>();
+            builder.Services.AddScoped<IAssignmentSubmissionService, AssignmentSubmissionService>();
+            builder.Services.AddScoped<IFileService, FileService>();
+            // Enrollment Repositories
+            builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
+            builder.Services.AddScoped<ILessonProgressRepository, LessonProgressRepository>();
+            // Notifications Services
+            builder.Services.AddScoped<INotificationService, NotificationService>();
+            builder.Services.AddScoped<INotificationSettingService, NotificationSettingService>();
+            // CourseService
+            builder.Services.AddScoped<ICourseContentService, CourseContentService>();
+            builder.Services.AddScoped<ICourseService, CourseService>();
+            builder.Services.AddApplicationServices();
+            // AddApplicationServices
+            builder.Services.AddScoped<INotificationHubService, NotificationHubService>();  // ← ضيف السطر ده
+            builder.Services.AddScoped<IScheduleService, ScheduleService>();
+
             builder.Services.AddTransient<ResponseHandler>();
             builder.Services.AddScoped<IAdminService, AdminService>();
             builder.Services.AddScoped<IInstructorService, InstructorService>();
@@ -94,46 +124,17 @@ namespace E_Learning.API
             builder.Services.AddScoped<IInstructorProfileRepository, InstructorProfileRepository>();
             builder.Services.AddScoped<IStudentProfileRepository, StudentProfileRepository>();
             builder.Services.AddScoped<ICertificateServices, CertificateServices>();
-
-
-            //// Auto Mapper
-            builder.Services.AddAutoMapper(typeof(EnrollmentMappingProfile).Assembly);
-            builder.Services.AddAutoMapper(typeof(AssignmentProfile).Assembly);
-            builder.Services.AddAutoMapper(typeof(LiveSessionMappingProfile).Assembly);
-            builder.Services.AddAutoMapper(typeof(AdminProfileMapping).Assembly);
-            builder.Services.AddAutoMapper(typeof(AcademicMappingProfile).Assembly);
-
-            builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-            // builder.Services.AddAutoMapper(typeof(LiveSessionMappingProfile));
-            // ResponseHandler
-            builder.Services.AddTransient<ResponseHandler>();
-            // Stage & Level Services
-            builder.Services.AddScoped<IStageService, StageService>();
-            builder.Services.AddScoped<ILevelService, LevelService>();
-            // Enrollment Services
-            builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
-            builder.Services.AddScoped<ILessonProgressService, LessonProgressService>();
-            builder.Services.AddScoped<IAssignmentService, AssignmentService>();
-            builder.Services.AddScoped<IAssignmentSubmissionService, AssignmentSubmissionService>();
-            builder.Services.AddScoped<IFileService, FileService>();
-            // Enrollment Repositories
-            builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
-            builder.Services.AddScoped<ILessonProgressRepository, LessonProgressRepository>();
-            // Notifications Services
-            builder.Services.AddScoped<INotificationService, NotificationService>();
-            builder.Services.AddScoped<INotificationSettingService, NotificationSettingService>();
-            builder.Services.AddScoped<INotificationHubService, NotificationHubService>();
-            // Service فقط - الـ Repositories شغالة عن طريق UnitOfWork
+            builder.Services.AddScoped<IExamAttemptServices, ExamAttemptServices>();
+            builder.Services.AddScoped<IExamServices, ExamServices>();
+            builder.Services.AddScoped<IExamQuestionServices, ExamQuestionServices>();
+            builder.Services.AddScoped<IExamAttemptAnswerServices, ExamAttemptAnswerServices>();
             builder.Services.AddScoped<IQuizService, QuizService>();
-            builder.Services.AddScoped<ResponseHandler>();// ← ضيف السطر ده
+            #endregion
 
-            builder.Services.AddScoped<INotificationHubService, NotificationHubService>();
-            // CourseService
-            builder.Services.AddScoped<ICourseContentService, CourseContentService>();
-            builder.Services.AddScoped<ICourseService, CourseService>();
-            // AddApplicationServices
-            builder.Services.AddScoped<INotificationHubService, NotificationHubService>();  // ← ضيف السطر ده
-            builder.Services.AddScoped<IScheduleService, ScheduleService>();
+
+
+            // Stage & Level Services
+
             builder.Services.AddSignalR();
 
 
@@ -156,15 +157,8 @@ namespace E_Learning.API
             // AddApplicationServices (repositories + services)
 
             builder.Services.AddApplicationServices(builder.Configuration);
-
-
-
-            // ══════════════════════════════════════════════════════
-            // ═══════════ JWT Authentication Registration ══════════
-            // ══════════════════════════════════════════════════════
-
+            // JWT Authentication
             builder.Services.AddJwtAuthentication(builder.Configuration);
-
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -197,20 +191,20 @@ namespace E_Learning.API
             });
 
             builder.Services.AddSignalR();
-               
-            var app = builder.Build();
 
+            var app = builder.Build();
+            app.UseMiddleware<ExceptionMiddleware>();
             // ─── Migration & Seeding ─────────────────────
-            // await app.MigrateDatabaseAsync();
+            await app.MigrateDatabaseAsync();
 
             if (app.Environment.IsDevelopment())
             {
-                app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseDeveloperExceptionPage();
             }
 
+            app.UseSwagger();
+            app.UseSwaggerUI();
             app.UseHttpsRedirection();
-
 
             app.UseCors("AllowFrontend");
             app.UseAuthentication();

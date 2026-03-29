@@ -4,6 +4,9 @@ using E_Learning.Core.Entities.Courses;
 using E_Learning.Core.Repository;
 using E_Learning.Service.DTOs.Lesson;
 using E_Learning.Service.DTOs.Section;
+using FFMpegCore;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,14 +20,34 @@ namespace E_Learning.Service.Services.Courses
         private readonly IUnitOfWork _unit;
         private readonly IMapper _mapper;
         private readonly ResponseHandler _response;
+        private readonly IWebHostEnvironment _webHost;
 
-        public CourseContentService(IUnitOfWork unit, IMapper mapper, ResponseHandler response)
+        public CourseContentService(IUnitOfWork unit, IMapper mapper, ResponseHandler response, IWebHostEnvironment webHost)
         {
             _unit = unit;
             _mapper = mapper;
             _response = response;
+            _webHost = webHost;
         }
 
+        private async Task<(string Path, int Duration)> UploadVideoAndGetDurationAsync(IFormFile file)
+        {
+            var uploadsFolder = Path.Combine(_webHost.WebRootPath, "uploads", "videos");
+            if(!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
+
+            var fileName = $"{Guid.NewGuid()}_{file.FileName}";
+            var filePath = Path.Combine(uploadsFolder, fileName);
+
+            using var stream = new FileStream(filePath, FileMode.Create);
+            await file.CopyToAsync(stream);
+
+            var videoInfo = await FFProbe.AnalyseAsync(filePath);
+            int duration = (int)videoInfo.Duration.TotalSeconds;
+
+            return ($"/uploads/videos/{fileName}",duration);
+        }
+        #region Section
+        
         public async Task<Response<SectionDto>> CreateSectionAsync(int courseId, CreateSectionDto dto, CancellationToken ct = default)
         {
             var course = await _unit.Courses.GetByIdAsync(courseId);
@@ -92,7 +115,9 @@ namespace E_Learning.Service.Services.Courses
 
             return _response.Success(result);
         }
+        #endregion
 
+        #region Lesson
         public async Task<Response<LessonDto>> CreateLessonAsync(int sectionId, CreateLessonDto dto, CancellationToken ct = default)
         {
             var section = await _unit.Sections.GetByIdAsync(sectionId);
@@ -101,11 +126,16 @@ namespace E_Learning.Service.Services.Courses
                 return _response.NotFound<LessonDto>("Section Not Found");
 
             var lesson = _mapper.Map<Lesson>(dto);
-
             lesson.SectionId = sectionId;
 
-            await _unit.Lessons.AddAsync(lesson);
+            if (dto.VideoUrl != null)
+                {
+                    var uploadResult = await UploadVideoAndGetDurationAsync(dto.VideoUrl);
+                    lesson.VideoUrl = uploadResult.Path;
+                    lesson.DurationSeconds = uploadResult.Duration;
+                }
 
+            await _unit.Lessons.AddAsync(lesson);
             await _unit.SaveChangesAsync();
 
             var result = _mapper.Map<LessonDto>(lesson);
@@ -120,12 +150,26 @@ namespace E_Learning.Service.Services.Courses
             if (lesson == null)
                 return _response.NotFound<LessonDto>("Lesson Not Found");
 
-            lesson.Title = dto.Title;
-            lesson.VideoUrl = dto.VideoUrl;
-            lesson.DurationSeconds = dto.DurationSeconds;
+            _mapper.Map(dto, lesson);
+
+            if (dto.VideoUrl != null)
+            {
+                if(!string.IsNullOrEmpty( lesson.VideoUrl))
+                {
+                    var oldRelativePath = lesson.VideoUrl.TrimStart('/');
+                    var oldFillPath = Path.Combine(_webHost.WebRootPath, oldRelativePath);
+
+                    if(System.IO.File.Exists(oldFillPath))
+                        System.IO.File.Delete(oldFillPath);
+                }
+                var uploadResult = await UploadVideoAndGetDurationAsync(dto.VideoUrl);
+                lesson.VideoUrl = uploadResult.Path;
+                lesson.DurationSeconds = uploadResult.Duration;
+            }
+
+
 
             _unit.Lessons.Update(lesson);
-
             await _unit.SaveChangesAsync();
 
             var result = _mapper.Map<LessonDto>(lesson);
@@ -140,8 +184,22 @@ namespace E_Learning.Service.Services.Courses
             if (lesson == null)
                 return _response.NotFound<string>("Lesson Not Found");
 
-            _unit.Lessons.Remove(lesson);
+            if (!string.IsNullOrEmpty(lesson.VideoUrl))
+            {
+                var filePath = Path.Combine(_webHost.WebRootPath, lesson.VideoUrl.TrimStart('/'));
 
+                if (System.IO.File.Exists(filePath))
+                {
+                    try
+                    {
+                        System.IO.File.Delete(filePath);
+                    }
+                    catch (Exception ex)
+                    {                        
+                    }
+                }
+            }
+            _unit.Lessons.Remove(lesson);
             await _unit.SaveChangesAsync();
 
             return _response.Deleted<string>();
@@ -176,5 +234,7 @@ namespace E_Learning.Service.Services.Courses
 
             return _response.Success(result);
         }
+        #endregion 
+
     }
 }

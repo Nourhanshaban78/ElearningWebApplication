@@ -8,9 +8,9 @@ namespace E_Learning.Core.Interfaces.Services.Reviews_Certificates
     {
         Task<Response<Certificate>> GetByIdAsync(int id, CancellationToken ct = default);
         Task<Response<IReadOnlyList<Certificate>>> GetByStudentIdAsync(Guid studentId, CancellationToken ct = default);
-        Task<Response<IReadOnlyList<Certificate>>> GetByCourseIdAsync(int courseId, CancellationToken ct = default);
+        Task<Response<IReadOnlyList<Certificate>>> GetByCourseIdAsync(int courseId,PaginationParams paginationParams, CancellationToken ct = default);
         Task<Response<Certificate>> CreateAsync(CreateCertificateDto dto, CancellationToken ct = default);
         Task<Response<Certificate>> UpdateAsync(int id, UpdateCertificateDto dto, CancellationToken ct = default);
-        Task<Response<string>> DeleteAsync(int id, CancellationToken ct = default);
+        Task<Response<Certificate>> DeleteAsync(int id, CancellationToken ct = default);
     }
 }

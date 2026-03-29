@@ -1,11 +1,14 @@
-﻿using E_Learning.Core.Interfaces.Services.Courses;
+﻿using E_Learning.Core.Features.Courses.Queries;
+using E_Learning.Core.Interfaces.Services.Courses;
 using E_Learning.Service.DTOs.CourseDto;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace E_Learning.API.Controllers.Courses
 {
-    [Route("api/[controller]")]
+    [Authorize(Roles = "Instructor,Admin")]
     [ApiController]
     public class CoursesController : ControllerBase
     {
@@ -16,11 +19,19 @@ namespace E_Learning.API.Controllers.Courses
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetCourses()
+        public async Task<IActionResult> GetCourses([FromQuery] CourseQuery query,
+            CancellationToken ct = default)
         {
-            var result = await _courseService.GetCoursesAsync();
-            return StatusCode((int)result.HttpStatusCode, result);
+            var result = await _courseService.GetCoursesAsync(query, ct);
+            return Ok(result);
         }
+
+        //[HttpGet()]
+        //public async Task<IActionResult> GetCourses(CancellationToken ct = default)
+        //{
+        //    var result = await _courseService.GetCoursesAsync(ct);
+        //    return Ok(result);
+        //}
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCourse(int id)
@@ -32,14 +43,19 @@ namespace E_Learning.API.Controllers.Courses
         [HttpPost]
         public async Task<IActionResult> CreateCourse(CreateCourseDto dto)
         {
-            var result = await _courseService.CreateCourseAsync(dto);
+            var userId = Guid.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value);
+
+            if (userId == null)
+                return Unauthorized();
+
+            var result = await _courseService.CreateCourseAsync(dto, userId);
             return StatusCode((int)result.HttpStatusCode, result);
         }
 
-        [HttpPut]
-        public async Task<IActionResult> UpdateCourse(UpdateCourseDto dto)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateCourse(int id,UpdateCourseDto dto)
         {
-            var result = await _courseService.UpdateCourseAsync(dto);
+            var result = await _courseService.UpdateCourseAsync(id,dto);
             return StatusCode((int)result.HttpStatusCode, result);
         }
 
