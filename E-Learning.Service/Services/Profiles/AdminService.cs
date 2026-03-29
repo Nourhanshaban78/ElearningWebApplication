@@ -3,14 +3,17 @@ using E_learning.Core.Entities.Identity;
 using E_Learning.Core.Base;
 using E_Learning.Core.Entities.Profiles;
 using E_Learning.Core.Interfaces.Repositories;
+using E_Learning.Core.Interfaces.Repositories.Academic;
 using E_Learning.Core.Interfaces.Repositories.Profile;
 using E_Learning.Core.Repository;
 using E_Learning.Repository.Repositories.GenericesRepositories.Profile;
 using E_Learning.Service.Contract;
 using E_Learning.Service.DTOs.Profiles.Admin;
 using E_Learning.Service.DTOs.Profiles.Instructor;
+using E_Learning.Service.DTOs.User;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -28,6 +31,11 @@ namespace E_Learning.Service.Services.Profiles
         private readonly ResponseHandler _responseHandler;
         private readonly IFileService _fileService;
         private readonly IInstructorProfileRepository _instructorProfileRepository;
+        private readonly IStudentProfileRepository _StudentProfileRepository;
+        private readonly ILevelRepository _levelRepository;
+
+
+
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole<Guid>> _roleManager;
         public AdminService(
@@ -35,8 +43,9 @@ namespace E_Learning.Service.Services.Profiles
             IGenericRepository<ApplicationUser, Guid> genericRepository,
             IUnitOfWork unit,
             IMapper mapper,
-            ResponseHandler responseHandler,IFileService fileService, IInstructorProfileRepository instructorProfileRepository,
-            UserManager<ApplicationUser> userManager, RoleManager<IdentityRole<Guid>> roleManager)
+            ResponseHandler responseHandler, IFileService fileService, IInstructorProfileRepository instructorProfileRepository, IStudentProfileRepository studentProfileRepository,
+            UserManager<ApplicationUser> userManager, RoleManager<IdentityRole<Guid>> roleManager
+            , ILevelRepository levelRepository)
         {
             _adminProfileRepository = adminProfileRepository;
             _genericRepository = genericRepository;
@@ -45,14 +54,15 @@ namespace E_Learning.Service.Services.Profiles
             _responseHandler = responseHandler;
             _fileService = fileService;
             _instructorProfileRepository = instructorProfileRepository;
+            _StudentProfileRepository = studentProfileRepository;
             _userManager = userManager;
             _roleManager = roleManager;
+            _levelRepository = levelRepository;
         }
 
-        // ================= Create Admin Profile =================
-        public async Task<Response<UserResponseDto>> CreateUserProfile(
-        CreateAdminProfileDto dto,
-        CancellationToken ct = default)
+        // ================= Create User Profile =================
+
+        async Task<Response<CreateUserResponseDto>> IAdminService.CreateUserProfile(CreateUserDto dto, CancellationToken ct)
         {
             var user = new ApplicationUser
             {
@@ -60,7 +70,7 @@ namespace E_Learning.Service.Services.Profiles
                 Email = dto.Email,
                 UserName = dto.Email,
                 PhoneNumber = dto.phoneNumber,
-                IsActive = true,
+                IsActive = false,
                 MemberSince = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };
@@ -69,7 +79,7 @@ namespace E_Learning.Service.Services.Profiles
             if (!result.Succeeded)
             {
                 var errors = string.Join("; ", result.Errors.Select(e => e.Description));
-                return _responseHandler.BadRequest<UserResponseDto>(errors);
+                return _responseHandler.BadRequest<CreateUserResponseDto>(errors);
             }
 
             if (!await _roleManager.RoleExistsAsync(dto.Role))
@@ -77,7 +87,7 @@ namespace E_Learning.Service.Services.Profiles
 
             await _userManager.AddToRoleAsync(user, dto.Role);
 
-            UserResponseDto response;
+            CreateUserResponseDto response;
 
             if (dto.Role == "Admin")
             {
@@ -85,7 +95,7 @@ namespace E_Learning.Service.Services.Profiles
                 await _adminProfileRepository.AddAsync(profile);
                 await _unit.SaveChangesAsync(ct);
 
-                response = _mapper.Map<UserResponseDto>(profile);
+                response = _mapper.Map<CreateUserResponseDto>(profile);
             }
             else if (dto.Role == "Instructor")
             {
@@ -93,60 +103,53 @@ namespace E_Learning.Service.Services.Profiles
                 await _instructorProfileRepository.AddAsync(profile);
                 await _unit.SaveChangesAsync(ct);
 
-                response = _mapper.Map<UserResponseDto>(profile);
+                response = _mapper.Map<CreateUserResponseDto>(profile);
             }
+            else if (dto.Role == "Student")
+            {
+                // 1. التأكد من تحويل قيمة Level من الـ DTO إلى int (لأنها تأتي string من Swagger)
+                int.TryParse(dto.Level, out int levelId);
+
+                var profile = new StudentProfile
+                {
+                    AppUserId = user.Id,
+                    LevelId = levelId > 0 ? levelId : null // إسناد الـ ID للبروفايل
+                };
+
+                await _StudentProfileRepository.AddAsync(profile);
+                await _unit.SaveChangesAsync(ct);
+
+                // 2. عمل الـ Mapping
+                response = _mapper.Map<CreateUserResponseDto>(profile);
+
+                // 3. حل مشكلة الـ N/A: 
+                // بما أن الـ profile.Level لسه null (لأنه لم يُسحب من الـ DB بـ Include)
+                // نضع القيمة يدوياً في الـ response لكي تظهر للمستخدم فوراً
+                if (levelId > 0)
+                {
+                    // إذا أردتِ جلب الاسم الحقيقي من الـ Repository:
+                    var levelData = await _levelRepository.GetByIdAsync(levelId);
+                    response.Level = levelData?.Name ?? $"Level {levelId}";
+                }
+                else
+                {
+                    response.Level = "N/A";
+                }
+            }
+
             else
             {
-                
-                return _responseHandler.BadRequest<UserResponseDto>("Invalid role");
+
+                return _responseHandler.BadRequest<CreateUserResponseDto>("Invalid role");
             }
             response.Password = dto.Password;
-        
+
             response.Role = dto.Role;
 
             return _responseHandler.Created(response);
         }
-        //========== Create Instructor Profile =================
-        /*public async Task<Response<InstructorProfileResponseDto>> CreateInstructorProfile(CreateInstructorProfileDto dto, CancellationToken ct = default)
-        {
-
-            var user = new ApplicationUser
-            {
-                FullName = dto.FullName,
-                Email = dto.Email,
-                UserName = dto.Email,
-                PhoneNumber = dto.phoneNumber,
-                IsActive = true,
-                MemberSince = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
-            };
-
-            await _genericRepository.AddAsync(user);
-            await _unit.SaveChangesAsync(ct);
-
-            string imagePath = null;
-
-            if (dto.ProfilePicture != null)
-            {
-                imagePath = await _fileService.UploadFileAsync<AdminProfile>(dto.ProfilePicture, "images/admins");
-            }
-            var profile = new InstructorProfile
-            {
-                AppUserId = user.Id,
-                Bio = dto.Bio,
-                Location = dto.Location,
-                ProfilePicture = imagePath
-            };
-
-            await _instructorProfileRepository.AddAsync(profile);
-            await _unit.SaveChangesAsync(ct);
 
 
-            var resultDto = _mapper.Map<InstructorProfileResponseDto>(profile);
-            return _responseHandler.Created(resultDto);
-        }
-
-        */
 
         // ================= Update Admin Profile =================
         public async Task<Response<AdminProfileResponseDto>> UpdateAdminProfile(Guid userId, UpdateAdminProfileDto dto)
@@ -211,7 +214,7 @@ namespace E_Learning.Service.Services.Profiles
             var profile = await _adminProfileRepository.GetAdminProfileWithUserByUserIdAsync(userId);
             if (profile == null)
                 return _responseHandler.NotFound<AdminProfileResponseDto>("Admin profile not found");
-           
+
             var resultDto = _mapper.Map<AdminProfileResponseDto>(profile);
             resultDto.Role = "Admin";
 
@@ -252,6 +255,146 @@ namespace E_Learning.Service.Services.Profiles
             return _responseHandler.Deleted<AdminProfileResponseDto>("Admin profile deleted successfully");
         }
 
-      
+        // 2.2 - (Get) Read Users
+        public async Task<Response<IEnumerable<CreateUserResponseDto>>> GetAllUsers(CancellationToken ct)
+        {
+            var users = await _userManager.Users.ToListAsync(ct);
+            var responseList = new List<CreateUserResponseDto>();
+
+            foreach (var user in users)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                var role = roles.FirstOrDefault() ?? "No Role";
+
+                // 1. جلب البروفايل (قد يكون null)
+                dynamic? profile = role switch
+                {
+                    "Student" => await _StudentProfileRepository.GetStudentProfileWithUserByUserIdAsync(user.Id),
+                    "Instructor" or "Teacher" => await _instructorProfileRepository.GetInstructorProfileWithUserByUserIdAsync(user.Id),
+                    // أضيفي الأدمن هنا إذا كان له مستودع
+                    _ => null
+                };
+
+                // 2. معالجة البيانات (Mapping)
+                CreateUserResponseDto mapped;
+
+                if (profile != null)
+                {
+                    // إذا وجدنا بروفايل، نحوله هو (لأنه يحتوي على الليفل واليوزر معاً)
+                    mapped = _mapper.Map<CreateUserResponseDto>(profile);
+                }
+                else
+                {
+                    // إذا لم نجد بروفايل، نحول اليوزر الأساسي فقط
+                    mapped = _mapper.Map<CreateUserResponseDto>(user);
+                    mapped.Level = "N/A";
+                }
+
+                // 3. تأكيد البيانات الإضافية
+                mapped.Role = role;
+                mapped.UserId = user.Id;
+                if (role != "Student") mapped.Level = "N/A";
+
+                responseList.Add(mapped);
+            }
+
+            return _responseHandler.Success(responseList.AsEnumerable());
+        }
+        // 2.3 - (Put) Update User
+        public async Task<Response<string>> UpdateUser(Guid userId, CreateUserDto dto)
+        {
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            if (user == null) return _responseHandler.NotFound<string>("User not found");
+
+            user.FullName = dto.FullName;
+            user.Email = dto.Email;
+            user.UserName = dto.Email;
+            user.PhoneNumber = dto.phoneNumber;
+            user.UpdatedAt = DateTime.UtcNow;
+
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded) return _responseHandler.BadRequest<string>("Update failed");
+
+            return _responseHandler.Success("Updated Successfully");
+        }
+
+        // 2.5 - (Put/Post) Change Activity (Status)
+        public async Task<Response<string>> ChangeUserStatus(Guid userId, bool newStatus)
+        {
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            if (user == null) return _responseHandler.NotFound<string>("User not found");
+
+            user.IsActive = newStatus; 
+            user.IsActive = (newStatus == true);
+            user.UpdatedAt = DateTime.UtcNow;
+
+            await _userManager.UpdateAsync(user);
+            return _responseHandler.Success($"User status changed to {newStatus}");
+        }
+
+        // 2.6 & 2.7 - Search and Filter
+        public async Task<Response<IEnumerable<CreateUserResponseDto>>> SearchAndFilterUsers(string? search, string? role)
+{
+    // البداية من كويري المستخدمين
+    var query = _userManager.Users.AsQueryable();
+
+    // 1. فلترة بالاسم أو الايميل (اختياري)
+    if (!string.IsNullOrWhiteSpace(search))
+    {
+        query = query.Where(u => u.FullName.Contains(search) || u.Email.Contains(search));
+    }
+
+    var users = await query.ToListAsync();
+    var responseList = new List<CreateUserResponseDto>();
+
+    foreach (var user in users)
+    {
+        var roles = await _userManager.GetRolesAsync(user);
+        var userRole = roles.FirstOrDefault();
+
+        // 2. فلترة بالرول (اختياري)
+        if (!string.IsNullOrWhiteSpace(role) && 
+            !string.Equals(userRole, role, StringComparison.OrdinalIgnoreCase)) 
+        {
+            continue;
+        }
+
+        // 3. جلب البروفايل لضمان ظهور الـ Level في نتائج البحث
+        dynamic? profile = userRole switch
+        {
+            "Student" => await _StudentProfileRepository.GetStudentProfileWithUserByUserIdAsync(user.Id),
+            "Instructor" or "Teacher" => await _instructorProfileRepository.GetInstructorProfileWithUserByUserIdAsync(user.Id),
+            _ => null
+        };
+
+        // 4. عمل المابينج بناءً على المتوفر (بروفايل أو يوزر)
+        var mapped = (profile != null) 
+            ? _mapper.Map<CreateUserResponseDto>(profile) 
+            : _mapper.Map<CreateUserResponseDto>(user);
+
+        mapped.Role = userRole ?? "No Role";
+        mapped.UserId = user.Id;
+        
+        // تنظيف قيمة الـ Level لغير الطلاب
+        if (userRole != "Student") mapped.Level = "N/A";
+
+        responseList.Add(mapped);
+    }
+
+    return _responseHandler.Success(responseList.AsEnumerable());
+}
+        // 2.4 - (Delete) Delete User
+        public async Task<Response<string>> DeleteUser(Guid userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            if (user == null) return _responseHandler.NotFound<string>("User not found");
+
+            var result = await _userManager.DeleteAsync(user);
+            if (!result.Succeeded) return _responseHandler.BadRequest<string>("Delete failed");
+
+            return _responseHandler.Deleted<string>("User deleted successfully");
+        }
+
+       
     }
 }
