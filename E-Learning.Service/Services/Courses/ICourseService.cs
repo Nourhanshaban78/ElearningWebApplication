@@ -12,7 +12,7 @@ namespace E_Learning.Core.Interfaces.Services.Courses
         Task<Response<IReadOnlyList<CourseDto>>> GetCoursesAsync(CancellationToken ct = default);
         Task<Response<CourseDto>> GetCourseByIdAsync(int id, CancellationToken ct = default);
 
-        Task<Response<CourseDto>> CreateCourseAsync(CreateCourseDto course, CancellationToken ct = default);
+        Task<Response<CourseDto>> CreateCourseAsync(CreateCourseDto course, Guid instructorId, CancellationToken ct = default);
         Task<Response<string>> UpdateCourseAsync(int id,UpdateCourseDto course, CancellationToken ct = default);
         Task<Response<string>> DeleteCourseAsync(int id, CancellationToken ct = default);
     }

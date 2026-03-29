@@ -8,7 +8,7 @@ using System.Security.Claims;
 
 namespace E_Learning.API.Controllers.Courses
 {
-    [Route("api/[controller]")]
+    [Authorize(Roles = "Instructor,Admin")]
     [ApiController]
     public class CoursesController : ControllerBase
     {
@@ -19,7 +19,7 @@ namespace E_Learning.API.Controllers.Courses
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetCoursesForAdmin([FromQuery] CourseQuery query,
+        public async Task<IActionResult> GetCourses([FromQuery] CourseQuery query,
             CancellationToken ct = default)
         {
             var result = await _courseService.GetCoursesAsync(query, ct);
@@ -27,7 +27,7 @@ namespace E_Learning.API.Controllers.Courses
         }
 
         //[HttpGet()]
-        //public async Task<IActionResult> GetCoursesForAdmin(CancellationToken ct = default)
+        //public async Task<IActionResult> GetCourses(CancellationToken ct = default)
         //{
         //    var result = await _courseService.GetCoursesAsync(ct);
         //    return Ok(result);
@@ -43,7 +43,12 @@ namespace E_Learning.API.Controllers.Courses
         [HttpPost]
         public async Task<IActionResult> CreateCourse(CreateCourseDto dto)
         {
-            var result = await _courseService.CreateCourseAsync(dto);
+            var userId = Guid.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value);
+
+            if (userId == null)
+                return Unauthorized();
+
+            var result = await _courseService.CreateCourseAsync(dto, userId);
             return StatusCode((int)result.HttpStatusCode, result);
         }
 
