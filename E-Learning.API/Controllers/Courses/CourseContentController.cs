@@ -1,12 +1,13 @@
 ﻿using E_Learning.Service.DTOs.Lesson;
 using E_Learning.Service.DTOs.Section;
 using E_Learning.Service.Services.Courses;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace E_Learning.API.Controllers.Courses
 {
-    [Route("api/[controller]")]
+    [Authorize(Roles = "Instructor,Admin")]
     [ApiController]
     public class CourseContentController : ControllerBase
     {

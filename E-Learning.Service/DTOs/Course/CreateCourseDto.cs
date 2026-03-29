@@ -8,7 +8,6 @@ namespace E_Learning.Service.DTOs.CourseDto
 {
     public class CreateCourseDto
     {
-        public Guid InstructorId { get; set; }
         public int? LevelId { get; set; }
 
         public string Title { get; set; } = string.Empty;
