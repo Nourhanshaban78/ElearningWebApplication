@@ -1,6 +1,8 @@
 ﻿using E_Learning.API.Hubs;
 using E_Learning.API.Middleware;
 using E_Learning.API.Services;
+using E_Learning.Core.Interfaces.Repositories.Academic;
+using E_Learning.Repository.Repositories.GenericesRepositories.Academic;
 using E_Learning.Service.Hubs;
 using E_Learning.Service.Services.QuizServices;
 using E_Learning.Service.Services.Schedule;
@@ -47,7 +49,7 @@ namespace E_Learning.API
             // Auto Mapper
             builder.Services.AddAutoMapper(typeof(EnrollmentMappingProfile).Assembly);
             builder.Services.AddScoped(typeof(IGenericRepository<,>), typeof(GenericRepository<,>));
-         
+
 
             //// Auto Mapper
             builder.Services.AddAutoMapper(typeof(EnrollmentMappingProfile).Assembly);
@@ -60,7 +62,7 @@ namespace E_Learning.API
             builder.Services.AddAutoMapper(typeof(StudentProfileMapping).Assembly);
             builder.Services.AddAutoMapper(typeof(UserMappingProfile).Assembly);
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-         
+
             // ResponseHandler
             builder.Services.AddTransient<ResponseHandler>();
 
@@ -70,6 +72,8 @@ namespace E_Learning.API
             // Services
             builder.Services.AddScoped<IStageService, StageService>();
             builder.Services.AddScoped<ILevelService, LevelService>();
+            builder.Services.AddScoped<ILevelRepository, LevelRepository>();
+
             // Enrollment Services
             builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
             builder.Services.AddScoped<ILessonProgressService, LessonProgressService>();
@@ -105,7 +109,7 @@ namespace E_Learning.API
             builder.Services.AddScoped<INotificationHubService, NotificationHubService>();  // ← ضيف السطر ده
             builder.Services.AddScoped<IScheduleService, ScheduleService>();
 
-           builder.Services.AddTransient<ResponseHandler>();
+            builder.Services.AddTransient<ResponseHandler>();
             builder.Services.AddScoped<IAdminService, AdminService>();
             builder.Services.AddScoped<IInstructorService, InstructorService>();
             builder.Services.AddScoped<IStudentService, StudentService>();
