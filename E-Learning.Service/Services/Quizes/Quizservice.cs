@@ -22,15 +22,16 @@ namespace E_Learning.Service.Services.QuizServices
 
         // ─── Create ───────────────────────────────────────────────────────────
 
-        public async Task<Response<QuizDetailResponseDto>> CreateAsync(CreateQuizDto dto, CancellationToken ct = default)
+        public async Task<Response<QuizDetailResponseDto>> CreateAsync(CreateQuizDto dto, Guid instructorId, bool isAdmin, CancellationToken ct = default)
         {
-            // Validate course exists
-            var courseExists = await _unitOfWork.Courses.AnyAsync(c => c.Id == dto.CourseId, ct);
-            if (!courseExists)
+            // Validate course exists + ownership
+            var course = await _unitOfWork.Courses.GetByIdAsync(dto.CourseId, ct);
+            if (course == null)
                 return _responseHandler.NotFound<QuizDetailResponseDto>("Course not found.");
-            // Validate lessonId if provided ← هنا 
-            // Validate course exists
 
+            // تأكد إن الكورس بتاع الـ Instructor ده بس
+            if (!isAdmin && course.InstructorId != instructorId)
+                return _responseHandler.Forbidden<QuizDetailResponseDto>("You can only add quizzes to your own courses.");
 
             // Validate lessonId if provided
             if (dto.LessonId.HasValue)
@@ -44,10 +45,6 @@ namespace E_Learning.Service.Services.QuizServices
             var titleExists = await _unitOfWork.Quizzes.ExistsByTitleAsync(dto.Title, dto.CourseId, ct);
             if (titleExists)
                 return _responseHandler.BadRequest<QuizDetailResponseDto>("A quiz with this title already exists in the course.");
-
-            // Validate questions count matches
-            if (dto.Questions.Any() && dto.Questions.Count != dto.Questions.Count)
-                return _responseHandler.BadRequest<QuizDetailResponseDto>("Questions count mismatch.");
 
             // Map to entity
             var quiz = new Quiz
@@ -84,9 +81,8 @@ namespace E_Learning.Service.Services.QuizServices
 
             // Reload with full includes
             var created = await _unitOfWork.Quizzes.GetWithQuestionsAndOptionsAsync(quiz.Id, ct);
-            var course = await _unitOfWork.Courses.GetByIdAsync(dto.CourseId, ct);
 
-            return _responseHandler.Created(MapToDetailDto(created!, course?.Title ?? ""));
+            return _responseHandler.Created(MapToDetailDto(created!, course.Title ?? ""));
         }
 
         // ─── Get By Id ────────────────────────────────────────────────────────
@@ -130,11 +126,19 @@ namespace E_Learning.Service.Services.QuizServices
 
         // ─── Update ───────────────────────────────────────────────────────────
 
-        public async Task<Response<QuizResponseDto>> UpdateAsync(int id, UpdateQuizDto dto, CancellationToken ct = default)
+        public async Task<Response<QuizResponseDto>> UpdateAsync(int id, UpdateQuizDto dto,  Guid instructorId, bool isAdmin, CancellationToken ct = default)
         {
             var quiz = await _unitOfWork.Quizzes.GetByIdAsync(id, ct);
             if (quiz is null)
                 return _responseHandler.NotFound<QuizResponseDto>("Quiz not found.");
+
+            
+            var course = await _unitOfWork.Courses.GetByIdAsync(quiz.CourseId, ct);
+            if (course == null)
+                return _responseHandler.NotFound<QuizResponseDto>("Course not found.");
+
+            if (!isAdmin && course.InstructorId != instructorId)
+                return _responseHandler.Forbidden<QuizResponseDto>("You can only update quizzes in your own courses.");
 
             quiz.Title = dto.Title;
             quiz.Topic = dto.Topic;
@@ -150,17 +154,22 @@ namespace E_Learning.Service.Services.QuizServices
             _unitOfWork.Quizzes.Update(quiz);
             await _unitOfWork.SaveChangesAsync(ct);
 
-            var course = await _unitOfWork.Courses.GetByIdAsync(quiz.CourseId, ct);
-            return _responseHandler.Success(MapToDto(quiz, course?.Title ?? ""));
+            return _responseHandler.Success(MapToDto(quiz, course.Title ?? ""));
         }
 
-        // ─── Delete ───────────────────────────────────────────────────────────
-
-        public async Task<Response<string>> DeleteAsync(int id, CancellationToken ct = default)
+        public async Task<Response<string>> DeleteAsync(int id, Guid instructorId, bool isAdmin, CancellationToken ct = default)
         {
             var quiz = await _unitOfWork.Quizzes.GetByIdAsync(id, ct);
             if (quiz is null)
                 return _responseHandler.NotFound<string>("Quiz not found.");
+
+           
+            var course = await _unitOfWork.Courses.GetByIdAsync(quiz.CourseId, ct);
+            if (course == null)
+                return _responseHandler.NotFound<string>("Course not found.");
+
+            if (!isAdmin && course.InstructorId != instructorId)
+                return _responseHandler.Forbidden<string>("You can only delete quizzes in your own courses.");
 
             _unitOfWork.Quizzes.Remove(quiz);
             await _unitOfWork.SaveChangesAsync(ct);

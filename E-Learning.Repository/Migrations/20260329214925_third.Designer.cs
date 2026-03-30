@@ -12,15 +12,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace E_Learning.Repository.Migrations
 {
     [DbContext(typeof(ELearningDbContext))]
-    [Migration("20260325161741_UpdateTableNamel")]
-    partial class UpdateTableNamel
+    [Migration("20260329214925_third")]
+    partial class third
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.23")
+                .HasAnnotation("ProductVersion", "8.0.24")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -775,6 +775,10 @@ namespace E_Learning.Repository.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
+                    b.Property<string>("StripePaymentMethodId")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<string>("Type")
                         .IsRequired()
                         .HasMaxLength(20)
@@ -1145,6 +1149,9 @@ namespace E_Learning.Repository.Migrations
                     b.Property<int>("CourseId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("CourseId1")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -1194,6 +1201,8 @@ namespace E_Learning.Repository.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CourseId");
+
+                    b.HasIndex("CourseId1");
 
                     b.HasIndex("TransactionId");
 
@@ -2652,6 +2661,10 @@ namespace E_Learning.Repository.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("E_Learning.Core.Entities.Courses.Course", null)
+                        .WithMany("Enrollments")
+                        .HasForeignKey("CourseId1");
+
                     b.HasOne("E_learning.Core.Entities.Identity.ApplicationUser", "Student")
                         .WithMany()
                         .HasForeignKey("StudentId")
@@ -3032,6 +3045,8 @@ namespace E_Learning.Repository.Migrations
 
             modelBuilder.Entity("E_Learning.Core.Entities.Courses.Course", b =>
                 {
+                    b.Navigation("Enrollments");
+
                     b.Navigation("Sections");
                 });
 

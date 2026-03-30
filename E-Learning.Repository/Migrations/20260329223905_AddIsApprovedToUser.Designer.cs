@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace E_Learning.Repository.Migrations
 {
     [DbContext(typeof(ELearningDbContext))]
-    [Migration("20260326204756_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20260329223905_AddIsApprovedToUser")]
+    partial class AddIsApprovedToUser
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
