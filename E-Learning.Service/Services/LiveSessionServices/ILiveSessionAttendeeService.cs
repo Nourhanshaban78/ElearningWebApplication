@@ -13,8 +13,7 @@ namespace E_Learning.Service.Services.LiveSessionServices
         Task<Response<AttendeeResponseDto>> LogAttendanceAsync(LogAttendanceDto dto, CancellationToken ct = default);
 
         // جلب كل الطلاب المشاركين في جلسة معينة
-        Task<Response<IReadOnlyList<AttendeeResponseDto>>> GetAttendeesBySessionIdAsync(int sessionId, CancellationToken ct = default);
-
+        Task<Response<SessionAttendeesDashboardDto>> GetAttendeesBySessionIdAsync(int sessionId, CancellationToken ct = default);
         // خروج الطالب من الجلسة (تحديث LeftAt)
         Task<Response<AttendeeResponseDto>> LeaveSession(LeaveSessionDto dto, CancellationToken ct = default);
     }

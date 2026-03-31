@@ -2,14 +2,10 @@
 
 namespace E_Learning.Core.Interfaces.Repositories.LiveSessions
 {
-    public interface ILiveSessionRepository
+    public interface ILiveSessionRepository:IGenericRepository<LiveSession,int>
     {
-        IQueryable<LiveSession> GetTableNoTracking();
-        Task<IReadOnlyList<LiveSession>> GetAllAsync(CancellationToken ct = default);
-        Task AddAsync(LiveSession liveSession, CancellationToken ct = default);
-        void Update(LiveSession liveSession);
+       IQueryable<LiveSession> GetTableNoTracking() => QueryNoTracking();
         void SoftDelete(LiveSession liveSession);
-        Task<LiveSession> GetByIdAsync(int id,CancellationToken ct = default);
 
 
     }
