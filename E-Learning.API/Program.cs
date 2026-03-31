@@ -4,6 +4,8 @@ using E_Learning.API.Services;
 using E_Learning.Core.Interfaces.Repositories.Academic;
 using E_Learning.Repository.Repositories.GenericesRepositories.Academic;
 using E_Learning.Service.Hubs;
+using E_Learning.Service.Services.Dashboard.AdminDashboard;
+using E_Learning.Service.Services.Dashboard.InstructorDashboard;
 using E_Learning.Service.Services.QuizServices;
 using E_Learning.Service.Services.Schedule;
 using FFMpegCore;
@@ -129,6 +131,10 @@ namespace E_Learning.API
             builder.Services.AddScoped<IExamQuestionServices, ExamQuestionServices>();
             builder.Services.AddScoped<IExamAttemptAnswerServices, ExamAttemptAnswerServices>();
             builder.Services.AddScoped<IQuizService, QuizService>();
+
+            builder.Services.AddScoped<IAdminDashboardService, AdminDashboardService>();
+            builder.Services.AddScoped<IInstructorDashboardService, InstructorDashboardService>();
+
             #endregion
 
 

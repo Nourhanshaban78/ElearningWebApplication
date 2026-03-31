@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace E_Learning.API.Controllers.Courses
 {
     [Authorize(Roles = "Instructor,Admin")]
-    [ApiController]
+    [Route("api/[controller]")]
     public class CourseContentController : ControllerBase
     {
         private readonly ICourseContentService _service;

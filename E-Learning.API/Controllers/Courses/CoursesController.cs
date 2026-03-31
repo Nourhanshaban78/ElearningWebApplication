@@ -9,7 +9,7 @@ using System.Security.Claims;
 namespace E_Learning.API.Controllers.Courses
 {
     [Authorize(Roles = "Instructor,Admin")]
-    [ApiController]
+    [Route("api/[controller]")]
     public class CoursesController : ControllerBase
     {
         private readonly ICourseService _courseService;

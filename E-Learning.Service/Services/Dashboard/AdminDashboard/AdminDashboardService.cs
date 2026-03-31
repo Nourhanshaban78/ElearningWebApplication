@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using E_Learning.Core.Base;
+using E_Learning.Core.Repository;
 using E_Learning.Repository.Repositories;
 using E_Learning.Service.DTOs.Admin_Dashboard;
 using Microsoft.EntityFrameworkCore;
@@ -9,15 +10,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace E_Learning.Service.Services.AdminDashboard
+namespace E_Learning.Service.Services.Dashboard.AdminDashboard
 {
     public class AdminDashboardService : IAdminDashboardService
     {
-        private readonly UnitOfWork _unit;
+        private readonly IUnitOfWork _unit;
         private readonly ResponseHandler _response;
-        private readonly Mapper _mapper;
+        private readonly IMapper _mapper;
 
-        public AdminDashboardService(UnitOfWork unit, ResponseHandler response, Mapper mapper)
+        public AdminDashboardService(IUnitOfWork unit, ResponseHandler response, IMapper mapper)
         {
             _unit = unit;
             _response = response;
@@ -38,10 +39,10 @@ namespace E_Learning.Service.Services.AdminDashboard
             var totalDistcinctStudent = totalFailedStudents + totalPassedStudents;
 
             decimal passRate = totalDistcinctStudent > 0
-                ? Math.Round(((decimal)totalPassedStudents / totalDistcinctStudent) * 100, 2) : 0;
+                ? Math.Round((decimal)totalPassedStudents / totalDistcinctStudent * 100, 2) : 0;
 
             decimal failRate = totalDistcinctStudent > 0
-                ? Math.Round(((decimal)totalFailedStudents / totalDistcinctStudent) * 100, 2) : 0;
+                ? Math.Round((decimal)totalFailedStudents / totalDistcinctStudent * 100, 2) : 0;
 
             var currentYear = DateTime.UtcNow.Year;
             var trendsQuery = await completedAttemptsQuery
