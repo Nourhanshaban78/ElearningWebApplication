@@ -10,7 +10,7 @@ namespace E_Learning.Repository.Data
             var optionsBuilder = new DbContextOptionsBuilder<ELearningDbContext>();
 
             optionsBuilder.UseSqlServer(
-                    "Server=localhost;Database=ELearningdbeuuu;Trusted_Connection=True;TrustServerCertificate=True");
+                    "Server=db46311.public.databaseasp.net; Database=db46311; User Id=db46311; Password=5w?Am=K4Md7!; Encrypt=False; MultipleActiveResultSets=True;");
 
             return new ELearningDbContext(optionsBuilder.Options, null);
         }

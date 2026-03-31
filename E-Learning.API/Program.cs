@@ -4,12 +4,16 @@ using E_Learning.API.Services;
 using E_Learning.Application.Services;
 using E_Learning.Core.Interfaces.Repositories.Academic;
 using E_Learning.Infrastructure.Repositories;
+using E_Learning.Repository.Data.Seeding;
 using E_Learning.Repository.Repositories.GenericesRepositories.Academic;
+using E_Learning.Repository.Seeding;
 using E_Learning.Service.Hubs;
 using E_Learning.Service.Services.QuizServices;
 using E_Learning.Service.Services.Schedule;
 using E_Learning.Service.Services.UserDashboard;
 using FFMpegCore;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace E_Learning.API
 {
@@ -201,6 +205,17 @@ namespace E_Learning.API
             app.UseMiddleware<ExceptionMiddleware>();
             // ─── Migration & Seeding ─────────────────────
             await app.MigrateDatabaseAsync();
+            
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+
+                var roleManager = services.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
+                var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+
+                await RoleSeeding.SeedRolesAsync(roleManager);
+                await AdminSeeding.SeedAdminAsync(userManager);
+            }
 
             if (app.Environment.IsDevelopment())
             {
