@@ -4,6 +4,7 @@ using E_Learning.Service.DTOs.Profiles.Instructor;
 using E_Learning.Service.DTOs.Profiles.Student;
 using E_Learning.Service.DTOs.User;
 using E_Learning.Service.Services.Profiles;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -13,6 +14,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 [Route("api/[controller]")]
 [ApiController]
+[Authorize(Roles = "Admin")]
 public class AdminController : ControllerBase
 {
     private readonly IAdminService _adminService;

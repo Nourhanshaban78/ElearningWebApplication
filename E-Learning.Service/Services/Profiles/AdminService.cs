@@ -142,7 +142,6 @@ namespace E_Learning.Service.Services.Profiles
 
                 return _responseHandler.BadRequest<CreateUserResponseDto>("Invalid role");
             }
-            response.Password = dto.Password;
 
             response.Role = dto.Role;
 
