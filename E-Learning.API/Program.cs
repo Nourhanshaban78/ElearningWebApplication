@@ -8,6 +8,8 @@ using E_Learning.Repository.Data.Seeding;
 using E_Learning.Repository.Repositories.GenericesRepositories.Academic;
 using E_Learning.Repository.Seeding;
 using E_Learning.Service.Hubs;
+using E_Learning.Service.Services.Dashboard.AdminDashboard;
+using E_Learning.Service.Services.Dashboard.InstructorDashboard;
 using E_Learning.Service.Services.QuizServices;
 using E_Learning.Service.Services.Schedule;
 using E_Learning.Service.Services.UserDashboard;
@@ -138,6 +140,10 @@ namespace E_Learning.API
             builder.Services.AddScoped<IExamQuestionServices, ExamQuestionServices>();
             builder.Services.AddScoped<IExamAttemptAnswerServices, ExamAttemptAnswerServices>();
             builder.Services.AddScoped<IQuizService, QuizService>();
+
+            builder.Services.AddScoped<IAdminDashboardService, AdminDashboardService>();
+            builder.Services.AddScoped<IInstructorDashboardService, InstructorDashboardService>();
+
             #endregion
 
 
