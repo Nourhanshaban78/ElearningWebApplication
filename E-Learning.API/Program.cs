@@ -10,6 +10,8 @@ using E_Learning.Service.Services.QuizServices;
 using E_Learning.Service.Services.Schedule;
 using E_Learning.Service.Services.UserDashboard;
 using FFMpegCore;
+using MediatR;
+using System.Reflection;
 
 namespace E_Learning.API
 {
@@ -23,6 +25,10 @@ namespace E_Learning.API
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddScoped<AuditInterceptor>();
             builder.Services.AddHttpClient();
+            builder.Services.AddMediatR(cfg =>
+            {
+                cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+            });
 
             // ffmpeg
             GlobalFFOptions.Configure(options =>

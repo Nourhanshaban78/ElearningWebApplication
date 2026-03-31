@@ -19,6 +19,8 @@ namespace E_Learning.Core.Entities.Assessments.Quiz
 
         public DateTime StartedAt { get; set; } = DateTime.UtcNow;
         public DateTime? SubmittedAt { get; set; }
+        public DateTime? ExpiresAt { get; set; }
+
         public decimal? Score { get; set; }
         public bool? IsPassed { get; set; }
         public QuizAttemptStatus Status { get; set; }

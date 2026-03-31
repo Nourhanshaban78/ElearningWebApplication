@@ -107,6 +107,10 @@ namespace E_Learning.Repository.Data
             modelBuilder.ApplyConfigurationsFromAssembly(
                 typeof(ELearningDbContext).Assembly);
 
+            modelBuilder.Entity<QuizAttemptAnswer>()
+            .HasIndex(x => new { x.AttemptId, x.QuestionId })
+            .IsUnique();
+
             foreach (var entityType in modelBuilder.Model.GetEntityTypes())
             {
                 if (typeof(ISoftDelete).IsAssignableFrom(entityType.ClrType))
@@ -136,6 +140,10 @@ namespace E_Learning.Repository.Data
             if (_auditInterceptor != null)
                 optionsBuilder.AddInterceptors(_auditInterceptor);
         }
+
+
+     
+
 
     }
 }

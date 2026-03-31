@@ -22,11 +22,13 @@ namespace E_Learning.Core.Entities.Assessments.Quiz
         public int? TimeLimitSeconds { get; set; }
         public int TimePerQuestionSeconds { get; set; } = 30;
         public decimal PassingScore { get; set; } = 60;
-        public int MaxAttempts { get; set; } = 3;
+        public int? MaxAttempts { get; set; } = 3;
         public bool ShuffleQuestions { get; set; } = true;
         public bool ShowResultsImmediately { get; set; } = true;
         public bool IsActive { get; set; } = true;
         public DateTime? ScheduledAt { get; set; }
+
+        public DateTime? EndAt { get; set; }
         public ICollection<QuizQuestion> Questions { get; set; }
             = new List<QuizQuestion>();
         public ICollection<QuizAttempt> Attempts { get; set; }

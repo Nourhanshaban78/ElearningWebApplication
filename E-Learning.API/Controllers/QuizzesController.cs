@@ -1,5 +1,7 @@
-﻿using E_Learning.Service.DTOs;
+﻿using E_Learning.Core.Features.Quizzes.Commands.StartQuizAttempt;
+using E_Learning.Service.DTOs;
 using E_Learning.Service.Services.QuizServices;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -12,12 +14,23 @@ namespace E_Learning.API.Controllers
     public class QuizzesController : ControllerBase
     {
         private readonly IQuizService _quizService;
+        private readonly IMediator _mediator;
 
-        public QuizzesController(IQuizService quizService)
+        public QuizzesController(IQuizService quizService, IMediator mediator)
         {
             _quizService = quizService;
+            _mediator = mediator;
         }
 
+
+        //post Attempt
+
+        [HttpPost("{quizId}/attempts")]
+        public async Task<IActionResult> StartAttempt(int quizId)
+        {
+            var result = await _mediator.Send(new StartQuizAttemptCommand(quizId));
+            return Ok(result);
+        }
         // GET api/quizzes
         [HttpGet]
         [Authorize(Roles = "Student,Instructor,Admin")]
