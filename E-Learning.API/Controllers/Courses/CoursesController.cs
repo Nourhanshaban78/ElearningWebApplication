@@ -8,6 +8,7 @@ using System.Security.Claims;
 
 namespace E_Learning.API.Controllers.Courses
 {
+    [Route("api/[controller]")]
     [Authorize(Roles = "Instructor,Admin")]
     [ApiController]
     public class CoursesController : ControllerBase
@@ -18,20 +19,14 @@ namespace E_Learning.API.Controllers.Courses
             _courseService = courseService;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetCourses([FromQuery] CourseQuery query,
-            CancellationToken ct = default)
-        {
-            var result = await _courseService.GetCoursesAsync(query, ct);
-            return Ok(result);
-        }
+       
 
-        //[HttpGet()]
-        //public async Task<IActionResult> GetCourses(CancellationToken ct = default)
-        //{
-        //    var result = await _courseService.GetCoursesAsync(ct);
-        //    return Ok(result);
-        //}
+        [HttpGet()]  
+        public async Task<IActionResult> GetCourses(CancellationToken ct = default)
+        {
+           var result = await _courseService.GetCoursesAsync(ct);
+           return Ok(result);
+       }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCourse(int id)
