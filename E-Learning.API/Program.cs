@@ -1,11 +1,14 @@
 ﻿using E_Learning.API.Hubs;
 using E_Learning.API.Middleware;
 using E_Learning.API.Services;
+using E_Learning.Application.Services;
 using E_Learning.Core.Interfaces.Repositories.Academic;
+using E_Learning.Infrastructure.Repositories;
 using E_Learning.Repository.Repositories.GenericesRepositories.Academic;
 using E_Learning.Service.Hubs;
 using E_Learning.Service.Services.QuizServices;
 using E_Learning.Service.Services.Schedule;
+using E_Learning.Service.Services.UserDashboard;
 using FFMpegCore;
 
 namespace E_Learning.API
@@ -114,6 +117,8 @@ namespace E_Learning.API
             builder.Services.AddScoped<IInstructorService, InstructorService>();
             builder.Services.AddScoped<IStudentService, StudentService>();
 
+            builder.Services.AddScoped<IDashboardService, DashboardService>();
+            builder.Services.AddScoped<IStudentDashboardRepository, StudentDashboardRepository>();
 
             builder.Services.AddScoped<ILiveSessionService, LiveSessionService>();
             builder.Services.AddScoped<ILiveSessionAttendeeService, LiveSessionAttendeeService>();
