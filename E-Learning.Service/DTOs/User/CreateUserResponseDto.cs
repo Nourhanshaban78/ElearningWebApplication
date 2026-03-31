@@ -9,7 +9,6 @@ namespace E_Learning.Service.DTOs.User
         public string Role { get; set; } = string.Empty;
         public bool IsActive { get; set; } = false;
         public DateTime CreatedAt { get; set; }
-        public string Password { get; set; } 
         public string Level { get; set; }
 
 
