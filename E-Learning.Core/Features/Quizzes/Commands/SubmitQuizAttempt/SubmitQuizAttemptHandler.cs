@@ -5,12 +5,13 @@ using E_Learning.Core.Interfaces.Repositories;
 using E_Learning.Core.Repository;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
 
 namespace E_Learning.Core.Features.Quizzes.Commands.SubmitQuizAttempt
 {
@@ -37,7 +38,11 @@ namespace E_Learning.Core.Features.Quizzes.Commands.SubmitQuizAttempt
             if (user == null)
                 return _responseHandler.Unauthorized<SubmitQuizAttemptResponse>();
 
-            var studentIdClaim = user.FindFirst("sub") ?? user.FindFirst("userId");
+            var studentIdClaim =
+                user.FindFirst(ClaimTypes.NameIdentifier) ??
+                user.FindFirst("sub") ??
+                user.FindFirst("userId");
+
             if (studentIdClaim == null)
                 return _responseHandler.Unauthorized<SubmitQuizAttemptResponse>();
 
@@ -53,65 +58,43 @@ namespace E_Learning.Core.Features.Quizzes.Commands.SubmitQuizAttempt
 
             var quiz = attempt.Quiz;
 
-            // 3️⃣ حساب النقاط الإجمالية لكل سؤال
+            // 3️⃣ حساب النقاط الإجمالية من الإجابات الموجودة مسبقًا
             decimal totalScore = 0;
 
             foreach (var question in quiz.Questions)
             {
-                var userAnswer = request.Answers.FirstOrDefault(a => a.QuestionId == question.Id);
-                if (userAnswer == null) continue;
-
-                var attemptAnswer = new QuizAttemptAnswer
-                {
-                    AttemptId = attempt.Id,
-                    QuestionId = question.Id
-                };
+                var attemptAnswer = attempt.Answers.FirstOrDefault(a => a.QuestionId == question.Id);
+                if (attemptAnswer == null)
+                    continue; // الطالب ما جاوبش السؤال
 
                 switch (question.Type)
                 {
                     case "MultipleChoice":
                     case "TrueFalse":
-                        // سؤال بإجابة واحدة
-                        if (userAnswer.SelectedOptionIds != null && userAnswer.SelectedOptionIds.Count == 1)
-                        {
-                            var optionId = userAnswer.SelectedOptionIds.First();
-                            var selectedOption = question.Options.FirstOrDefault(o => o.Id == optionId);
-                            attemptAnswer.SelectedOption = selectedOption;
-
-                            if (selectedOption != null && selectedOption.IsCorrect)
-                                totalScore += question.Points;
-                        }
+                        if (attemptAnswer.SelectedOption != null && attemptAnswer.SelectedOption.IsCorrect)
+                            totalScore += question.Points;
                         break;
 
                     case "MultipleSelect":
-                        // سؤال بإجابات متعددة
-                        if (userAnswer.SelectedOptionIds != null && userAnswer.SelectedOptionIds.Any())
+                        if (attemptAnswer.SelectedOptions != null && attemptAnswer.SelectedOptions.Any())
                         {
-                            var selectedOptions = question.Options
-                                .Where(o => userAnswer.SelectedOptionIds.Contains(o.Id))
-                                .ToList();
+                            var correctIds = question.Options.Where(o => o.IsCorrect).Select(o => o.Id).ToHashSet();
+                            var selectedIds = attemptAnswer.SelectedOptions.Select(o => o.Id).ToHashSet();
 
-                            attemptAnswer.SelectedOptions = selectedOptions;
-
-                            var correctIds = question.Options.Where(o => o.IsCorrect).Select(o => o.Id).OrderBy(i => i).ToList();
-                            if (userAnswer.SelectedOptionIds.OrderBy(i => i).SequenceEqual(correctIds))
+                            if (selectedIds.SetEquals(correctIds))
                                 totalScore += question.Points;
                         }
                         break;
 
                     case "Text":
                     case "Essay":
-                        // الأسئلة النصية للمراجعة
-                        attemptAnswer.NeedsReview = true;
+                        attemptAnswer.NeedsReview = true; // اجابات النصية للمراجعة
                         break;
 
                     default:
-                        // أي نوع جديد مستقبلي
                         attemptAnswer.NeedsReview = true;
                         break;
                 }
-
-                attempt.Answers.Add(attemptAnswer);
             }
 
             // 4️⃣ تحديث Attempt
@@ -120,7 +103,7 @@ namespace E_Learning.Core.Features.Quizzes.Commands.SubmitQuizAttempt
             attempt.IsPassed = totalScore >= quiz.PassingScore;
             attempt.Status = QuizAttemptStatus.Submitted;
 
-            // 5️⃣ حفظ Attempt
+            // 5️⃣ حفظ Attempt فقط (بدون عمل Insert جديد على QuizAttemptAnswers)
             try
             {
                 await _unitOfWork.SaveChangesAsync(ct);

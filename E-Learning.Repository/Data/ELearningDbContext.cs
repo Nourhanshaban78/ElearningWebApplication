@@ -111,6 +111,22 @@ namespace E_Learning.Repository.Data
             .HasIndex(x => new { x.AttemptId, x.QuestionId })
             .IsUnique();
 
+            // Many-to-Many: QuizAttemptAnswer ↔ QuizOption
+            modelBuilder.Entity<QuizAttemptAnswer>()
+          .HasMany(a => a.SelectedOptions)
+         .WithMany()
+          .UsingEntity(j =>
+    {
+        j.ToTable("QuizAttemptAnswerSelectedOptions");
+        j.HasOne(typeof(QuizOption))
+            .WithMany()
+            .HasForeignKey("SelectedOptionsId")
+            .OnDelete(DeleteBehavior.NoAction);
+    });
+
+
+
+
             foreach (var entityType in modelBuilder.Model.GetEntityTypes())
             {
                 if (typeof(ISoftDelete).IsAssignableFrom(entityType.ClrType))

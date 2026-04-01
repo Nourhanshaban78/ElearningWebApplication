@@ -6,6 +6,7 @@ using E_Learning.Core.Repository;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using System;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -36,8 +37,13 @@ namespace E_Learning.Core.Features.Quizzes.Commands.StartQuizAttempt
                 if (user == null)
                     return _responseHandler.Unauthorized<StartQuizAttemptResponse>();
 
-                var claim = user.FindFirst("sub") ?? user.FindFirst("userId");
-                if (claim == null || !Guid.TryParse(claim.Value, out Guid studentId))
+                
+
+                var studentIdClaim =
+                    user.FindFirst(ClaimTypes.NameIdentifier) ??
+                    user.FindFirst("sub") ??
+                    user.FindFirst("userId");
+                if (studentIdClaim == null || !Guid.TryParse(studentIdClaim.Value, out Guid studentId))
                     return _responseHandler.Unauthorized<StartQuizAttemptResponse>();
 
 
@@ -96,14 +102,13 @@ namespace E_Learning.Core.Features.Quizzes.Commands.StartQuizAttempt
                 // 8️⃣ Create Attempt
                 var now = DateTime.UtcNow;
 
-                DateTime? expiresAt = null;
+                // مدة المحاولة بالثواني أو 30 دقيقة افتراضية
+                int durationSeconds = quiz.TimeLimitSeconds ?? 30 * 60;
+                var expiresAt = now.AddSeconds(durationSeconds);
 
-                if (quiz.TimeLimitSeconds.HasValue)
-                    expiresAt = now.AddSeconds(quiz.TimeLimitSeconds.Value);
-
-                //  EndAt
-                if (quiz.EndAt.HasValue && expiresAt.HasValue && expiresAt > quiz.EndAt)
-                    expiresAt = quiz.EndAt;
+                // لو الـ Quiz له EndAt محدد مسبقًا
+                if (quiz.EndAt.HasValue && expiresAt > quiz.EndAt.Value)
+                    expiresAt = quiz.EndAt.Value;
 
                 var attempt = new QuizAttempt
                 {

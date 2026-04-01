@@ -36,8 +36,14 @@ namespace E_Learning.Repository.Repositories.GenericesRepositories.Assessments.Q
         public async Task<QuizAttempt?> GetWithAnswersAsync(int attemptId, CancellationToken ct = default)
         {
             return await _context.QuizAttempts
-                .Include(x => x.Answers)
-                .FirstOrDefaultAsync(x => x.Id == attemptId, ct);
+         .Include(a => a.Quiz)                  // تحميل Quiz
+             .ThenInclude(q => q.Questions)     // تحميل Questions
+                 .ThenInclude(q => q.Options)   // تحميل Options لكل Question
+         .Include(a => a.Answers)                // تحميل إجابات Attempt
+             .ThenInclude(a => a.SelectedOption)
+         .Include(a => a.Answers)
+             .ThenInclude(a => a.SelectedOptions)
+         .FirstOrDefaultAsync(a => a.Id == attemptId, ct);
         }
 
         public async Task<IReadOnlyList<QuizAttempt>> GetByQuizIdAsync(int quizId, CancellationToken ct = default)

@@ -2,6 +2,7 @@
 using E_Learning.API.Middleware;
 using E_Learning.API.Services;
 using E_Learning.Application.Services;
+using E_Learning.Core.Features.Quizzes.Commands.StartQuizAttempt;
 using E_Learning.Core.Interfaces.Repositories.Academic;
 using E_Learning.Infrastructure.Repositories;
 using E_Learning.Repository.Repositories.GenericesRepositories.Academic;
@@ -29,6 +30,10 @@ namespace E_Learning.API
             {
                 cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
             });
+
+            builder.Services.AddMediatR(cfg =>
+            cfg.RegisterServicesFromAssembly(typeof(StartQuizAttemptHandler).Assembly));
+
 
             // ffmpeg
             GlobalFFOptions.Configure(options =>
