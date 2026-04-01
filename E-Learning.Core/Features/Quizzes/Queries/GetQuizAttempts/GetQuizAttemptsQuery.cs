@@ -1,12 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using E_Learning.Core.Base;
+using MediatR;
 
-namespace E_Learning.Core.Features.Quizzes.Commands.GetQuizAttempts
+public record GetQuizAttemptsQuery(int QuizId)
+    : IRequest<Response<List<AttemptSummaryDto>>>;
+
+public class AttemptSummaryDto
 {
-    internal class GetQuizAttemptsQuery
-    {
-    }
+    public int AttemptId { get; set; }
+    public Guid StudentId { get; set; }
+    public string StudentName { get; set; } = string.Empty;
+    public decimal? Score { get; set; }
+    public bool? IsPassed { get; set; }
+    public string Status { get; set; } = string.Empty;
+    public DateTime StartedAt { get; set; }
+    public DateTime? SubmittedAt { get; set; }
 }

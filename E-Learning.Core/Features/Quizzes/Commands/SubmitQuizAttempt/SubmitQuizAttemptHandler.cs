@@ -50,11 +50,22 @@ namespace E_Learning.Core.Features.Quizzes.Commands.SubmitQuizAttempt
 
             // 2️⃣ جلب Attempt مع الأسئلة والإجابات
             var attempt = await _unitOfWork.QuizAttempts.GetWithAnswersAsync(request.AttemptId, ct);
-            if (attempt == null || attempt.StudentId != studentId)
+            if (attempt == null)
                 return _responseHandler.NotFound<SubmitQuizAttemptResponse>("Attempt not found");
+
+            if (attempt.StudentId != studentId)
+                return _responseHandler.Forbidden<SubmitQuizAttemptResponse>("This attempt is not yours");
 
             if (attempt.Status != QuizAttemptStatus.InProgress)
                 return _responseHandler.BadRequest<SubmitQuizAttemptResponse>("This attempt has already been submitted");
+
+            // 3️⃣ Check ExpiresAt
+            if (attempt.ExpiresAt.HasValue && attempt.ExpiresAt <= DateTime.UtcNow)
+            {
+                attempt.Status = QuizAttemptStatus.Abandoned;
+                await _unitOfWork.SaveChangesAsync(ct);
+                return _responseHandler.BadRequest<SubmitQuizAttemptResponse>("Attempt has expired");
+            }
 
             var quiz = attempt.Quiz;
 
