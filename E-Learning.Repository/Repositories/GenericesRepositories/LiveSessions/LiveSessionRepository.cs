@@ -5,55 +5,34 @@ using Microsoft.EntityFrameworkCore;
 
 namespace E_Learning.Repository.Repositories.GenericesRepositories.LiveSessions
 {
-    public class LiveSessionRepository : ILiveSessionRepository
+    public class LiveSessionRepository : GenericRepository<LiveSession, int>, ILiveSessionRepository
     {
-        public LiveSessionRepository(ELearningDbContext context)
-        {
-            _context = context;
-        }
+        public LiveSessionRepository(ELearningDbContext context) : base(context) { }
 
-        public ELearningDbContext _context { get; }
-
-        public async Task AddAsync(LiveSession liveSession, CancellationToken ct = default)
-        {
-            await _context.LiveSessions.AddAsync(liveSession, ct);
-        }
-
+        // ميثود داخلية تجمع كل الـ Includes المطلوبة للمابينج تبعك
         private IQueryable<LiveSession> WithFullIncludes()
         {
             return _context.LiveSessions
-                .Include(ls => ls.Instructor)
-                .Include(ls => ls.Course)
-                .Include(ls => ls.Attendees);
+                .Include(ls => ls.Course)           // عشان CourseTitle و CourseSummaryDto
+                .Include(ls => ls.Instructor)       // عشان InstructorResponseDto (ApplicationUser)
+                .Include(ls => ls.Attendees)        // عشان AttendeeResponseDto
+                    .ThenInclude(a => a.Student)    // عشان بيانات الطالب اللي حضر
+                .AsNoTracking();
         }
 
-        public async Task<LiveSession?> GetByIdAsync(int id, CancellationToken ct = default)
+        public override async Task<LiveSession?> GetByIdAsync(int id, CancellationToken ct = default)
         {
-            return await WithFullIncludes()
-                .FirstOrDefaultAsync(e => e.Id == id, ct);
+            return await WithFullIncludes().FirstOrDefaultAsync(e => e.Id == id, ct);
         }
 
-        public async Task<IReadOnlyList<LiveSession>> GetAllAsync(CancellationToken ct = default)
+        public override async Task<IReadOnlyList<LiveSession>> GetAllAsync(CancellationToken ct = default)
         {
-            return await WithFullIncludes()
-                .ToListAsync(ct);
-        }
-
-        public IQueryable<LiveSession> GetTableNoTracking()
-        {
-            return _context.LiveSessions.AsNoTracking();
+            return await WithFullIncludes().ToListAsync(ct);
         }
 
         public void SoftDelete(LiveSession liveSession)
         {
             _context.Set<LiveSession>().Remove(liveSession);
         }
-
-        public void Update(LiveSession liveSession)
-        {
-            _context.LiveSessions.Update(liveSession);
-        }
-
-
     }
 }

@@ -1,4 +1,4 @@
-﻿using E_Learning.Service.Services.AdminDashboard;
+﻿using E_Learning.Service.Services.Dashboard.AdminDashboard;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -8,11 +8,11 @@ namespace E_Learning.API.Controllers
     [Authorize(Roles = "Admin")]
     [Route("api/[controller]")]
     [ApiController]
-    public class DashboardAdminController : ControllerBase
+    public class AdminDashboardController : ControllerBase
     {
         private readonly IAdminDashboardService _dashboardService;
 
-        public DashboardAdminController(IAdminDashboardService dashboardService)
+        public AdminDashboardController(IAdminDashboardService dashboardService)
         {
             _dashboardService = dashboardService;
         }

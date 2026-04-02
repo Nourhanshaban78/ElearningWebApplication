@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace E_Learning.Service.Services.AdminDashboard
+namespace E_Learning.Service.Services.Dashboard.AdminDashboard
 {
     public interface IAdminDashboardService
     {
