@@ -15,6 +15,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
+using E_Learning.Service.Services.Profiles.InstructorSetting;
 
 namespace E_Learning.Service.Services.LiveSessionServices
 {

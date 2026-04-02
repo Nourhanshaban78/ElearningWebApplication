@@ -22,6 +22,68 @@ namespace E_Learning.Repository.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("E_Learning.Core.Entities.Academic.AcademicSetting", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("AllowInstructorsToCreateCourses")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("AutoPublishResults")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("GradeAppealPeriodDays")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MaxCourseDurationWeeks")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MinCourseDurationWeeks")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ResultReleaseDelayDays")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AcademicSettings");
+                });
+
+            modelBuilder.Entity("E_Learning.Core.Entities.Academic.GradeRange", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AcademicSettingId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Letter")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("MaxScore")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MinScore")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AcademicSettingId");
+
+                    b.ToTable("GradeRanges");
+                });
+
             modelBuilder.Entity("E_Learning.Core.Entities.Academic.Level", b =>
                 {
                     b.Property<int>("Id")
@@ -1550,17 +1612,51 @@ namespace E_Learning.Repository.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
 
+                    b.Property<bool>("CourseEnrollmentConfirmation")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("EmailNotification")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("EmergencyAlerts")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("EnrollmentCapacityAlert")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("ExamNotification")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
 
+                    b.Property<bool>("ExamSubmissionEmail")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool>("ExamSubmissionInApp")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool>("FailingGradeWarning")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("GradePublished")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("InAppNotification")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("LowAttendanceAlert")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("NewStudentEnrollmentEmail")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool>("NewStudentEnrollmentInApp")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
@@ -1570,8 +1666,14 @@ namespace E_Learning.Repository.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
 
+                    b.Property<bool>("QuizSubmission")
+                        .HasColumnType("bit");
+
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("WeeklyActivityDigest")
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
@@ -1687,6 +1789,9 @@ namespace E_Learning.Repository.Migrations
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("phoneNumber")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
