@@ -43,5 +43,13 @@ namespace E_Learning.Repository.Repositories.GenericesRepositories.Assessments.Q
             return await _context.Quizzes
                 .AnyAsync(q => q.Title.ToLower() == title.ToLower() && q.CourseId == courseId, ct);
         }
+
+
+        public async Task<Quiz?> GetWithCourseAsync(int quizId, CancellationToken ct = default)
+        {
+            return await _context.Quizzes
+                .Include(q => q.Course)
+                .FirstOrDefaultAsync(q => q.Id == quizId, ct);
+        }
     }
 }

@@ -7,5 +7,5 @@ using System.Threading.Tasks;
 namespace E_Learning.Core.Enums
 {
     public enum QuizAttemptStatus
-    { InProgress, Completed, Abandoned }
+    { InProgress, Completed, Abandoned , Submitted }
 }

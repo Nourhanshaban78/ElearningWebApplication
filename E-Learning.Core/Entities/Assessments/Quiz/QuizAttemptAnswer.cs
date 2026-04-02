@@ -18,7 +18,11 @@ namespace E_Learning.Core.Entities.Assessments.Quiz
         public int? SelectedOptionId { get; set; }
         public QuizOption? SelectedOption { get; set; }
 
+        public ICollection<QuizOption> SelectedOptions { get; set; } = new List<QuizOption>();
+
         public string? TextAnswer { get; set; }
         public bool? IsCorrect { get; set; }
+
+        public bool NeedsReview { get; set; } = false;
     }
 }

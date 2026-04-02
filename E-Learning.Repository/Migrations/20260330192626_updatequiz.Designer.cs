@@ -4,6 +4,7 @@ using E_Learning.Repository.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace E_Learning.Repository.Migrations
 {
     [DbContext(typeof(ELearningDbContext))]
-    partial class ELearningDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260330192626_updatequiz")]
+    partial class updatequiz
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -470,9 +473,6 @@ namespace E_Learning.Repository.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("EndAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
@@ -597,9 +597,6 @@ namespace E_Learning.Repository.Migrations
                     b.Property<bool?>("IsCorrect")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("NeedsReview")
-                        .HasColumnType("bit");
-
                     b.Property<int>("QuestionId")
                         .HasColumnType("int");
 
@@ -612,12 +609,11 @@ namespace E_Learning.Repository.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AttemptId");
+
                     b.HasIndex("QuestionId");
 
                     b.HasIndex("SelectedOptionId");
-
-                    b.HasIndex("AttemptId", "QuestionId")
-                        .IsUnique();
 
                     b.ToTable("QuizAttemptAnswers", (string)null);
                 });
@@ -2304,21 +2300,6 @@ namespace E_Learning.Repository.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("QuizAttemptAnswerQuizOption", b =>
-                {
-                    b.Property<int>("QuizAttemptAnswerId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SelectedOptionsId")
-                        .HasColumnType("int");
-
-                    b.HasKey("QuizAttemptAnswerId", "SelectedOptionsId");
-
-                    b.HasIndex("SelectedOptionsId");
-
-                    b.ToTable("QuizAttemptAnswerSelectedOptions", (string)null);
-                });
-
             modelBuilder.Entity("E_Learning.Core.Entities.Academic.Level", b =>
                 {
                     b.HasOne("E_Learning.Core.Entities.Academic.Stage", "Stage")
@@ -3013,21 +2994,6 @@ namespace E_Learning.Repository.Migrations
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("QuizAttemptAnswerQuizOption", b =>
-                {
-                    b.HasOne("E_Learning.Core.Entities.Assessments.Quiz.QuizAttemptAnswer", null)
-                        .WithMany()
-                        .HasForeignKey("QuizAttemptAnswerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("E_Learning.Core.Entities.Assessments.Quiz.QuizOption", null)
-                        .WithMany()
-                        .HasForeignKey("SelectedOptionsId")
-                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 

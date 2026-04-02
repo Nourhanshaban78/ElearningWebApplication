@@ -2,6 +2,7 @@
 using E_Learning.API.Middleware;
 using E_Learning.API.Services;
 using E_Learning.Application.Services;
+using E_Learning.Core.Features.Quizzes.Commands.StartQuizAttempt;
 using E_Learning.Core.Interfaces.Repositories.Academic;
 using E_Learning.Infrastructure.Repositories;
 using E_Learning.Repository.Data.Seeding;
@@ -14,8 +15,8 @@ using E_Learning.Service.Services.QuizServices;
 using E_Learning.Service.Services.Schedule;
 using E_Learning.Service.Services.UserDashboard;
 using FFMpegCore;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+using MediatR;
+using System.Reflection;
 
 namespace E_Learning.API
 {
@@ -29,6 +30,14 @@ namespace E_Learning.API
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddScoped<AuditInterceptor>();
             builder.Services.AddHttpClient();
+            builder.Services.AddMediatR(cfg =>
+            {
+                cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+            });
+
+            builder.Services.AddMediatR(cfg =>
+            cfg.RegisterServicesFromAssembly(typeof(StartQuizAttemptHandler).Assembly));
+
 
             // ffmpeg
             GlobalFFOptions.Configure(options =>
