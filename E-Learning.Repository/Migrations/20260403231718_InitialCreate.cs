@@ -12,6 +12,25 @@ namespace E_Learning.Repository.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "AcademicSettings",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    AllowInstructorsToCreateCourses = table.Column<bool>(type: "bit", nullable: false),
+                    MaxCourseDurationWeeks = table.Column<int>(type: "int", nullable: false),
+                    MinCourseDurationWeeks = table.Column<int>(type: "int", nullable: false),
+                    AutoPublishResults = table.Column<bool>(type: "bit", nullable: false),
+                    ResultReleaseDelayDays = table.Column<int>(type: "int", nullable: false),
+                    GradeAppealPeriodDays = table.Column<int>(type: "int", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AcademicSettings", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
                 {
@@ -73,6 +92,28 @@ namespace E_Learning.Repository.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Stages", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "GradeRanges",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    AcademicSettingId = table.Column<int>(type: "int", nullable: false),
+                    Letter = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    MinScore = table.Column<int>(type: "int", nullable: false),
+                    MaxScore = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GradeRanges", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_GradeRanges_AcademicSettings_AcademicSettingId",
+                        column: x => x.AcademicSettingId,
+                        principalTable: "AcademicSettings",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -219,6 +260,7 @@ namespace E_Learning.Repository.Migrations
                     Location = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     DateOfBirth = table.Column<DateOnly>(type: "date", nullable: true),
                     Headline = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    phoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     About = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Gender = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     TotalEarnings = table.Column<decimal>(type: "decimal(12,2)", nullable: false, defaultValue: 0m),
@@ -272,10 +314,22 @@ namespace E_Learning.Repository.Migrations
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CourseAnnouncement = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
                     AssignmentReminder = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
-                    ExamNotification = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
                     PlatformUpdates = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
-                    InAppNotification = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
-                    EmailNotification = table.Column<bool>(type: "bit", nullable: false, defaultValue: true)
+                    CourseEnrollmentConfirmation = table.Column<bool>(type: "bit", nullable: false),
+                    GradePublished = table.Column<bool>(type: "bit", nullable: false),
+                    WeeklyActivityDigest = table.Column<bool>(type: "bit", nullable: false),
+                    ExamNotification = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    EmergencyAlerts = table.Column<bool>(type: "bit", nullable: false),
+                    LowAttendanceAlert = table.Column<bool>(type: "bit", nullable: false),
+                    FailingGradeWarning = table.Column<bool>(type: "bit", nullable: false),
+                    EnrollmentCapacityAlert = table.Column<bool>(type: "bit", nullable: false),
+                    InAppNotification = table.Column<bool>(type: "bit", nullable: false),
+                    EmailNotification = table.Column<bool>(type: "bit", nullable: false),
+                    NewStudentEnrollmentEmail = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    NewStudentEnrollmentInApp = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    ExamSubmissionEmail = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    QuizSubmission = table.Column<bool>(type: "bit", nullable: false),
+                    ExamSubmissionInApp = table.Column<bool>(type: "bit", nullable: false, defaultValue: true)
                 },
                 constraints: table =>
                 {
@@ -1227,11 +1281,12 @@ namespace E_Learning.Repository.Migrations
                     TimeLimitSeconds = table.Column<int>(type: "int", nullable: true),
                     TimePerQuestionSeconds = table.Column<int>(type: "int", nullable: false, defaultValue: 30),
                     PassingScore = table.Column<decimal>(type: "decimal(5,2)", nullable: false, defaultValue: 60m),
-                    MaxAttempts = table.Column<int>(type: "int", nullable: false, defaultValue: 3),
+                    MaxAttempts = table.Column<int>(type: "int", nullable: true, defaultValue: 3),
                     ShuffleQuestions = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
                     ShowResultsImmediately = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
                     IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
                     ScheduledAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    EndAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -1297,6 +1352,7 @@ namespace E_Learning.Repository.Migrations
                     QuizId = table.Column<int>(type: "int", nullable: false),
                     StartedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     SubmittedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ExpiresAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Score = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
                     IsPassed = table.Column<bool>(type: "bit", nullable: true),
                     Status = table.Column<int>(type: "int", nullable: false)
@@ -1374,7 +1430,8 @@ namespace E_Learning.Repository.Migrations
                     QuestionId = table.Column<int>(type: "int", nullable: false),
                     SelectedOptionId = table.Column<int>(type: "int", nullable: true),
                     TextAnswer = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
-                    IsCorrect = table.Column<bool>(type: "bit", nullable: true)
+                    IsCorrect = table.Column<bool>(type: "bit", nullable: true),
+                    NeedsReview = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -1394,6 +1451,29 @@ namespace E_Learning.Repository.Migrations
                         name: "FK_QuizAttemptAnswers_QuizQuestions_QuestionId",
                         column: x => x.QuestionId,
                         principalTable: "QuizQuestions",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "QuizAttemptAnswerSelectedOptions",
+                columns: table => new
+                {
+                    QuizAttemptAnswerId = table.Column<int>(type: "int", nullable: false),
+                    SelectedOptionsId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_QuizAttemptAnswerSelectedOptions", x => new { x.QuizAttemptAnswerId, x.SelectedOptionsId });
+                    table.ForeignKey(
+                        name: "FK_QuizAttemptAnswerSelectedOptions_QuizAttemptAnswers_QuizAttemptAnswerId",
+                        column: x => x.QuizAttemptAnswerId,
+                        principalTable: "QuizAttemptAnswers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_QuizAttemptAnswerSelectedOptions_QuizOptions_SelectedOptionsId",
+                        column: x => x.SelectedOptionsId,
+                        principalTable: "QuizOptions",
                         principalColumn: "Id");
                 });
 
@@ -1580,6 +1660,11 @@ namespace E_Learning.Repository.Migrations
                 column: "CourseId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_GradeRanges_AcademicSettingId",
+                table: "GradeRanges",
+                column: "AcademicSettingId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_InstructorEarnings_CourseId",
                 table: "InstructorEarnings",
                 column: "CourseId");
@@ -1706,9 +1791,10 @@ namespace E_Learning.Repository.Migrations
                 column: "InstructorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_QuizAttemptAnswers_AttemptId",
+                name: "IX_QuizAttemptAnswers_AttemptId_QuestionId",
                 table: "QuizAttemptAnswers",
-                column: "AttemptId");
+                columns: new[] { "AttemptId", "QuestionId" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_QuizAttemptAnswers_QuestionId",
@@ -1719,6 +1805,11 @@ namespace E_Learning.Repository.Migrations
                 name: "IX_QuizAttemptAnswers_SelectedOptionId",
                 table: "QuizAttemptAnswers",
                 column: "SelectedOptionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_QuizAttemptAnswerSelectedOptions_SelectedOptionsId",
+                table: "QuizAttemptAnswerSelectedOptions",
+                column: "SelectedOptionsId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_QuizAttempts_QuizId",
@@ -1861,6 +1952,9 @@ namespace E_Learning.Repository.Migrations
                 name: "ExamAttemptAnswers");
 
             migrationBuilder.DropTable(
+                name: "GradeRanges");
+
+            migrationBuilder.DropTable(
                 name: "InstructorEarnings");
 
             migrationBuilder.DropTable(
@@ -1885,7 +1979,7 @@ namespace E_Learning.Repository.Migrations
                 name: "PayoutApprovals");
 
             migrationBuilder.DropTable(
-                name: "QuizAttemptAnswers");
+                name: "QuizAttemptAnswerSelectedOptions");
 
             migrationBuilder.DropTable(
                 name: "ScheduleEvents");
@@ -1915,6 +2009,9 @@ namespace E_Learning.Repository.Migrations
                 name: "ExamOptions");
 
             migrationBuilder.DropTable(
+                name: "AcademicSettings");
+
+            migrationBuilder.DropTable(
                 name: "Enrollments");
 
             migrationBuilder.DropTable(
@@ -1924,10 +2021,7 @@ namespace E_Learning.Repository.Migrations
                 name: "PayoutRequests");
 
             migrationBuilder.DropTable(
-                name: "QuizAttempts");
-
-            migrationBuilder.DropTable(
-                name: "QuizOptions");
+                name: "QuizAttemptAnswers");
 
             migrationBuilder.DropTable(
                 name: "SupportTickets");
@@ -1939,13 +2033,19 @@ namespace E_Learning.Repository.Migrations
                 name: "PaymentTransactions");
 
             migrationBuilder.DropTable(
-                name: "QuizQuestions");
+                name: "QuizAttempts");
+
+            migrationBuilder.DropTable(
+                name: "QuizOptions");
 
             migrationBuilder.DropTable(
                 name: "Exams");
 
             migrationBuilder.DropTable(
                 name: "PaymentMethods");
+
+            migrationBuilder.DropTable(
+                name: "QuizQuestions");
 
             migrationBuilder.DropTable(
                 name: "Quizzes");

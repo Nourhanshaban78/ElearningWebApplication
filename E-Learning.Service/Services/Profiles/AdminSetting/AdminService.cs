@@ -39,7 +39,7 @@ public class AdminService : IAdminService
 
     public async Task<Response<AdminProfile>> GetAdminProfileByUserId(Guid userId, CancellationToken ct = default)
     {
-        var profile = await _uow.AdminProfiles.GetAdminProfileWithUserByUserIdAsync(userId, ct);
+        var profile = await _uow.AdminProfiles.GetAdminProfileWithUserByUserIdAsync(userId);
         if (profile is null)
             return _responseHandler.NotFound<AdminProfile>("Admin profile not found");
 
@@ -52,7 +52,7 @@ public class AdminService : IAdminService
 
     public async Task<Response<AdminProfile>> UpdateAdminProfile(Guid userId, UpdateAdminProfileDto dto, CancellationToken ct = default)
     {
-        var profile = await _uow.AdminProfiles.GetAdminProfileWithUserByUserIdAsync(userId, ct);
+        var profile = await _uow.AdminProfiles.GetAdminProfileWithUserByUserIdAsync(userId);
         if (profile is null)
             return _responseHandler.NotFound<AdminProfile>("Admin profile not found");
 

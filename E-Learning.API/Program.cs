@@ -137,6 +137,8 @@ namespace E_Learning.API
 
             builder.Services.AddTransient<ResponseHandler>();
             builder.Services.AddScoped<IAdminService, AdminService>();
+            builder.Services.AddScoped<IAdminProfileService, AdminProfileService>();
+
             builder.Services.AddScoped<IInstructorService, InstructorService>();
             builder.Services.AddScoped<IStudentService, StudentService>();
 
@@ -227,17 +229,17 @@ namespace E_Learning.API
             var app = builder.Build();
             app.UseMiddleware<ExceptionMiddleware>();
             // ─── Migration & Seeding ─────────────────────
-            await app.MigrateDatabaseAsync();
-            
+             await app.MigrateDatabaseAsync();
+
             using (var scope = app.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
 
                 var roleManager = services.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
                 var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
-
+                var context = services.GetRequiredService<ELearningDbContext>();
                 await RoleSeeding.SeedRolesAsync(roleManager);
-                await AdminSeeding.SeedAdminAsync(userManager);
+                await AdminSeeding.SeedAdminAsync(userManager, context);
             }
 
             if (app.Environment.IsDevelopment())
