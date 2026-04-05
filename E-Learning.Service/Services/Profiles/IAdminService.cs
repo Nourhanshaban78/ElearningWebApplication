@@ -11,22 +11,22 @@ using E_Learning.Service.DTOs.Profiles.Admin;
 
 namespace E_Learning.Service.Services.Profiles
 {
-    public interface IAdminService
+    public interface IAdminProfileService
     {
-        Task<Response<AdminProfileResponseDto>> GetAdminProfileByUserId(Guid userId);
-        Task<Response<CreateUserResponseDto>> CreateUserProfile( CreateUserDto dto, CancellationToken ct = default);
-       // Task<Response<InstructorProfileResponseDto>> CreateInstructorProfile(CreateInstructorProfileDto dto, CancellationToken ct = default);
+        Task<Response<AdminProfileResponseDto>> GetAdminProfileByUserId(Guid userId, CancellationToken ct);
+        Task<Response<CreateUserResponseDto>> CreateUserProfile(CreateUserDto dto, CancellationToken ct = default);
+        // Task<Response<InstructorProfileResponseDto>> CreateInstructorProfile(CreateInstructorProfileDto dto, CancellationToken ct = default);
+        Task<Response<AdminProfileResponseDto>> UpdateAdminProfile(Guid userId, UpdateAdminProfileDto dto, CancellationToken ct = default);
 
-       Task<Response<IEnumerable<CreateUserResponseDto>>> GetAllUsers(CancellationToken ct);
-       Task<Response<string>> UpdateUser(Guid userId, CreateUserDto dto);
-       Task<Response<string>> ChangeUserStatus(Guid userId, bool newStatus);
-       Task<Response<IEnumerable<CreateUserResponseDto>>> SearchAndFilterUsers(string? search, string? role);
-       Task<Response<string>> DeleteUser(Guid userId);
+        Task<Response<IEnumerable<CreateUserResponseDto>>> GetAllUsers(CancellationToken ct);
+        Task<Response<string>> UpdateUser(Guid userId, CreateUserDto dto, CancellationToken ct);
+        Task<Response<string>> ChangeUserStatus(Guid userId, bool newStatus);
+        Task<Response<IEnumerable<CreateUserResponseDto>>> SearchAndFilterUsers(string? search, string? role);
+        Task<Response<string>> DeleteUser(Guid userId, CancellationToken ct);
 
-        Task<Response<AdminProfileResponseDto>> UpdateAdminProfile(Guid userId, UpdateAdminProfileDto dto);
         Task<Response<bool>> AdminProfileExists(Guid userId);
         Task<Response<IEnumerable<AdminProfileResponseDto>>> GetAllAdmins();
-        Task<Response<AdminProfileResponseDto>> DeleteAdminProfile(Guid userId);
-      
+        Task<Response<AdminProfileResponseDto>> DeleteAdminProfile(Guid userId, CancellationToken ct);
+
     }
 }

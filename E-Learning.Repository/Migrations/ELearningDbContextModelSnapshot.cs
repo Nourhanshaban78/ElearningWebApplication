@@ -2424,6 +2424,17 @@ namespace E_Learning.Repository.Migrations
                     b.ToTable("QuizAttemptAnswerSelectedOptions", (string)null);
                 });
 
+            modelBuilder.Entity("E_Learning.Core.Entities.Academic.GradeRange", b =>
+                {
+                    b.HasOne("E_Learning.Core.Entities.Academic.AcademicSetting", "AcademicSetting")
+                        .WithMany("GradeRanges")
+                        .HasForeignKey("AcademicSettingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AcademicSetting");
+                });
+
             modelBuilder.Entity("E_Learning.Core.Entities.Academic.Level", b =>
                 {
                     b.HasOne("E_Learning.Core.Entities.Academic.Stage", "Stage")
@@ -3134,6 +3145,11 @@ namespace E_Learning.Repository.Migrations
                         .HasForeignKey("SelectedOptionsId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("E_Learning.Core.Entities.Academic.AcademicSetting", b =>
+                {
+                    b.Navigation("GradeRanges");
                 });
 
             modelBuilder.Entity("E_Learning.Core.Entities.Academic.Stage", b =>
