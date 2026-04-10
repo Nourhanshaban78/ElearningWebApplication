@@ -45,7 +45,7 @@ public class AdminController : ControllerBase
 
     // ================= 2.3 - Update User =================
     [HttpPut("users/{userId}")]
-    public async Task<IActionResult> UpdateUser(Guid userId, [FromBody] CreateUserDto dto,CancellationToken ct)
+    public async Task<IActionResult> UpdateUser(Guid userId, [FromBody] UpdateUserDto dto,CancellationToken ct)
     {
         var response = await _adminService.UpdateUser(userId, dto,ct);
         return StatusCode((int)response.HttpStatusCode, response);
