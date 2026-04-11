@@ -9,5 +9,7 @@ namespace E_Learning.Core.Interfaces.Repositories.Assessments.Quizzes
         Task<IReadOnlyList<Quiz>> GetByCourseIdAsync(int courseId, CancellationToken ct = default);
         Task<bool> ExistsAsync(int id, CancellationToken ct = default);
         Task<bool> ExistsByTitleAsync(string title, int courseId, CancellationToken ct = default);
+
+        Task<Quiz?> GetWithCourseAsync(int quizId, CancellationToken ct = default);
     }
 }

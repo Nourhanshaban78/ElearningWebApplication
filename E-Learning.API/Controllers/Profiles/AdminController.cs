@@ -1,94 +1,98 @@
-﻿using E_Learning.API.Extensions.E_Learning.API.Extensions;
-using E_Learning.Service.DTOs.Profiles;
+﻿using E_Learning.Core.Base;
 using E_Learning.Service.DTOs.Profiles.Admin;
-using E_Learning.Service.Services.Profiles.AdminSetting;
-using E_Learning.Service.Services.Profiles.GenericProfileSettingServices;
+using E_Learning.Service.DTOs.Profiles.Instructor;
+using E_Learning.Service.DTOs.Profiles.Student;
+using E_Learning.Service.DTOs.User;
+using E_Learning.Service.Services.Profiles;
+using E_Learning.Service.Services.Profiles.InstructorSetting;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
-
-[ApiController]
+using System.Threading.Tasks;
 [Route("api/[controller]")]
-[Authorize(Roles ="Admin")]
+[ApiController]
+[Authorize(Roles = "Admin")]
 public class AdminController : ControllerBase
 {
-    private readonly IAdminService _adminService;
-    private readonly IGenericProfileSettingServices _genericProfileSetting;
+    private readonly IAdminProfileService _adminService;
+    private readonly IInstructorService _instructorService;
 
-
-    public AdminController(IAdminService adminService, IGenericProfileSettingServices genericProfileSetting)
+    public AdminController(IAdminProfileService adminService, IInstructorService instructorService)
     {
         _adminService = adminService;
-        _genericProfileSetting = genericProfileSetting;
+        _instructorService = instructorService;
     }
 
-    /*private Guid UserId =>
-        Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);*/
-
-
-    [HttpGet("settings/notifications")]
-    public async Task<IActionResult> GetAdminNotificationSettings(CancellationToken ct)
+    // ================= Create User =================
+    [HttpPost("createUser")]
+    public async Task<IActionResult> CreateUserProfile([FromForm] CreateUserDto dto)
     {
-         
-        var UserId = User.GetUserId(); //this extention method get id from jwt token and return it as guid
-
-
-        var result = await _adminService.GetAdminNotificationSettingsAsync(UserId, ct);
-        return StatusCode((int)result.HttpStatusCode, result);
+        var response = await _adminService.CreateUserProfile(dto);
+        return StatusCode((int)response.HttpStatusCode, response);
     }
 
-    [HttpGet("profile")]
-    public async Task<IActionResult> GetAdminProfile(CancellationToken ct)
+    // ================= 2.2 - Get All Users =================
+    [HttpGet("users")]
+    public async Task<IActionResult> GetAllUsers(CancellationToken ct)
     {
-       var UserId = User.GetUserId();
-
-        var result = await _adminService.GetAdminProfileByUserId(UserId, ct);
-        return StatusCode((int)result.HttpStatusCode, result);
+        var response = await _adminService.GetAllUsers(ct);
+        return StatusCode((int)response.HttpStatusCode, response);
     }
 
-    [HttpPut("profile")]
-    public async Task<IActionResult> UpdateAdminProfile([FromForm] UpdateAdminProfileDto dto, CancellationToken ct)
+    // ================= 2.3 - Update User =================
+    [HttpPut("users/{userId}")]
+    public async Task<IActionResult> UpdateUser(Guid userId, [FromBody] CreateUserDto dto,CancellationToken ct)
     {
-        var UserId = User.GetUserId();
-        var result = await _adminService.UpdateAdminProfile(UserId, dto, ct);
-        return StatusCode((int)result.HttpStatusCode, result);
+        var response = await _adminService.UpdateUser(userId, dto,ct);
+        return StatusCode((int)response.HttpStatusCode, response);
     }
 
-    [HttpPut("settings/notifications")]
-    public async Task<IActionResult> UpdateAdminNotificationSetting([FromBody] AdminNotificationSettingDto dto, CancellationToken ct)
+    // ================= 2.4 - Delete User =================
+    [HttpDelete("users/{userId}")]
+    public async Task<IActionResult> DeleteUser(Guid userId,CancellationToken ct)
     {
-        var UserId = User.GetUserId();
-        var result = await _adminService.UpdateAdminNotificationSettingAsync(UserId, dto, ct);
-        return StatusCode((int)result.HttpStatusCode, result);
+        var response = await _adminService.DeleteUser(userId,ct);
+        return StatusCode((int)response.HttpStatusCode, response);
     }
 
-    [HttpPut("settings/notifications/preferences")]
-    public async Task<IActionResult> UpdateAdminNotificationPreferences([FromBody] AdminNotificationPrefrancesDto dto, CancellationToken ct)
+    // ================= 2.5 - Change User Status (Activity) =================
+    [HttpPut("users/{userId}/status")]
+    public async Task<IActionResult> ChangeUserStatus(Guid userId, [FromQuery] bool newStatus)
     {
-        var UserId = User.GetUserId();
-        var result = await _adminService.UpdateAdminNotification_PrefrancesSettingAsync(UserId, dto, ct);
-        return StatusCode((int)result.HttpStatusCode, result);
+        var response = await _adminService.ChangeUserStatus(userId, newStatus);
+        return StatusCode((int)response.HttpStatusCode, response);
     }
 
-    [HttpPut("settings/general")]
-    public async Task<IActionResult> UpdateGeneralSetting([FromBody] GeneralSettingDto dto, CancellationToken ct)
+    // ================= 2.6 & 2.7 - Search and Filter =================
+    [HttpGet("users/search")]
+    public async Task<IActionResult> SearchAndFilterUsers([FromQuery] string? search, [FromQuery] string? role)
     {
-        var UserId = User.GetUserId();
-        var result = await _adminService.UpdateGeneralSettingAsync(UserId, dto, ct);
-        return StatusCode((int)result.HttpStatusCode, result);
+        var response = await _adminService.SearchAndFilterUsers(search, role);
+        return StatusCode((int)response.HttpStatusCode, response);
     }
 
-    [HttpPut("settings/academic")]
-    public async Task<IActionResult> UpdateAcademicSetting([FromBody] AcademicSettingDto dto, CancellationToken ct)
+    // ================= Admin Specific Operations =================
+
+    [HttpPut("profile/{userId}")]
+    public async Task<IActionResult> UpdateAdminProfile(Guid userId, [FromForm] UpdateAdminProfileDto dto,CancellationToken ct)
     {
-        var UserId = User.GetUserId();
-        var result = await _adminService.UpdateAcademicSettingAsync(UserId, dto, ct);
-        return StatusCode((int)result.HttpStatusCode, result);
+        var response = await _adminService.UpdateAdminProfile(userId, dto,ct);
+        return StatusCode((int)response.HttpStatusCode, response);
     }
 
-    [HttpPut("password")]
-    public async Task<IActionResult> UpdatePassword(
-         [FromBody] ChangePasswordDto dto)
+    [HttpGet("profile/{userId}")]
+    public async Task<IActionResult> GetAdminByUserId(Guid userId,CancellationToken ct)
+    {
+        var response = await _adminService.GetAdminProfileByUserId(userId,ct);
+        return StatusCode((int)response.HttpStatusCode, response);
+    }
+
+    [HttpGet("all-admins")]
+    public async Task<IActionResult> GetAllAdmins()
     {
         var UserId = User.GetUserId();
         var result = await _genericProfileSetting.UpdatePasswordAsync(UserId, dto);

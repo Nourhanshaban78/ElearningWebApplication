@@ -10,15 +10,16 @@ using System.Threading.Tasks;
 
 namespace E_Learning.Core.Interfaces.Repositories.Profile
 {
-    public interface IAdminProfileRepository:IGenericRepository<AdminProfile,Guid>
+    public interface IAdminProfileRepository : IGenericRepository<AdminProfile, Guid>
 
     {
 
         // ── Admin Profile ─────────────────────────────────────────────────────
         Task<AdminProfile?> GetAdminProfileWithUserAsync(Guid userId, CancellationToken ct);
-        Task<AdminProfile?> GetAdminProfileWithUserByUserIdAsync(Guid userId,CancellationToken ct);
+        Task<AdminProfile?> GetAdminProfileWithUserByUserIdAsync(Guid userId);
 
-        
+        public Task<IReadOnlyList<AdminProfile>> GetAllAdminProfilesWithUsersAsync();
+
 
     }
 }

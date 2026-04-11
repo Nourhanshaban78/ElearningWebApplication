@@ -7,8 +7,10 @@ using E_Learning.Core.Base;
 using E_Learning.Core.Entities.LiveSessions;
 using E_Learning.Core.Enums;
 using E_Learning.Core.Repository;
+using E_Learning.Service.DTOs.Enrollments.Enrollment;
 using E_Learning.Service.DTOs.LiveSessionDto;
 using E_Learning.Service.Hubs;
+using E_Learning.Service.Services.Profiles;
 using E_Learning.Service.Services.Profiles.StudentSetting;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
@@ -21,14 +23,14 @@ namespace E_Learning.Service.Services.LiveSessionServices
         private readonly ResponseHandler _responseHandler;
         private readonly IMapper _mapper;
         private readonly IHubContext<LiveSessionHub> _hubContext;
-        private readonly IStudentService _studentService; 
+        private readonly IStudentService _studentService;
 
         public LiveSessionAttendeeService(
             IUnitOfWork uow,
             ResponseHandler responseHandler,
             IMapper mapper,
             IHubContext<LiveSessionHub> hubContext,
-            IStudentService studentService) 
+            IStudentService studentService)
         {
             _uow = uow;
             _responseHandler = responseHandler;
@@ -37,117 +39,122 @@ namespace E_Learning.Service.Services.LiveSessionServices
             _studentService = studentService;
         }
 
-    public async Task<Response<AttendeeResponseDto>> LogAttendanceAsync(LogAttendanceDto dto, CancellationToken ct = default)
-{
-    // 1️⃣ جلب الجلسة والتحقق من وجودها
-    var session = await _uow.LiveSessions.GetByIdAsync(dto.SessionId, ct);
-    if (session == null)
-        return _responseHandler.NotFound<AttendeeResponseDto>("Live session not found.");
-
-    // 2️⃣ التحقق من أن الجلسة حالتها Live
-    if (session.Status != LiveSessionStatus.Live)
-        return _responseHandler.BadRequest<AttendeeResponseDto>(
-            $"Cannot join session. The session is currently '{session.Status}'.");
-
-    // 3️⃣ التحقق إذا الطالب دخل قبل هيك
-    var alreadyLogged = await _uow.LiveSessionAttendees
-        .IsStudentEnrolledAsync(dto.SessionId, dto.StudentId, ct);
-
-    if (alreadyLogged)
-        return _responseHandler.BadRequest<AttendeeResponseDto>("Student has already joined this session.");
-
-    // 4️⃣ تسجيل الطالب
-    var attendee = _mapper.Map<LiveSessionAttendee>(dto);
-    await _uow.LiveSessionAttendees.AddAsync(attendee, ct);
-    await _uow.SaveChangesAsync(ct);
-
-   // 5️⃣ جلب الحضور الحالي للطالب فقط
-var currentAttendee = (await _uow.LiveSessionAttendees
-    .GetAttendeesBySessionIdAsync(dto.SessionId, ct))
-    .FirstOrDefault(x => x.StudentId == dto.StudentId);
-
-if (currentAttendee == null)
-    return _responseHandler.NotFound<AttendeeResponseDto>("Error retrieving attendance data.");
-
-// 6️⃣ Mapping للـ DTO مباشرة على العنصر وليس الـ IEnumerable
-var result = _mapper.Map<AttendeeResponseDto>(currentAttendee);
-
-// 7️⃣ إضافة بيانات الـ Profile إذا موجودة
-var studentProfileResponse = await _studentService.GetStudentProfileByUserIdAsync(dto.StudentId);
-
-if (studentProfileResponse.Data != null)
-{
-    result.Student.ProfilePicture = studentProfileResponse.Data.ProfilePicture;
-    result.Student.Location = studentProfileResponse.Data.Location;
-    // أي بيانات إضافية من Profile
-}
-
-// 8️⃣ إشعار عبر SignalR
-await _hubContext.Clients
-    .Group(dto.SessionId.ToString())
-    .SendAsync("OnStudentJoined", result);
-
-return _responseHandler.Success(result);}
-
-        public async Task<Response<IReadOnlyList<AttendeeResponseDto>>> GetAttendeesBySessionIdAsync(int sessionId, CancellationToken ct)
+        public async Task<Response<AttendeeResponseDto>> LogAttendanceAsync(LogAttendanceDto dto, CancellationToken ct = default)
         {
-            var attendees = await _uow.LiveSessionAttendees
-                .GetAttendeesBySessionIdAsync(sessionId, ct);
+            var session = await _uow.LiveSessions.GetByIdAsync(dto.SessionId, ct);
+            if (session == null) return _responseHandler.NotFound<AttendeeResponseDto>("Session not found.");
 
-            if (attendees == null || !attendees.Any())
-                return _responseHandler.Success<IReadOnlyList<AttendeeResponseDto>>(new List<AttendeeResponseDto>());
+            var attendees = await _uow.LiveSessionAttendees.GetAttendeesBySessionIdAsync(dto.SessionId, ct);
+            var existingRecord = attendees.FirstOrDefault(x => x.StudentId == dto.StudentId);
 
-            var allStudentsResponse = await _studentService.GetAllStudentsAsync();
-            var allStudents = allStudentsResponse.Data;
-
-            var result = _mapper.Map<IReadOnlyList<AttendeeResponseDto>>(attendees);
-
-            foreach (var attendeeDto in result)
+            if (existingRecord != null)
             {
-                var studentInfo = allStudents?.FirstOrDefault(s => s.AppUserId == attendeeDto.Student.Id);
-                if (studentInfo != null)
-                {
-                    attendeeDto.Student.ProfilePicture = studentInfo.ProfilePicture;
-                    attendeeDto.Student.Location = studentInfo.Location;
-                }
+                if (existingRecord.LeftAt == null)
+                    return _responseHandler.BadRequest<AttendeeResponseDto>("Student is already active in this session.");
+
+                existingRecord.JoinedAt = DateTime.UtcNow;
+                existingRecord.LeftAt = null;
+                existingRecord.DurationSeconds = null;
+
+                _uow.LiveSessionAttendees.Update(existingRecord);
+            }
+            else
+            {
+                var attendee = _mapper.Map<LiveSessionAttendee>(dto);
+                attendee.JoinedAt = DateTime.UtcNow;
+                await _uow.LiveSessionAttendees.AddAsync(attendee, ct);
             }
 
+            await _uow.SaveChangesAsync(ct);
+
+            var fullData = await _uow.LiveSessionAttendees.GetFullActiveAttendeeAsync(dto.SessionId, dto.StudentId, ct);
+            var result = _mapper.Map<AttendeeResponseDto>(fullData);
+
+            // 🟢 تعديل: تغيير اسم الميثود إلى GetStudentProfileByUserIdAsync لتطابق الـ Interface
+            var studentProfile = await _studentService.GetStudentProfileByUserIdAsync(dto.StudentId);
+            if (studentProfile.Data != null)
+            {
+                result.Student.ProfilePicture = studentProfile.Data.ProfilePicture;
+                result.Student.Location = studentProfile.Data.Location;
+            }
+
+            await _hubContext.Clients.Group(dto.SessionId.ToString()).SendAsync("OnStudentJoined", result);
             return _responseHandler.Success(result);
         }
 
         public async Task<Response<AttendeeResponseDto>> LeaveSession(LeaveSessionDto dto, CancellationToken ct = default)
         {
-             // 1️⃣ جلب الطالب الحالي في الجلسة (LeftAt == null)
-    var attendees = await _uow.LiveSessionAttendees.GetAttendeesBySessionIdAsync(dto.SessionId, ct);
-var existing = attendees.FirstOrDefault(x => x.StudentId == dto.StudentId && x.LeftAt == null);
+            var existing = await _uow.LiveSessionAttendees.GetFullActiveAttendeeAsync(dto.SessionId, dto.StudentId, ct);
 
-    if (existing == null)
-        return _responseHandler.BadRequest<AttendeeResponseDto>("Student is not in the session or already left.");
+            if (existing == null)
+                return _responseHandler.BadRequest<AttendeeResponseDto>("Student is not in the session or already left.");
 
-    // 2️⃣ تعديل LeftAt وحساب المدة بالثواني
-    existing.LeftAt = DateTime.UtcNow;
-    existing.DurationSeconds = (int)(existing.LeftAt.Value - existing.JoinedAt).TotalSeconds;
+            _uow.LiveSessionAttendees.LeaveSession(existing);
+            await _uow.SaveChangesAsync(ct);
 
-    // 3️⃣ حفظ التعديلات
-    _uow.LiveSessionAttendees.Update(existing); // لازم تتأكد ان الريبو فيه Update أو اعمل SaveChanges مباشرة
-    await _uow.SaveChangesAsync(ct);
+            var result = _mapper.Map<AttendeeResponseDto>(existing);
 
-    // 4️⃣ جلب بيانات الطالب لتحديث الـDTO
-    var studentProfileResponse = await _studentService.GetStudentProfileByUserIdAsync(dto.StudentId);
-    var result = _mapper.Map<AttendeeResponseDto>(existing);
+            // 🟢 تعديل: تغيير اسم الميثود إلى GetStudentProfileByUserIdAsync
+            var studentProfileResponse = await _studentService.GetStudentProfileByUserIdAsync(dto.StudentId);
+            if (studentProfileResponse.Data != null)
+            {
+                result.Student.ProfilePicture = studentProfileResponse.Data.ProfilePicture;
+                result.Student.Location = studentProfileResponse.Data.Location;
+            }
 
-    if (studentProfileResponse.Data != null)
-    {
-        result.Student.ProfilePicture = studentProfileResponse.Data.ProfilePicture;
-        result.Student.Location = studentProfileResponse.Data.Location;
-    }
+            await _hubContext.Clients.Group(dto.SessionId.ToString()).SendAsync("OnStudentLeft", result);
 
-    // 5️⃣ إرسال إشعار عبر SignalR
-    await _hubContext.Clients
-        .Group(dto.SessionId.ToString())
-        .SendAsync("OnStudentLeft", result);
+            return _responseHandler.Success(result);
+        }
 
-    return _responseHandler.Success(result);
+        public async Task<Response<SessionAttendeesDashboardDto>> GetAttendeesBySessionIdAsync(int sessionId, CancellationToken ct = default)
+        {
+            var attendees = await _uow.LiveSessionAttendees.GetAttendeesBySessionIdAsync(sessionId, ct);
+
+            if (attendees == null || !attendees.Any())
+            {
+                var session = await _uow.LiveSessions.GetByIdAsync(sessionId, ct);
+                return _responseHandler.Success(new SessionAttendeesDashboardDto
+                {
+                    LiveSession = _mapper.Map<LiveSessionResponseDto>(session),
+                    Attendees = new List<AttendeeSummaryDto>()
+                });
+            }
+
+            var firstRecord = attendees.First();
+            var sessionDto = _mapper.Map<LiveSessionResponseDto>(firstRecord.Session);
+
+            var attendeesList = attendees.Select(a => new AttendeeSummaryDto
+            {
+                StudentId = a.StudentId,
+                Student = _mapper.Map<StudentSummaryDto>(a.Student),
+                JoinedAt = a.JoinedAt,
+                LeftAt = a.LeftAt,
+                DurationSeconds = a.DurationSeconds
+            }).ToList();
+
+            // 🟢 تعديل: تغيير اسم الميثود إلى GetAllStudentsAsync لتطابق الـ Interface
+            var allStudentsResponse = await _studentService.GetAllStudentsAsync();
+            var allStudents = allStudentsResponse.Data;
+
+            foreach (var item in attendeesList)
+            {
+                // تعديل: البحث عن الطالب بناءً على الـ UserId المرتبط بالبروفايل
+                var extra = allStudents?.FirstOrDefault(s => s.Id.ToString() == item.StudentId.ToString());
+                if (extra != null)
+                {
+                    item.Student.ProfilePicture = extra.ProfilePicture;
+                    item.Student.Location = extra.Location;
+                }
+            }
+
+            var result = new SessionAttendeesDashboardDto
+            {
+                LiveSession = sessionDto,
+                Attendees = attendeesList
+            };
+
+            return _responseHandler.Success(result);
         }
     }
 }

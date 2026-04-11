@@ -8,8 +8,8 @@ using System.Security.Claims;
 
 namespace E_Learning.API.Controllers.Courses
 {
+    [Authorize(Roles = "Instructor,Admin")]
     [Route("api/[controller]")]
-    [ApiController]
     public class CoursesController : ControllerBase
     {
         private readonly ICourseService _courseService;
@@ -18,20 +18,14 @@ namespace E_Learning.API.Controllers.Courses
             _courseService = courseService;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetCoursesForAdmin([FromQuery] CourseQuery query,
-            CancellationToken ct = default)
-        {
-            var result = await _courseService.GetCoursesAsync(query, ct);
-            return Ok(result);
-        }
+       
 
-        //[HttpGet()]
-        //public async Task<IActionResult> GetCoursesForAdmin(CancellationToken ct = default)
-        //{
-        //    var result = await _courseService.GetCoursesAsync(ct);
-        //    return Ok(result);
-        //}
+        [HttpGet()]  
+        public async Task<IActionResult> GetCourses(CancellationToken ct = default)
+        {
+           var result = await _courseService.GetCoursesAsync(ct);
+           return Ok(result);
+       }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCourse(int id)
@@ -43,7 +37,12 @@ namespace E_Learning.API.Controllers.Courses
         [HttpPost]
         public async Task<IActionResult> CreateCourse(CreateCourseDto dto)
         {
-            var result = await _courseService.CreateCourseAsync(dto);
+            var userId = Guid.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value);
+
+            if (userId == null)
+                return Unauthorized();
+
+            var result = await _courseService.CreateCourseAsync(dto, userId);
             return StatusCode((int)result.HttpStatusCode, result);
         }
 

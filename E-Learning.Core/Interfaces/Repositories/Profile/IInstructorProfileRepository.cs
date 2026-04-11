@@ -11,7 +11,8 @@ namespace E_Learning.Core.Interfaces.Repositories.Profile
     public interface IInstructorProfileRepository:IGenericRepository<InstructorProfile,Guid>
     {
         Task<InstructorProfile?> GetProfileByUserIdAsync(Guid userId);
-      
+              Task<InstructorProfile?> GetInstructorProfileWithUserByUserIdAsync(Guid userId);
+
 
 
     }

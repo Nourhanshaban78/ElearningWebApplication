@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace E_Learning.Repository.Repositories.GenericesRepositories.Enrollments
 {
-    public class LessonProgressRepository : ILessonProgressRepository
+    public class LessonProgressRepository : GenericRepository<LessonProgress,int>, ILessonProgressRepository
     {
-        private readonly ELearningDbContext _context;
+        private new readonly ELearningDbContext _context;
 
-        public LessonProgressRepository(ELearningDbContext context)
+        public LessonProgressRepository(ELearningDbContext context) : base(context)
         {
             _context = context;
         }
@@ -27,7 +27,7 @@ namespace E_Learning.Repository.Repositories.GenericesRepositories.Enrollments
         }
 
 
-        public async Task<LessonProgress?> GetByIdAsync(int id, CancellationToken ct = default)
+        public override async Task<LessonProgress?> GetByIdAsync(int id, CancellationToken ct = default)
         {
             return await WithFullIncludes()
                 .FirstOrDefaultAsync(lp => lp.Id == id, ct);
@@ -54,12 +54,12 @@ namespace E_Learning.Repository.Repositories.GenericesRepositories.Enrollments
         }
 
 
-        public async Task AddAsync(LessonProgress lessonProgress, CancellationToken ct = default)
+        public override async Task AddAsync(LessonProgress lessonProgress, CancellationToken ct = default)
         {
             await _context.LessonProgresses.AddAsync(lessonProgress, ct);
         }
 
-        public void Update(LessonProgress lessonProgress)
+        public override void Update(LessonProgress lessonProgress)
         {
             _context.LessonProgresses.Update(lessonProgress);
         }

@@ -19,6 +19,7 @@ namespace E_Learning.Core.Base
                 Message = Message == null ? "Deleted Sucessfully" : Message
             };
         }
+
         public Response<T> Forbidden<T>(string Message = null)
         {
             return new Response<T>()
@@ -28,6 +29,8 @@ namespace E_Learning.Core.Base
                 Message = Message == null ? "Access denied." : Message
             };
         }
+
+
         public Response<T> Success<T>(T entity)
         {
             return new Response<T>()
@@ -88,7 +91,7 @@ namespace E_Learning.Core.Base
             };
         }
 
-        public   Response<T> HandleModelStateErrors<T>(ModelStateDictionary modelState)
+        public Response<T> HandleModelStateErrors<T>(ModelStateDictionary modelState)
         {
             var errors = modelState
                 .Where(x => x.Value.Errors.Count > 0)
@@ -101,6 +104,17 @@ namespace E_Learning.Core.Base
                 Succeeded = false,
                 Errors = errors,
                 Message = "Validation Failed"
+            };
+        }
+
+
+        public Response<T> InternalServerError<T>(string message = null)
+        {
+            return new Response<T>()
+            {
+                HttpStatusCode = System.Net.HttpStatusCode.InternalServerError,
+                Succeeded = false,
+                Message = message ?? "An unexpected error occurred"
             };
         }
     }

@@ -6,74 +6,58 @@ using Microsoft.EntityFrameworkCore;
 
 namespace E_Learning.Repository.Repositories.GenericesRepositories.LiveSessions
 {
-    public class LiveSessionAttendeeRepository : ILiveSessionAttendeeRepository
+    public class LiveSessionAttendeeRepository : GenericRepository<LiveSessionAttendee, int>, ILiveSessionAttendeeRepository
     {
-        private readonly ELearningDbContext _context;
+        public LiveSessionAttendeeRepository(ELearningDbContext context) : base(context) { }
 
-        public LiveSessionAttendeeRepository(ELearningDbContext context)
+        // ميثود مركزية تجلب شجرة البيانات كاملة (Attendee -> Session -> Course & Instructor)
+        private IQueryable<LiveSessionAttendee> WithFullIncludes()
         {
-            _context = context;
+            return _context.LiveSessionAttendees
+                .Include(a => a.Student)            // بيانات الطالب
+                .Include(a => a.Session)            // الجلسة
+                    .ThenInclude(s => s.Course)     // الكورس داخل الجلسة
+                .Include(a => a.Session)
+                    .ThenInclude(s => s.Instructor) // المدرس داخل الجلسة
+                .AsNoTracking();
         }
-       private IQueryable<LiveSessionAttendee> WithFullIncludes()
-{
-    return _context.LiveSessionAttendees
-        .Include(a => a.Student) // جلب الطالب
-        .Include(a => a.Session)
-            .ThenInclude(s => s.Course)      // جلب الكورس
-        .Include(a => a.Session)
-            .ThenInclude(s => s.Instructor)  // جلب المدرس
-        .AsNoTracking();
-}
-
-        public async Task AddAsync(LiveSessionAttendee attendee, CancellationToken ct = default)
+        // تعديل الميثود لتفحص فقط الطلاب "الموجودين حالياً"
+        public async Task<bool> IsStudentCurrentlyInSessionAsync(int sessionId, Guid studentId, CancellationToken ct = default)
         {
-            await _context.LiveSessionAttendees.AddAsync(attendee, ct);
+            return await _context.LiveSessionAttendees
+                         .AnyAsync(x => x.SessionId == sessionId &&
+                                        x.StudentId == studentId &&
+                                        x.LeftAt == null, ct);
         }
-
         public async Task<IReadOnlyList<LiveSessionAttendee>> GetAttendeesBySessionIdAsync(int sessionId, CancellationToken ct = default)
         {
             return await WithFullIncludes()
-            .Include(x=>x.Student)
-                 .Where(x => x.SessionId == sessionId)
-                 .Include(x=>x.Session)
-        .ThenInclude(s => s.Course)      // جلب الكورس
-    .Include(a => a.Session)
-        .ThenInclude(s => s.Instructor)  // جلب المدرس
-                 .ToListAsync(ct);
+                         .Where(x => x.SessionId == sessionId)
+                         .ToListAsync(ct);
+        }
+
+        public async Task<LiveSessionAttendee?> GetFullActiveAttendeeAsync(int sessionId, Guid studentId, CancellationToken ct = default)
+        {
+            return await WithFullIncludes()
+                         .FirstOrDefaultAsync(x => x.SessionId == sessionId && x.StudentId == studentId && x.LeftAt == null, ct);
         }
 
         public async Task<bool> IsStudentEnrolledAsync(int sessionId, Guid studentId, CancellationToken ct = default)
         {
             return await _context.LiveSessionAttendees
-                 .AnyAsync(x => x.SessionId == sessionId && x.StudentId == studentId, ct);
+                         .AnyAsync(x => x.SessionId == sessionId && x.StudentId == studentId, ct);
         }
 
         public IQueryable<StudentProfile> GetTableNoTracking()
         {
             return _context.StudentProfiles.AsNoTracking();
-
         }
 
-       public void Update(LiveSessionAttendee entity)
-    {
-        _context.Set<LiveSessionAttendee>().Update(entity);
-    }
-
-    public void LeaveSession(LiveSessionAttendee attendee)
-    {
-        attendee.LeftAt = DateTime.UtcNow;
-        attendee.DurationSeconds = (int)(DateTime.UtcNow - attendee.JoinedAt).TotalSeconds;
-        _context.Set<LiveSessionAttendee>().Update(attendee);
-    }
-
-        public async Task<LiveSessionAttendee?> GetActiveAttendeeAsync(int sessionId, Guid studentId, CancellationToken ct = default)
+        public void LeaveSession(LiveSessionAttendee attendee)
         {
-
-    return await _context.LiveSessionAttendees
-        .FirstOrDefaultAsync(x => x.SessionId == sessionId 
-                               && x.StudentId == studentId 
-                               && x.LeftAt == null, ct);
-}
-        
+            attendee.LeftAt = DateTime.UtcNow;
+            attendee.DurationSeconds = (int)(DateTime.UtcNow - attendee.JoinedAt).TotalSeconds;
+            _context.Set<LiveSessionAttendee>().Update(attendee);
+        }
     }
 }

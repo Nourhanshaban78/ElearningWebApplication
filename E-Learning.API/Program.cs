@@ -1,6 +1,13 @@
 ﻿using E_Learning.API.Hubs;
 using E_Learning.API.Middleware;
 using E_Learning.API.Services;
+using E_Learning.Application.Services;
+using E_Learning.Core.Features.Quizzes.Commands.StartQuizAttempt;
+using E_Learning.Core.Interfaces.Repositories.Academic;
+using E_Learning.Infrastructure.Repositories;
+using E_Learning.Repository.Data.Seeding;
+using E_Learning.Repository.Repositories.GenericesRepositories.Academic;
+using E_Learning.Repository.Seeding;
 using E_Learning.Service.Hubs;
 using E_Learning.Service.Services.Profiles.AdminSetting;
 using E_Learning.Service.Services.Profiles.FileStorageService;
@@ -8,8 +15,14 @@ using E_Learning.Service.Services.Profiles.GenericProfileSetting;
 using E_Learning.Service.Services.Profiles.GenericProfileSettingServices;
 using E_Learning.Service.Services.Profiles.InstructorSetting;
 using E_Learning.Service.Services.Profiles.StudentSetting;
+using E_Learning.Service.Services.Dashboard.AdminDashboard;
+using E_Learning.Service.Services.Dashboard.InstructorDashboard;
 using E_Learning.Service.Services.QuizServices;
 using E_Learning.Service.Services.Schedule;
+using E_Learning.Service.Services.UserDashboard;
+using FFMpegCore;
+using MediatR;
+using System.Reflection;
 
 namespace E_Learning.API
 {
@@ -23,7 +36,20 @@ namespace E_Learning.API
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddScoped<AuditInterceptor>();
             builder.Services.AddHttpClient();
+            builder.Services.AddMediatR(cfg =>
+            {
+                cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+            });
 
+            builder.Services.AddMediatR(cfg =>
+            cfg.RegisterServicesFromAssembly(typeof(StartQuizAttemptHandler).Assembly));
+
+
+            // ffmpeg
+            GlobalFFOptions.Configure(options =>
+            {
+                options.BinaryFolder = Path.Combine(Directory.GetCurrentDirectory(), "Infrastructure", "FFmpeg");
+            });
 
             // DbContext Default
             builder.Services.AddDbContext<ELearningDbContext>((serviceProvider, options) =>
@@ -47,7 +73,7 @@ namespace E_Learning.API
             // Auto Mapper
             builder.Services.AddAutoMapper(typeof(EnrollmentMappingProfile).Assembly);
             builder.Services.AddScoped(typeof(IGenericRepository<,>), typeof(GenericRepository<,>));
-         
+
 
             //// Auto Mapper
             builder.Services.AddAutoMapper(typeof(EnrollmentMappingProfile).Assembly);
@@ -60,7 +86,7 @@ namespace E_Learning.API
             builder.Services.AddAutoMapper(typeof(StudentProfileMapping).Assembly);
             builder.Services.AddAutoMapper(typeof(UserMappingProfile).Assembly);
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-         
+
             // ResponseHandler
             builder.Services.AddTransient<ResponseHandler>();
 
@@ -72,6 +98,8 @@ namespace E_Learning.API
             // Services
             builder.Services.AddScoped<IStageService, StageService>();
             builder.Services.AddScoped<ILevelService, LevelService>();
+            builder.Services.AddScoped<ILevelRepository, LevelRepository>();
+
             // Enrollment Services
             builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
             builder.Services.AddScoped<ILessonProgressService, LessonProgressService>();
@@ -107,11 +135,15 @@ namespace E_Learning.API
             builder.Services.AddScoped<INotificationHubService, NotificationHubService>();  // ← ضيف السطر ده
             builder.Services.AddScoped<IScheduleService, ScheduleService>();
 
-           builder.Services.AddTransient<ResponseHandler>();
+            builder.Services.AddTransient<ResponseHandler>();
             builder.Services.AddScoped<IAdminService, AdminService>();
+            builder.Services.AddScoped<IAdminProfileService, AdminProfileService>();
+
             builder.Services.AddScoped<IInstructorService, InstructorService>();
             builder.Services.AddScoped<IStudentService, StudentService>();
 
+            builder.Services.AddScoped<IDashboardService, DashboardService>();
+            builder.Services.AddScoped<IStudentDashboardRepository, StudentDashboardRepository>();
 
             builder.Services.AddScoped<ILiveSessionService, LiveSessionService>();
             builder.Services.AddScoped<ILiveSessionAttendeeService, LiveSessionAttendeeService>();
@@ -127,6 +159,10 @@ namespace E_Learning.API
             builder.Services.AddScoped<IExamQuestionServices, ExamQuestionServices>();
             builder.Services.AddScoped<IExamAttemptAnswerServices, ExamAttemptAnswerServices>();
             builder.Services.AddScoped<IQuizService, QuizService>();
+
+            builder.Services.AddScoped<IAdminDashboardService, AdminDashboardService>();
+            builder.Services.AddScoped<IInstructorDashboardService, InstructorDashboardService>();
+
             #endregion
 
 
@@ -193,7 +229,18 @@ namespace E_Learning.API
             var app = builder.Build();
             app.UseMiddleware<ExceptionMiddleware>();
             // ─── Migration & Seeding ─────────────────────
-            await app.MigrateDatabaseAsync();
+             await app.MigrateDatabaseAsync();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+
+                var roleManager = services.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
+                var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+                var context = services.GetRequiredService<ELearningDbContext>();
+                await RoleSeeding.SeedRolesAsync(roleManager);
+                await AdminSeeding.SeedAdminAsync(userManager, context);
+            }
 
             if (app.Environment.IsDevelopment())
             {

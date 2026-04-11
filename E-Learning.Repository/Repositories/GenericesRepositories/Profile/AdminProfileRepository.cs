@@ -12,7 +12,7 @@ namespace E_Learning.Repository.Repositories.GenericesRepositories.Profile
     {
         private readonly ELearningDbContext _context;
         public AdminProfileRepository(ELearningDbContext context)
-            : base(context) 
+            : base(context)
         {
             _context = context;
         }
@@ -29,14 +29,20 @@ namespace E_Learning.Repository.Repositories.GenericesRepositories.Profile
                 .Include(a => a.AppUser)
                 .FirstOrDefaultAsync(a => a.AppUserId == userId);
         }
-        public async Task<IReadOnlyList<AdminProfile>> GetAllAdminProfilesWithUsersAsync(CancellationToken ct)
-        {
-            return await _context.AdminProfiles
-                .Include(a => a.AppUser)
-                .ToListAsync();
 
+      async  public Task<AdminProfile?> GetAdminProfileWithUserByUserIdAsync(Guid userId)
+        {
+              return await _context.AdminProfiles
+                .Include(a => a.AppUser)
+                .FirstOrDefaultAsync(a => a.AppUserId == userId);
         }
 
-      }
+        async public Task<IReadOnlyList<AdminProfile>> GetAllAdminProfilesWithUsersAsync()
+        {
+            return await _context.AdminProfiles
+               .Include(a => a.AppUser)
+               .ToListAsync();
+
+        }
+    }
 }
-   

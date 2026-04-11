@@ -532,6 +532,9 @@ namespace E_Learning.Repository.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime?>("EndAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
@@ -540,7 +543,7 @@ namespace E_Learning.Repository.Migrations
                     b.Property<int?>("LessonId")
                         .HasColumnType("int");
 
-                    b.Property<int>("MaxAttempts")
+                    b.Property<int?>("MaxAttempts")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasDefaultValue(3);
@@ -609,6 +612,9 @@ namespace E_Learning.Repository.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime?>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<bool?>("IsPassed")
                         .HasColumnType("bit");
 
@@ -653,6 +659,9 @@ namespace E_Learning.Repository.Migrations
                     b.Property<bool?>("IsCorrect")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("NeedsReview")
+                        .HasColumnType("bit");
+
                     b.Property<int>("QuestionId")
                         .HasColumnType("int");
 
@@ -665,11 +674,12 @@ namespace E_Learning.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AttemptId");
-
                     b.HasIndex("QuestionId");
 
                     b.HasIndex("SelectedOptionId");
+
+                    b.HasIndex("AttemptId", "QuestionId")
+                        .IsUnique();
 
                     b.ToTable("QuizAttemptAnswers", (string)null);
                 });
@@ -2405,6 +2415,21 @@ namespace E_Learning.Repository.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("QuizAttemptAnswerQuizOption", b =>
+                {
+                    b.Property<int>("QuizAttemptAnswerId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SelectedOptionsId")
+                        .HasColumnType("int");
+
+                    b.HasKey("QuizAttemptAnswerId", "SelectedOptionsId");
+
+                    b.HasIndex("SelectedOptionsId");
+
+                    b.ToTable("QuizAttemptAnswerSelectedOptions", (string)null);
+                });
+
             modelBuilder.Entity("E_Learning.Core.Entities.Academic.GradeRange", b =>
                 {
                     b.HasOne("E_Learning.Core.Entities.Academic.AcademicSetting", "AcademicSetting")
@@ -3110,6 +3135,21 @@ namespace E_Learning.Repository.Migrations
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("QuizAttemptAnswerQuizOption", b =>
+                {
+                    b.HasOne("E_Learning.Core.Entities.Assessments.Quiz.QuizAttemptAnswer", null)
+                        .WithMany()
+                        .HasForeignKey("QuizAttemptAnswerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("E_Learning.Core.Entities.Assessments.Quiz.QuizOption", null)
+                        .WithMany()
+                        .HasForeignKey("SelectedOptionsId")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 
