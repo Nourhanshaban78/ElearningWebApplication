@@ -381,7 +381,7 @@ namespace E_Learning.Service.Services.Profiles
             return _responseHandler.Deleted<string>("User deleted successfully");
         }
 
-        async public Task<Response<string>> UpdateUser(Guid userId, CreateUserDto dto, CancellationToken ct)
+        async public Task<Response<string>> UpdateUser(Guid userId, UpdateUserDto dto, CancellationToken ct)
         {
             var user = await _userManager.FindByIdAsync(userId.ToString());
             if (user == null) return _responseHandler.NotFound<string>("User not found");

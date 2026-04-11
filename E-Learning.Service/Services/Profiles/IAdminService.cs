@@ -19,7 +19,7 @@ namespace E_Learning.Service.Services.Profiles
         Task<Response<AdminProfileResponseDto>> UpdateAdminProfile(Guid userId, UpdateAdminProfileDto dto, CancellationToken ct = default);
 
         Task<Response<IEnumerable<CreateUserResponseDto>>> GetAllUsers(CancellationToken ct);
-        Task<Response<string>> UpdateUser(Guid userId, CreateUserDto dto, CancellationToken ct);
+        Task<Response<string>> UpdateUser(Guid userId, UpdateUserDto dto, CancellationToken ct);
         Task<Response<string>> ChangeUserStatus(Guid userId, bool newStatus);
         Task<Response<IEnumerable<CreateUserResponseDto>>> SearchAndFilterUsers(string? search, string? role);
         Task<Response<string>> DeleteUser(Guid userId, CancellationToken ct);
