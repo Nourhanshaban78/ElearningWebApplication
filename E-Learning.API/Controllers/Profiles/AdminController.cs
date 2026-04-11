@@ -94,7 +94,8 @@ public class AdminController : ControllerBase
     [HttpGet("all-admins")]
     public async Task<IActionResult> GetAllAdmins()
     {
-        var response = await _adminService.GetAllAdmins();
-        return StatusCode((int)response.HttpStatusCode, response);
+        var UserId = User.GetUserId();
+        var result = await _genericProfileSetting.UpdatePasswordAsync(UserId, dto);
+        return StatusCode((int)result.HttpStatusCode, result);
     }
 }
